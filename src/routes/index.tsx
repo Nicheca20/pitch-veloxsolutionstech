@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { brand, sections } from "@/content";
 import { Section } from "@/components/pitch/Section";
 import { NavDots } from "@/components/pitch/NavDots";
@@ -30,12 +30,11 @@ export const Route = createFileRoute("/")({
 });
 
 function Pitch() {
-  const { progress, section, value: barProgress } = useScrollProgress();
+  const { section, value: barProgress } = useScrollProgress();
   const [active, setActive] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [use3D, setUse3D] = useState(false);
   const [reduced, setReduced] = useState(false);
-  const [quality, setQuality] = useState(1);
   const [loading, setLoading] = useState(100);
   const [ready, setReady] = useState(false);
 
