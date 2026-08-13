@@ -13,7 +13,7 @@ const ICE = "#EEEDFE";
 /** Punto de focus de la sección 7 (idéntico al del cubo amarillo). */
 export const BIKE_FOCUS = new THREE.Vector3(0, 0, -140);
 /** Ventana de scroll (índice de sección) de la sección 7. */
-export const BIKE_WINDOW: [number, number] = [5.25, 6.45];
+export const BIKE_WINDOW: [number, number] = [5.9, 7.15];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -120,7 +120,9 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
   const root = useRef<THREE.Group>(null);
   const rider = useRef<THREE.Group>(null);
   const power = useRef(0);
+  const cloud = useRef(0);
   const spin = useRef(0);
+
 
   const model = useMemo(() => {
     const m = scene.clone(true);
@@ -170,23 +172,29 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const g = root.current;
     if (!g) return;
     const s = bikePhase(section.current);
-    const live = section.current > BIKE_WINDOW[0] - 0.6 && section.current < BIKE_WINDOW[1] + 0.6;
+    // la banda de nubes ya existe un poco antes: es la estela que dejó el avión
+    const live = section.current > BIKE_WINDOW[0] - 0.55 && section.current < BIKE_WINDOW[1] + 0.4;
     g.visible = live;
     if (!live) {
       power.current = 0;
+      cloud.current = 0;
       return;
     }
 
-    const entry = smooth(clamp01(s / 0.3)); // nace de la estela del avión
+    const entry = smooth(clamp01(s / 0.16)); // nace de la estela del avión
     const cruise = smooth(clamp01((s - 0.22) / 0.36)); // pasada lateral
     const exit = smooth(clamp01((s - 0.58) / 0.42)); // se va a toda velocidad
     power.current = entry * (1 - exit * 0.4);
+    cloud.current = clamp01((section.current - (BIKE_WINDOW[0] - 0.55)) / 0.5) * (1 - exit * 0.8);
     spin.current = (0.35 + cruise * 0.5) * dt * 60 * 0.06;
 
+
     const r = rider.current;
+    if (r) r.visible = section.current > BIKE_WINDOW[0] - 0.15;
     if (r) {
+
       // nace lejos en la estela y se acerca a la cámara, luego se aleja a fondo
-      r.position.z = THREE.MathUtils.lerp(-48, -9, entry) - exit * 95;
+      r.position.z = THREE.MathUtils.lerp(-34, -9, entry) - exit * 95;
       r.position.y = -0.2 + (1 - entry) * 2.4;
       r.position.x = -3.4 + cruise * 2.6 + Math.sin(clock.elapsedTime * 0.6) * 0.5 * cruise;
       r.rotation.z = 0.16 * cruise + Math.sin(clock.elapsedTime * 1.3) * 0.06 * cruise;
@@ -210,7 +218,7 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
 
   return (
     <group ref={root} position={BIKE_FOCUS.toArray()} visible={false}>
-      <CloudTrack power={power} />
+      <CloudTrack power={cloud} />
       <group ref={rider}>
         <primitive object={model} />
         <WheelRings spin={spin} radius={1.05} />
