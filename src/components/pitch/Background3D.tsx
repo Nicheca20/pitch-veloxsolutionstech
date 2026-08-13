@@ -99,7 +99,12 @@ function TestCubes() {
           position={[0, 0, c.z]}
         >
           <boxGeometry args={[4, 4, 4]} />
-          <meshStandardMaterial color={c.color} emissive={c.color} emissiveIntensity={0.5} fog={false} />
+          <meshStandardMaterial
+            color={c.color}
+            emissive={c.color}
+            emissiveIntensity={0.5}
+            fog={false}
+          />
         </mesh>
       ))}
     </>

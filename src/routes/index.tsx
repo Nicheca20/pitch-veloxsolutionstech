@@ -100,7 +100,6 @@ function Pitch() {
         ) : null}
       </div>
 
-
       <main className="relative z-10">
         <h1 className="sr-only">
           {brand.name} — {brand.tagline}
@@ -118,8 +117,12 @@ function Pitch() {
                 className="group rounded-xl border border-white/10 bg-white/[0.03] p-6 transition-colors hover:border-[var(--force)]"
               >
                 <div className="text-lg font-semibold">{c.name}</div>
-                <div className="mt-1 text-xs uppercase tracking-[0.2em] text-foreground/50">{c.role}</div>
-                <div className="mt-4 text-sm text-[var(--aura)] group-hover:underline">{c.email}</div>
+                <div className="mt-1 text-xs uppercase tracking-[0.2em] text-foreground/50">
+                  {c.role}
+                </div>
+                <div className="mt-4 text-sm text-[var(--aura)] group-hover:underline">
+                  {c.email}
+                </div>
               </a>
             ))}
           </div>
@@ -129,7 +132,12 @@ function Pitch() {
         </footer>
       </main>
 
-      <NavDots count={sections.length} active={active} onSelect={goTo} labels={sections.map((s) => s.kicker)} />
+      <NavDots
+        count={sections.length}
+        active={active}
+        onSelect={goTo}
+        labels={sections.map((s) => s.kicker)}
+      />
 
       <div
         className={`fixed inset-x-0 bottom-8 z-20 flex justify-center text-[10px] uppercase tracking-[0.3em] text-foreground/45 transition-opacity duration-500 print:hidden ${
