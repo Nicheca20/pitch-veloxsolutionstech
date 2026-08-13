@@ -104,15 +104,17 @@ function Pitch() {
       <ProgressBar progress={barProgress} />
 
       {/* Canvas fijo detrás del contenido; nunca bloquea la selección de texto */}
-      <div id="pitch-canvas" className="pointer-events-none fixed inset-0 z-0 print:hidden">
+      <div
+        id="pitch-canvas"
+        className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(70%_60%_at_30%_20%,rgba(83,74,183,0.35)_0%,transparent_65%),radial-gradient(60%_60%_at_80%_80%,rgba(127,119,221,0.25)_0%,transparent_70%)] print:hidden"
+      >
         {mounted && use3D ? (
           <Suspense fallback={null}>
-            <Scene progress={progress} quality={quality} reduced={reduced} onLowPerf={() => setQuality(0.5)} />
+            <Background3D />
           </Suspense>
-        ) : (
-          <div className="h-full w-full animate-pulse bg-[radial-gradient(60%_60%_at_30%_35%,var(--velox)_0%,transparent_60%),radial-gradient(50%_50%_at_75%_70%,var(--force)_0%,transparent_65%)] opacity-40" />
-        )}
+        ) : null}
       </div>
+
 
       <main className="relative z-10">
         <h1 className="sr-only">
