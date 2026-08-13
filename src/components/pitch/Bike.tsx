@@ -138,7 +138,7 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const center = new THREE.Vector3();
     box.getSize(size);
     box.getCenter(center);
-    const scale = 40 / Math.max(size.z, 0.001);
+    const scale = 15 / Math.max(size.z, 0.001);
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
     // avanza hacia la cámara (+Z) en un 3/4 para lucir el frente
@@ -188,9 +188,9 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
       // nace lejos en la estela y se acerca a la cámara, luego se aleja a fondo
       r.position.z = THREE.MathUtils.lerp(-34, 4, entry) + exit * 70;
       r.position.y = -0.9 + (1 - entry) * 1.6;
-      r.position.x = -2.2 + cruise * 2.0 + Math.sin(clock.elapsedTime * 0.6) * 0.5 * cruise;
+      r.position.x = -3.4 + cruise * 2.6 + Math.sin(clock.elapsedTime * 0.6) * 0.5 * cruise;
       r.rotation.z = 0.16 * cruise + Math.sin(clock.elapsedTime * 1.3) * 0.06 * cruise;
-      r.rotation.y = 0.35 - cruise * 0.3;
+      r.rotation.y = 0.55 - cruise * 0.35;
       const fade = 1 - exit;
       r.scale.setScalar((0.85 + entry * 0.15) * fade + 0.001);
     }
