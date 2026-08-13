@@ -19,6 +19,13 @@
  */
 
 @theme inline {
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --color-galaxy: var(--galaxy);
+  --color-velox: var(--velox);
+  --color-force: var(--force);
+  --color-aura: var(--aura);
+  --color-ice: var(--ice);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -63,8 +70,15 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.129 0.042 264.695);
+  /* Marca Velox */
+  --galaxy: #26215c;
+  --velox: #534ab7;
+  --force: #7f77dd;
+  --aura: #afa9ec;
+  --ice: #eeedfe;
+  --velox-gradient: linear-gradient(100deg, var(--velox) 0%, var(--force) 45%, var(--aura) 100%);
+  --background: oklch(0.16 0.07 285);
+  --foreground: oklch(0.96 0.015 290);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
@@ -140,5 +154,55 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+  }
+}
+
+
+@utility bg-velox-gradient {
+  background-image: var(--velox-gradient);
+}
+
+/* Velo radial detrás del texto para garantizar contraste AA sobre la escena 3D */
+@utility text-veil {
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -12% -8%;
+    z-index: -1;
+    background: radial-gradient(
+      ellipse at 30% 50%,
+      color-mix(in oklab, var(--galaxy) 88%, black) 0%,
+      transparent 72%
+    );
+    pointer-events: none;
+  }
+}
+
+html {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+}
+
+@media print {
+  #pitch-canvas,
+  .print\:hidden {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .pitch-section {
+    min-height: auto !important;
+    page-break-inside: avoid;
+    padding: 1.5rem 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    color: #000 !important;
+  }
+  .pitch-section * {
+    color: #000 !important;
+    -webkit-text-fill-color: #000 !important;
   }
 }
