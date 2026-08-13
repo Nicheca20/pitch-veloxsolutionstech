@@ -487,7 +487,7 @@ function Finale({ progress, quality }: { progress: P; quality: number }) {
   });
 
   return (
-    <points ref={ref} geometry={geo}>
+    <points ref={ref} geometry={geo} position={[2, 0.4, -6]}>
       <pointsMaterial
         size={0.07}
         color={CONFIG.colors.force}
