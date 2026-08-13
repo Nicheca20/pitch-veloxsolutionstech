@@ -105,7 +105,7 @@ function Pitch() {
 
       {/* Canvas fijo detrás del contenido; nunca bloquea la selección de texto */}
       <div id="pitch-canvas" className="pointer-events-none fixed inset-0 z-0 print:hidden">
-        {mounted && use3D && !reduced ? (
+        {mounted && use3D ? (
           <Suspense fallback={null}>
             <Scene progress={progress} quality={quality} reduced={reduced} onLowPerf={() => setQuality(0.5)} />
           </Suspense>
