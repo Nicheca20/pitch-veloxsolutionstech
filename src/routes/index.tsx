@@ -5,6 +5,7 @@ import { Section } from "@/components/pitch/Section";
 import { NavDots } from "@/components/pitch/NavDots";
 import { ProgressBar } from "@/components/pitch/ProgressBar";
 import { Preloader } from "@/components/pitch/Preloader";
+import { useScrollProgress } from "@/hooks/use-scroll-progress";
 
 const Background3D = lazy(() =>
   import("@/components/pitch/Background3D").then((m) => ({ default: m.Background3D })),
@@ -29,8 +30,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Pitch() {
-  const progress = useRef(0);
-  const [barProgress, setBarProgress] = useState(0);
+  const { progress, section, value: barProgress } = useScrollProgress();
   const [active, setActive] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [use3D, setUse3D] = useState(false);
@@ -60,24 +60,8 @@ function Pitch() {
   }, []);
 
   useEffect(() => {
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const max = document.body.scrollHeight - window.innerHeight;
-        const p = max > 0 ? window.scrollY / max : 0;
-        progress.current = p;
-        setBarProgress(p);
-        setActive(Math.min(sections.length - 1, Math.round(p * (sections.length - 1))));
-      });
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
+    setActive(Math.min(sections.length - 1, Math.round(barProgress * (sections.length - 1))));
+  }, [barProgress]);
 
   const goTo = useCallback((i: number) => {
     const el = document.getElementById(sections[Math.max(0, Math.min(sections.length - 1, i))]!.id);
@@ -112,7 +96,7 @@ function Pitch() {
       >
         {mounted && use3D ? (
           <Suspense fallback={null}>
-            <Background3D />
+            <Background3D section={section} />
           </Suspense>
         ) : null}
       </div>
