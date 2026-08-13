@@ -314,6 +314,21 @@ function ParticleField({ section, count = 30000 }: { section: Ref; count?: numbe
 }
 
 /** Bloom dinámico: golpe de brillo en el hook + build-up hacia la sección 5. */
+/** Monta el carro sólo cuando la sección 5 está cerca del viewport. */
+function LazyCar({ section }: { section: Ref }) {
+  const [show, setShow] = useState(false);
+  useFrame(() => {
+    if (!show && section.current > CAR_WINDOW[0] - 2) setShow(true);
+  });
+  if (!show) return null;
+  return (
+    <Suspense fallback={null}>
+      <F1Car section={section} />
+      <Environment preset="night" />
+    </Suspense>
+  );
+}
+
 function DynamicBloom({ section }: { section: Ref }) {
   const ref = useRef<{ intensity: number } | null>(null);
   const pulse = usePulse(section);
