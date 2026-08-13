@@ -94,8 +94,15 @@ function CameraRig({ section }: { section: Ref }) {
       const z = -o.x * Math.sin(a) + o.z * Math.cos(a);
       o.set(x, o.y + 0.9, z);
     }
+    // deriva sutil en el túnel (secciones 0-4) para que nunca se sienta estático
+    if (!inCar && t < CAR_WINDOW[0]) {
+      const e = clock.elapsedTime;
+      offset.current.x += Math.sin(e * 0.35) * 0.5;
+      offset.current.y += Math.cos(e * 0.27) * 0.28;
+    }
     camera.position.copy(focus.current).add(offset.current);
     camera.lookAt(focus.current);
+
   });
 
   return null;
