@@ -148,8 +148,21 @@ function TestCubes() {
   );
 }
 
+/** Pulso de entrada: oleada de energía en los primeros segundos del hook. */
+function usePulse(section: Ref) {
+  const born = useRef(0);
+  return (elapsed: number) => {
+    if (!born.current) born.current = elapsed;
+    const e = elapsed - born.current;
+    if (section.current > 1.1) return 0;
+    const near = 1 - clamp01(section.current / 1.1);
+    const wave = Math.exp(-Math.pow((e - 0.9) / 0.55, 2)); // campana ~0.9s
+    return wave * near;
+  };
+}
+
 /** Grilla synthwave infinita que acompaña a la cámara. */
-function SpeedGrid() {
+function SpeedGrid({ section }: { section: Ref }) {
   const group = useRef<THREE.Group>(null);
   const a = useRef<THREE.GridHelper>(null);
   const b = useRef<THREE.GridHelper>(null);
@@ -157,7 +170,8 @@ function SpeedGrid() {
   const size = 120;
 
   useFrame(({ camera }, dt) => {
-    run.current = (run.current + dt * 14) % size;
+    const k = tunnelIntensity(section.current);
+    run.current = (run.current + dt * 26 * k) % size;
     if (group.current) group.current.position.z = camera.position.z;
     if (a.current) a.current.position.z = run.current - size;
     if (b.current) b.current.position.z = run.current - size * 2;
@@ -166,18 +180,86 @@ function SpeedGrid() {
   return (
     <group ref={group} position={[0, -3.4, 0]}>
       <gridHelper ref={a} args={[size, 60, GRID, GRID]}>
-        <lineBasicMaterial attach="material" color={GRID} transparent opacity={0.5} fog />
+        <lineBasicMaterial attach="material" color={GRID} transparent opacity={0.6} fog />
       </gridHelper>
       <gridHelper ref={b} args={[size, 60, GRID, GRID]}>
-        <lineBasicMaterial attach="material" color={GRID} transparent opacity={0.5} fog />
+        <lineBasicMaterial attach="material" color={GRID} transparent opacity={0.6} fog />
       </gridHelper>
     </group>
   );
 }
 
+/** Líneas de velocidad que atraviesan la cámara (túnel de secciones 0-4). */
+function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
+  const ref = useRef<THREE.LineSegments>(null);
+  const mat = useRef<THREE.LineBasicMaterial>(null);
+  const depth = 220;
+
+  const { geometry, speeds } = useMemo(() => {
+    const pos = new Float32Array(count * 6);
+    const speeds = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      const r = 6 + Math.random() * 42;
+      const a = Math.random() * Math.PI * 2;
+      const x = Math.cos(a) * r;
+      const y = Math.sin(a) * r * 0.45;
+      const z = -Math.random() * depth;
+      const len = 2 + Math.random() * 6;
+      pos.set([x, y, z, x, y, z - len], i * 6);
+      speeds[i] = 28 + Math.random() * 55;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    return { geometry: g, speeds };
+  }, [count]);
+
+  useFrame(({ camera, clock }, dt) => {
+    const o = ref.current;
+    if (!o) return;
+    o.position.z = camera.position.z;
+    const k = tunnelIntensity(section.current);
+    const attr = geometry.getAttribute("position") as THREE.BufferAttribute;
+    const arr = attr.array as Float32Array;
+    for (let i = 0; i < count; i++) {
+      const d = speeds[i]! * k * dt;
+      const i0 = i * 6;
+      arr[i0 + 2]! + 0;
+      arr[i0 + 2] = arr[i0 + 2]! + d;
+      arr[i0 + 5] = arr[i0 + 5]! + d;
+      if (arr[i0 + 5]! > 12) {
+        const shift = depth + Math.random() * 40;
+        arr[i0 + 2] = arr[i0 + 2]! - shift;
+        arr[i0 + 5] = arr[i0 + 5]! - shift;
+      }
+    }
+    attr.needsUpdate = true;
+    if (mat.current) {
+      const fade = 1 - clamp01((section.current - CAR_WINDOW[0] + 0.6) / 1.2);
+      mat.current.opacity = (0.16 + (k - 1) * 0.3) * fade;
+      mat.current.color.setHSL(0.68, 0.6, 0.55 + Math.sin(clock.elapsedTime) * 0.05);
+    }
+  });
+
+  return (
+    <lineSegments ref={ref} geometry={geometry} frustumCulled={false}>
+      <lineBasicMaterial
+        ref={mat}
+        color={PARTICLE_COLORS[2]}
+        transparent
+        opacity={0.2}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </lineSegments>
+  );
+}
+
 /** Campo de partículas flotante con blending aditivo, siempre alrededor de la cámara. */
-function ParticleField({ count = 30000 }: { count?: number }) {
+function ParticleField({ section, count = 30000 }: { section: Ref; count?: number }) {
   const ref = useRef<THREE.Points>(null);
+  const mat = useRef<THREE.PointsMaterial>(null);
+  const drift = useRef(0);
+  const pulse = usePulse(section);
 
   const geometry = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -201,14 +283,24 @@ function ParticleField({ count = 30000 }: { count?: number }) {
   useFrame(({ camera, clock }, dt) => {
     const o = ref.current;
     if (!o) return;
-    o.rotation.y += dt * 0.012;
-    o.position.z = camera.position.z - 40;
+    const k = tunnelIntensity(section.current);
+    const p = pulse(clock.elapsedTime);
+    // flujo hacia la cámara: el campo entero se desliza en +Z y se recicla
+    drift.current = (drift.current + dt * 9 * k) % 170;
+    o.rotation.y += dt * 0.02 * k;
+    o.position.z = camera.position.z - 40 + drift.current;
     o.position.y = Math.sin(clock.elapsedTime * 0.15) * 0.6;
+    o.scale.setScalar(1 + p * 0.14);
+    if (mat.current) {
+      mat.current.size = 0.09 * (1 + (k - 1) * 0.5 + p * 1.6);
+      mat.current.opacity = Math.min(1, 0.9 + p * 0.1);
+    }
   });
 
   return (
     <points ref={ref} geometry={geometry} frustumCulled={false}>
       <pointsMaterial
+        ref={mat}
         size={0.09}
         vertexColors
         transparent
@@ -221,18 +313,23 @@ function ParticleField({ count = 30000 }: { count?: number }) {
   );
 }
 
-/** Monta el carro sólo cuando la sección 5 está cerca del viewport. */
-function LazyCar({ section }: { section: Ref }) {
-  const [show, setShow] = useState(false);
-  useFrame(() => {
-    if (!show && section.current > CAR_WINDOW[0] - 2) setShow(true);
+/** Bloom dinámico: golpe de brillo en el hook + build-up hacia la sección 5. */
+function DynamicBloom({ section }: { section: Ref }) {
+  const ref = useRef<{ intensity: number } | null>(null);
+  const pulse = usePulse(section);
+  useFrame(({ clock }) => {
+    const k = tunnelIntensity(section.current);
+    const p = pulse(clock.elapsedTime);
+    if (ref.current) ref.current.intensity = 0.45 + (k - 1) * 0.35 + p * 1.1;
   });
-  if (!show) return null;
   return (
-    <Suspense fallback={null}>
-      <F1Car section={section} />
-      <Environment preset="night" />
-    </Suspense>
+    <Bloom
+      ref={ref as never}
+      intensity={0.45}
+      luminanceThreshold={0.5}
+      luminanceSmoothing={0.3}
+      mipmapBlur
+    />
   );
 }
 
@@ -252,13 +349,15 @@ export function Background3D({ section }: { section: Ref }) {
       <directionalLight position={[6, 8, 6]} intensity={0.6} color="#AFA9EC" />
       <directionalLight position={[-8, -4, -6]} intensity={0.35} color="#534AB7" />
       <CameraRig section={section} />
-      <SpeedGrid />
-      <ParticleField />
+      <SpeedGrid section={section} />
+      <ParticleField section={section} />
+      <Streaks section={section} />
       <TestCubes />
       <LazyCar section={section} />
       <EffectComposer enableNormalPass={false}>
-        <Bloom intensity={0.45} luminanceThreshold={0.55} luminanceSmoothing={0.3} mipmapBlur />
+        <DynamicBloom section={section} />
       </EffectComposer>
     </Canvas>
   );
+
 }
