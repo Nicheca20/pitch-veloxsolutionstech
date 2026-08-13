@@ -138,7 +138,7 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const center = new THREE.Vector3();
     box.getSize(size);
     box.getCenter(center);
-    const scale = 16 / Math.max(size.z, 0.001);
+    const scale = 40 / Math.max(size.z, 0.001);
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
     // avanza hacia la cámara (+Z) en un 3/4 para lucir el frente
