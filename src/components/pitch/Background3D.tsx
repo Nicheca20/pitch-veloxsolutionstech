@@ -1,6 +1,9 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useMemo, useRef, type MutableRefObject } from "react";
+import { Environment } from "@react-three/drei";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
+import { Suspense, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
+import { CAR_WINDOW, F1Car, carPhase } from "./F1Car";
 
 const FOG = "#0a0820";
 const GRID = "#534AB7";
@@ -63,6 +66,15 @@ function CameraRig({ section }: { section: Ref }) {
     const t = smoothed.current;
     sampleKeys(FOCUS, t, focus.current);
     sampleKeys(OFFSET, t, offset.current);
+    // órbita lenta alrededor del carro durante la sección 5 (no altera focus/lookAt)
+    const inCar = t > CAR_WINDOW[0] - 0.4 && t < CAR_WINDOW[1] + 0.4;
+    if (inCar) {
+      const a = carPhase(t) * Math.PI * 0.55 - 0.25;
+      const o = offset.current;
+      const x = o.x * Math.cos(a) + o.z * Math.sin(a);
+      const z = -o.x * Math.sin(a) + o.z * Math.cos(a);
+      o.set(x, o.y + 0.9, z);
+    }
     camera.position.copy(focus.current).add(offset.current);
     camera.lookAt(focus.current);
   });
@@ -74,7 +86,6 @@ function CameraRig({ section }: { section: Ref }) {
 function TestCubes() {
   const refs = useRef<(THREE.Mesh | null)[]>([]);
   const data: { z: number; color: string }[] = [
-    { z: -55, color: "#FF5C7A" },
     { z: -95, color: "#4ADE80" },
     { z: -140, color: "#FACC15" },
   ];
@@ -184,6 +195,21 @@ function ParticleField({ count = 30000 }: { count?: number }) {
   );
 }
 
+/** Monta el carro sólo cuando la sección 5 está cerca del viewport. */
+function LazyCar({ section }: { section: Ref }) {
+  const [show, setShow] = useState(false);
+  useFrame(() => {
+    if (!show && section.current > CAR_WINDOW[0] - 2) setShow(true);
+  });
+  if (!show) return null;
+  return (
+    <Suspense fallback={null}>
+      <F1Car section={section} />
+      <Environment preset="night" />
+    </Suspense>
+  );
+}
+
 export function Background3D({ section }: { section: Ref }) {
   return (
     <Canvas
@@ -203,6 +229,10 @@ export function Background3D({ section }: { section: Ref }) {
       <SpeedGrid />
       <ParticleField />
       <TestCubes />
+      <LazyCar section={section} />
+      <EffectComposer enableNormalPass={false}>
+        <Bloom intensity={0.45} luminanceThreshold={0.55} luminanceSmoothing={0.3} mipmapBlur />
+      </EffectComposer>
     </Canvas>
   );
 }
