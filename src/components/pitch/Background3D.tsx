@@ -223,7 +223,7 @@ function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
     for (let i = 0; i < count; i++) {
       const d = speeds[i]! * k * dt;
       const i0 = i * 6;
-      arr[i0 + 2]! + 0;
+      
       arr[i0 + 2] = arr[i0 + 2]! + d;
       arr[i0 + 5] = arr[i0 + 5]! + d;
       if (arr[i0 + 5]! > 12) {
