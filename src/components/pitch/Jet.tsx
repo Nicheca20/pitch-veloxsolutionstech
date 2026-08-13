@@ -146,7 +146,6 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     const scale = 13 / Math.max(size.z, 0.001);
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
-    (window as unknown as Record<string, unknown>)["__jetScale"] = [scale, size.toArray()];
 
     wrap.traverse((o) => {
       const mesh = o as THREE.Mesh;
@@ -154,6 +153,19 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
         mesh.castShadow = false;
         mesh.receiveShadow = false;
         mesh.frustumCulled = false;
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        mats.forEach((mm) => {
+          const mat = mm as THREE.MeshStandardMaterial;
+          if (!mat || !("isMeshStandardMaterial" in mat)) return;
+          mat.envMapIntensity = 2.2;
+          // la librea original es gris muy oscura: la aclaramos y le damos tinte de marca
+          mat.color.lerp(new THREE.Color(FORCE), 0.35);
+          mat.emissive = new THREE.Color(VELOX);
+          mat.emissiveIntensity = 0.35;
+          mat.roughness = Math.min(mat.roughness, 0.45);
+          mat.metalness = Math.max(mat.metalness, 0.55);
+          mat.needsUpdate = true;
+        });
       }
     });
     return wrap;
@@ -180,13 +192,7 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
       craft.current.position.y = -1 + lift * lift * 5.5;
       craft.current.rotation.x = -lift * 0.42;
       craft.current.rotation.z = Math.sin(clock.elapsedTime * 0.8) * 0.05 * lift;
-      (window as unknown as Record<string, unknown>)["__jet"] = {
-        s,
-        vis: g.visible,
-        p: craft.current.getWorldPosition(new THREE.Vector3()).toArray(),
-        sc: (window as unknown as Record<string, unknown>)["__jetScale"],
-        bb: new THREE.Box3().setFromObject(craft.current).getSize(new THREE.Vector3()).toArray(),
-      };
+
     }
   });
 
@@ -196,9 +202,10 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
         <primitive object={model} />
         <Afterburner power={power} />
         <Trail power={power} />
-        <pointLight position={[0, 1.8, 2.4]} intensity={18} distance={18} color={VELOX} />
-        <pointLight position={[3, 3.5, -4]} intensity={26} distance={22} color={FORCE} />
-        <pointLight position={[-4, 1.5, 3]} intensity={16} distance={20} color={ICE} />
+        <pointLight position={[0, 2.5, 4]} intensity={90} distance={40} color={VELOX} />
+        <pointLight position={[7, 6, -8]} intensity={160} distance={50} color={FORCE} />
+        <pointLight position={[-8, 3, 6]} intensity={120} distance={50} color={ICE} />
+        <hemisphereLight args={[FORCE, VELOX, 1.2]} />
       </group>
     </group>
   );
