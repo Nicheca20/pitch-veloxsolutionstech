@@ -146,6 +146,7 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     const scale = 13 / Math.max(size.z, 0.001);
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
+    wrap.rotation.y = Math.PI; // la nariz del modelo mira a +Z: la giramos hacia -Z
 
     wrap.traverse((o) => {
       const mesh = o as THREE.Mesh;
