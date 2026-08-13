@@ -13,7 +13,7 @@ const ICE = "#EEEDFE";
 /** Punto de focus de la sección 7 (idéntico al del cubo amarillo). */
 export const BIKE_FOCUS = new THREE.Vector3(0, 0, -140);
 /** Ventana de scroll (índice de sección) de la sección 7. */
-export const BIKE_WINDOW: [number, number] = [5.7, 7.15];
+export const BIKE_WINDOW: [number, number] = [5.3, 6.85];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -186,8 +186,8 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const r = rider.current;
     if (r) {
       // nace lejos en la estela y se acerca a la cámara, luego se aleja a fondo
-      r.position.z = THREE.MathUtils.lerp(-34, 4, entry) + exit * 70;
-      r.position.y = -0.9 + (1 - entry) * 1.6;
+      r.position.z = THREE.MathUtils.lerp(-48, -9, entry) + exit * 80;
+      r.position.y = -1.2 + (1 - entry) * 2.4;
       r.position.x = -3.4 + cruise * 2.6 + Math.sin(clock.elapsedTime * 0.6) * 0.5 * cruise;
       r.rotation.z = 0.16 * cruise + Math.sin(clock.elapsedTime * 1.3) * 0.06 * cruise;
       r.rotation.y = 0.55 - cruise * 0.35;
