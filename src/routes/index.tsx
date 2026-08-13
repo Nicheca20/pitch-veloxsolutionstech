@@ -6,7 +6,9 @@ import { NavDots } from "@/components/pitch/NavDots";
 import { ProgressBar } from "@/components/pitch/ProgressBar";
 import { Preloader } from "@/components/pitch/Preloader";
 
-const Scene = lazy(() => import("@/components/pitch/Scene").then((m) => ({ default: m.Scene })));
+const Background3D = lazy(() =>
+  import("@/components/pitch/Background3D").then((m) => ({ default: m.Background3D })),
+);
 
 const TITLE = "Velox Solutions — Agentes que construyen agentes";
 const DESCRIPTION =
