@@ -5,6 +5,7 @@ import { Suspense, useMemo, useRef, useState, type MutableRefObject } from "reac
 import * as THREE from "three";
 import { CAR_WINDOW, F1Car, carPhase } from "./F1Car";
 import { JET_WINDOW, Jet } from "./Jet";
+import { BIKE_WINDOW, Bike } from "./Bike";
 
 const FOG = "#0a0820";
 const GRID = "#534AB7";
@@ -112,43 +113,8 @@ function CameraRig({ section }: { section: Ref }) {
   return null;
 }
 
-/* ---------------------------------------------------------- Cubos de prueba */
-function TestCubes() {
-  const refs = useRef<(THREE.Mesh | null)[]>([]);
-  const data: { z: number; color: string }[] = [{ z: -140, color: "#FACC15" }];
+/* -------------------------------------------------------- (sin cubos de prueba) */
 
-
-  useFrame((_, dt) => {
-    refs.current.forEach((m) => {
-      if (m) {
-        m.rotation.x += dt * 0.4;
-        m.rotation.y += dt * 0.6;
-      }
-    });
-  });
-
-  return (
-    <>
-      {data.map((c, i) => (
-        <mesh
-          key={c.z}
-          ref={(el) => {
-            refs.current[i] = el;
-          }}
-          position={[0, 0, c.z]}
-        >
-          <boxGeometry args={[4, 4, 4]} />
-          <meshStandardMaterial
-            color={c.color}
-            emissive={c.color}
-            emissiveIntensity={0.5}
-            fog={false}
-          />
-        </mesh>
-      ))}
-    </>
-  );
-}
 
 /** Pulso de entrada: oleada de energía en los primeros segundos del hook. */
 function usePulse(section: Ref) {
@@ -346,6 +312,20 @@ function LazyJet({ section }: { section: Ref }) {
 }
 
 
+/** Monta la moto sólo cuando la sección 7 está cerca del viewport. */
+function LazyBike({ section }: { section: Ref }) {
+  const [show, setShow] = useState(false);
+  useFrame(() => {
+    if (!show && section.current > BIKE_WINDOW[0] - 2) setShow(true);
+  });
+  if (!show) return null;
+  return (
+    <Suspense fallback={null}>
+      <Bike section={section} />
+    </Suspense>
+  );
+}
+
 function DynamicBloom({ section }: { section: Ref }) {
   const ref = useRef<{ intensity: number } | null>(null);
   const pulse = usePulse(section);
@@ -384,9 +364,9 @@ export function Background3D({ section }: { section: Ref }) {
       <SpeedGrid section={section} />
       <ParticleField section={section} />
       <Streaks section={section} />
-      <TestCubes />
       <LazyCar section={section} />
       <LazyJet section={section} />
+      <LazyBike section={section} />
       <EffectComposer enableNormalPass={false}>
         <DynamicBloom section={section} />
       </EffectComposer>
