@@ -4,6 +4,7 @@ import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { Suspense, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 import { CAR_WINDOW, F1Car, carPhase } from "./F1Car";
+import { JET_WINDOW, Jet } from "./Jet";
 
 const FOG = "#0a0820";
 const GRID = "#534AB7";
@@ -86,14 +87,17 @@ function CameraRig({ section }: { section: Ref }) {
     sampleKeys(FOCUS, t, focus.current);
     sampleKeys(OFFSET, t, offset.current);
     // órbita lenta alrededor del carro durante la sección 5 (no altera focus/lookAt)
-    const inCar = t > CAR_WINDOW[0] - 0.4 && t < CAR_WINDOW[1] + 0.4;
+    const inCar = t > CAR_WINDOW[0] - 0.4 && t < CAR_WINDOW[1];
     if (inCar) {
-      const a = carPhase(t) * Math.PI * 0.55 - 0.25;
+      // se desvanece al final para no arrastrar el encuadre a la sección 6
+      const fade = clamp01((CAR_WINDOW[1] - t) / 0.35);
+      const a = (carPhase(t) * Math.PI * 0.55 - 0.25) * fade;
       const o = offset.current;
       const x = o.x * Math.cos(a) + o.z * Math.sin(a);
       const z = -o.x * Math.sin(a) + o.z * Math.cos(a);
-      o.set(x, o.y + 0.9, z);
+      o.set(x, o.y + 0.9 * fade, z);
     }
+
     // deriva sutil en el túnel (secciones 0-4) para que nunca se sienta estático
     if (!inCar && t < CAR_WINDOW[0]) {
       const e = clock.elapsedTime;
@@ -111,10 +115,8 @@ function CameraRig({ section }: { section: Ref }) {
 /* ---------------------------------------------------------- Cubos de prueba */
 function TestCubes() {
   const refs = useRef<(THREE.Mesh | null)[]>([]);
-  const data: { z: number; color: string }[] = [
-    { z: -95, color: "#4ADE80" },
-    { z: -140, color: "#FACC15" },
-  ];
+  const data: { z: number; color: string }[] = [{ z: -140, color: "#FACC15" }];
+
 
   useFrame((_, dt) => {
     refs.current.forEach((m) => {
@@ -329,6 +331,21 @@ function LazyCar({ section }: { section: Ref }) {
   );
 }
 
+/** Monta el avión sólo cuando la sección 6 está cerca del viewport. */
+function LazyJet({ section }: { section: Ref }) {
+  const [show, setShow] = useState(false);
+  useFrame(() => {
+    if (!show && section.current > JET_WINDOW[0] - 2) setShow(true);
+  });
+  if (!show) return null;
+  return (
+    <Suspense fallback={null}>
+      <Jet section={section} />
+    </Suspense>
+  );
+}
+
+
 function DynamicBloom({ section }: { section: Ref }) {
   const ref = useRef<{ intensity: number } | null>(null);
   const pulse = usePulse(section);
@@ -369,6 +386,7 @@ export function Background3D({ section }: { section: Ref }) {
       <Streaks section={section} />
       <TestCubes />
       <LazyCar section={section} />
+      <LazyJet section={section} />
       <EffectComposer enableNormalPass={false}>
         <DynamicBloom section={section} />
       </EffectComposer>
