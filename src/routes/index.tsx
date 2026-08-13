@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { brand, sections } from "@/content";
 import { Section } from "@/components/pitch/Section";
 import { NavDots } from "@/components/pitch/NavDots";
 import { ProgressBar } from "@/components/pitch/ProgressBar";
 import { Preloader } from "@/components/pitch/Preloader";
+import { useScrollProgress } from "@/hooks/use-scroll-progress";
 
 const Background3D = lazy(() =>
   import("@/components/pitch/Background3D").then((m) => ({ default: m.Background3D })),
@@ -29,13 +30,11 @@ export const Route = createFileRoute("/")({
 });
 
 function Pitch() {
-  const progress = useRef(0);
-  const [barProgress, setBarProgress] = useState(0);
+  const { section, value: barProgress } = useScrollProgress();
   const [active, setActive] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [use3D, setUse3D] = useState(false);
   const [reduced, setReduced] = useState(false);
-  const [quality, setQuality] = useState(1);
   const [loading, setLoading] = useState(100);
   const [ready, setReady] = useState(false);
 
@@ -60,24 +59,8 @@ function Pitch() {
   }, []);
 
   useEffect(() => {
-    let raf = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const max = document.body.scrollHeight - window.innerHeight;
-        const p = max > 0 ? window.scrollY / max : 0;
-        progress.current = p;
-        setBarProgress(p);
-        setActive(Math.min(sections.length - 1, Math.round(p * (sections.length - 1))));
-      });
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
+    setActive(Math.min(sections.length - 1, Math.round(barProgress * (sections.length - 1))));
+  }, [barProgress]);
 
   const goTo = useCallback((i: number) => {
     const el = document.getElementById(sections[Math.max(0, Math.min(sections.length - 1, i))]!.id);
@@ -112,11 +95,10 @@ function Pitch() {
       >
         {mounted && use3D ? (
           <Suspense fallback={null}>
-            <Background3D />
+            <Background3D section={section} />
           </Suspense>
         ) : null}
       </div>
-
 
       <main className="relative z-10">
         <h1 className="sr-only">
@@ -135,8 +117,12 @@ function Pitch() {
                 className="group rounded-xl border border-white/10 bg-white/[0.03] p-6 transition-colors hover:border-[var(--force)]"
               >
                 <div className="text-lg font-semibold">{c.name}</div>
-                <div className="mt-1 text-xs uppercase tracking-[0.2em] text-foreground/50">{c.role}</div>
-                <div className="mt-4 text-sm text-[var(--aura)] group-hover:underline">{c.email}</div>
+                <div className="mt-1 text-xs uppercase tracking-[0.2em] text-foreground/50">
+                  {c.role}
+                </div>
+                <div className="mt-4 text-sm text-[var(--aura)] group-hover:underline">
+                  {c.email}
+                </div>
               </a>
             ))}
           </div>
@@ -146,7 +132,12 @@ function Pitch() {
         </footer>
       </main>
 
-      <NavDots count={sections.length} active={active} onSelect={goTo} labels={sections.map((s) => s.kicker)} />
+      <NavDots
+        count={sections.length}
+        active={active}
+        onSelect={goTo}
+        labels={sections.map((s) => s.kicker)}
+      />
 
       <div
         className={`fixed inset-x-0 bottom-8 z-20 flex justify-center text-[10px] uppercase tracking-[0.3em] text-foreground/45 transition-opacity duration-500 print:hidden ${
