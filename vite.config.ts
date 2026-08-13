@@ -18,7 +18,11 @@ function stripSourceTagsFrom3D(): Plugin {
       const file = id.split("?")[0] ?? "";
       if (!/src\/components\/pitch\/(Background3D|Scene)\.tsx$/.test(file)) return null;
       if (!code.includes("data-tsd-source")) return null;
-      return { code: code.replace(/\s*data-tsd-source=(?:"[^"]*"|\{[^}]*\})/g, ""), map: null };
+      const cleaned = code
+        .replace(/\s*data-tsd-source=(?:"[^"]*"|\{[^}]*\})/g, "")
+        .replace(/["']data-tsd-source["']\s*:\s*["'][^"']*["']\s*,?/g, "");
+      return { code: cleaned, map: null };
+
     },
   };
 }
