@@ -244,7 +244,7 @@ function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
     <lineSegments ref={ref} geometry={geometry} frustumCulled={false}>
       <lineBasicMaterial
         ref={mat}
-        color={PARTICLE_COLORS[2]}
+        color="#AFA9EC"
         transparent
         opacity={0.2}
         depthWrite={false}
