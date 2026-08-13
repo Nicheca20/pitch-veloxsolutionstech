@@ -16,7 +16,7 @@ export const CONFIG = {
   cloudParticles: 9000,
   cameraLerp: 0.06,
   mouseParallax: 0.3,
-  fog: { near: 8, far: 46 },
+  fog: { near: 14, far: 80 },
 };
 
 type P = MutableRefObject<number>;
@@ -27,6 +27,36 @@ const smooth = (x: number) => x * x * (3 - 2 * x);
 /** Ventana de aparición/desaparición de un acto. */
 const win = (p: number, a: number, b: number, fade = 0.02) =>
   Math.min(smooth(THREE.MathUtils.clamp((p - a) / fade, 0, 1)), smooth(THREE.MathUtils.clamp((b - p) / fade, 0, 1)));
+
+/* --------------------------------------------------- Fondo estelar siempre visible */
+function Starfield({ quality }: { quality: number }) {
+  const ref = useRef<THREE.Points>(null);
+  const count = Math.floor(3500 * quality);
+  const geo = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 120;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 70;
+      pos[i * 3 + 2] = -Math.random() * 70 - 5;
+    }
+    return new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  }, [count]);
+  useFrame((_, dt) => {
+    if (ref.current) ref.current.rotation.y += dt * 0.01;
+  });
+  return (
+    <points ref={ref} geometry={geo} frustumCulled={false}>
+      <pointsMaterial
+        size={0.14}
+        color={CONFIG.colors.aura}
+        transparent
+        opacity={0.55}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
 
 /* ---------------------------------------------------------------- Túnel */
 function Tunnel({ progress, quality }: { progress: P; quality: number }) {
@@ -69,7 +99,7 @@ function Tunnel({ progress, quality }: { progress: P; quality: number }) {
     const p = progress.current;
     const o = ref.current;
     if (!o) return;
-    const fade = 1 - smooth(seg(p, 0.22, 0.4));
+    const fade = 1 - smooth(seg(p, 0.20, 0.32));
     (o.material as THREE.PointsMaterial).opacity = fade;
     o.visible = fade > 0.01;
     // el túnel se abre y fragmenta cuando llega la consecuencia
@@ -95,9 +125,9 @@ function Constellation({ progress, quality }: { progress: P; quality: number }) 
       const phi = Math.acos(1 - (2 * (i + 0.5)) / nodes);
       const theta = Math.PI * (1 + Math.sqrt(5)) * i;
       targets.push(
-        new THREE.Vector3(Math.sin(phi) * Math.cos(theta), Math.sin(phi) * Math.sin(theta), Math.cos(phi)).multiplyScalar(3.1),
+        new THREE.Vector3(Math.sin(phi) * Math.cos(theta), Math.sin(phi) * Math.sin(theta), Math.cos(phi)).multiplyScalar(4.6),
       );
-      scatter.push(new THREE.Vector3().randomDirection().multiplyScalar(9 + Math.random() * 9));
+      scatter.push(new THREE.Vector3().randomDirection().multiplyScalar(7 + Math.random() * 5));
     }
     const pg = new THREE.BufferGeometry().setAttribute(
       "position",
@@ -106,7 +136,7 @@ function Constellation({ progress, quality }: { progress: P; quality: number }) 
     const pairs: [number, number][] = [];
     for (let i = 0; i < nodes; i++) {
       for (let j = i + 1; j < nodes; j++) {
-        if (targets[i]!.distanceTo(targets[j]!) < 1.35) pairs.push([i, j]);
+        if (targets[i]!.distanceTo(targets[j]!) < 1.9) pairs.push([i, j]);
       }
     }
     const lg = new THREE.BufferGeometry().setAttribute(
@@ -126,10 +156,10 @@ function Constellation({ progress, quality }: { progress: P; quality: number }) 
     const p = progress.current;
     const g = group.current;
     if (!g) return;
-    const vis = win(p, 0.28, 0.63, 0.05);
+    const vis = win(p, 0.22, 0.62, 0.05);
     g.visible = vis > 0.01;
     if (!g.visible) return;
-    const form = smooth(seg(p, 0.3, 0.5));
+    const form = smooth(seg(p, 0.24, 0.46));
     const pa = points.attributes["position"] as THREE.BufferAttribute;
     const t = clock.elapsedTime;
     for (let i = 0; i < targets.length; i++) {
@@ -157,11 +187,11 @@ function Constellation({ progress, quality }: { progress: P; quality: number }) 
   });
 
   return (
-    <group ref={group}>
+    <group ref={group} position={[2.5, 0.5, 4]}>
       <points geometry={points}>
         <pointsMaterial
-          size={0.13}
-          color={CONFIG.colors.aura}
+          size={0.34}
+          color={CONFIG.colors.ice}
           transparent
           depthWrite={false}
           blending={THREE.AdditiveBlending}
@@ -190,10 +220,10 @@ function PitStop({ progress }: { progress: P }) {
     const p = progress.current;
     const g = group.current;
     if (!g) return;
-    const vis = win(p, 0.6, 0.72, 0.025);
+    const vis = win(p, 0.58, 0.73, 0.03);
     g.visible = vis > 0.01;
     if (!g.visible) return;
-    const s = seg(p, 0.6, 0.72);
+    const s = seg(p, 0.58, 0.73);
     const t = clock.elapsedTime;
 
     // entrada rápida a pits, parada, salida
@@ -228,7 +258,7 @@ function PitStop({ progress }: { progress: P }) {
   });
 
   return (
-    <group ref={group} position={[0, 0, 0]}>
+    <group ref={group} position={[3, 0.8, 2]} scale={1.6}>
       {/* pista */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]}>
         <planeGeometry args={[120, 22]} />
@@ -284,10 +314,10 @@ function Takeoff({ progress }: { progress: P }) {
     const p = progress.current;
     const g = group.current;
     if (!g) return;
-    const vis = win(p, 0.72, 0.83, 0.025);
+    const vis = win(p, 0.71, 0.84, 0.03);
     g.visible = vis > 0.01;
     if (!g.visible) return;
-    const s = seg(p, 0.72, 0.83);
+    const s = seg(p, 0.71, 0.84);
     const roll = smooth(THREE.MathUtils.clamp(s / 0.55, 0, 1));
     const lift = smooth(THREE.MathUtils.clamp((s - 0.5) / 0.5, 0, 1));
     if (plane.current) {
@@ -310,7 +340,7 @@ function Takeoff({ progress }: { progress: P }) {
   });
 
   return (
-    <group ref={group}>
+    <group ref={group} position={[3, 0.8, 2]} scale={1.5}>
       <gridHelper args={[140, 50, CONFIG.colors.velox, CONFIG.colors.galaxy]} position={[0, -2.2, 0]} />
       <group ref={plane}>
         <mesh rotation={[0, 0, Math.PI / 2]}>
@@ -345,9 +375,9 @@ function Cheetah({ progress, quality }: { progress: P; quality: number }) {
   const cloudGeo = useMemo(() => {
     const pos = new Float32Array(count * 3);
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 90;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 14 - 2;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 30;
+      pos[i * 3] = (Math.random() - 0.5) * 80;
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 12 - 2;
+      pos[i * 3 + 2] = -4 - Math.random() * 24;
     }
     return new THREE.BufferGeometry().setAttribute("position", new THREE.BufferAttribute(pos, 3));
   }, [count]);
@@ -356,13 +386,13 @@ function Cheetah({ progress, quality }: { progress: P; quality: number }) {
     const p = progress.current;
     const g = group.current;
     if (!g) return;
-    const vis = win(p, 0.83, 0.94, 0.025);
+    const vis = win(p, 0.82, 0.95, 0.03);
     g.visible = vis > 0.01;
     if (!g.visible) return;
-    const s = seg(p, 0.83, 0.94);
+    const s = seg(p, 0.82, 0.95);
     const t = clock.elapsedTime;
     if (body.current) {
-      body.current.position.x = THREE.MathUtils.lerp(-16, 12, smooth(s));
+      body.current.position.x = THREE.MathUtils.lerp(-8, 16, smooth(s));
       body.current.position.y = Math.sin(t * 11) * 0.28; // galope
       body.current.rotation.z = Math.sin(t * 11) * 0.07;
     }
@@ -373,7 +403,7 @@ function Cheetah({ progress, quality }: { progress: P; quality: number }) {
     }
     if (clouds.current) {
       clouds.current.rotation.y = t * 0.02;
-      (clouds.current.material as THREE.PointsMaterial).opacity = vis * 0.55;
+      (clouds.current.material as THREE.PointsMaterial).opacity = vis * 0.3;
     }
     g.traverse((o) => {
       const m = (o as THREE.Mesh).material as THREE.Material | undefined;
@@ -385,10 +415,10 @@ function Cheetah({ progress, quality }: { progress: P; quality: number }) {
   });
 
   return (
-    <group ref={group}>
+    <group ref={group} position={[3.5, 1.6, 2]} scale={1.4}>
       <points ref={clouds} geometry={cloudGeo}>
         <pointsMaterial
-          size={0.3}
+          size={0.07}
           color={CONFIG.colors.aura}
           transparent
           depthWrite={false}
@@ -473,24 +503,7 @@ function Finale({ progress, quality }: { progress: P; quality: number }) {
 function CameraRig({ progress, reduced }: { progress: P; reduced: boolean }) {
   const { camera } = useThree();
   const mouse = useRef({ x: 0, y: 0 });
-  const curve = useMemo(
-    () =>
-      new THREE.CatmullRomCurve3([
-        new THREE.Vector3(0, 0, 14),
-        new THREE.Vector3(0, 0.4, 4),
-        new THREE.Vector3(1.2, 1.2, -2),
-        new THREE.Vector3(0, 0.6, 9),
-        new THREE.Vector3(-3, 1.6, 10),
-        new THREE.Vector3(0, 2.2, 16),
-        new THREE.Vector3(0, 1.4, 13),
-        new THREE.Vector3(2, 3.2, 15),
-        new THREE.Vector3(-1, 1.6, 14),
-        new THREE.Vector3(0, 0.6, 12),
-        new THREE.Vector3(0, 0, 17),
-      ]),
-    [],
-  );
-  const target = useRef(new THREE.Vector3());
+  const pos = useRef(new THREE.Vector3(0, 0, 14));
 
   useFrame(() => {
     const p = THREE.MathUtils.clamp(progress.current, 0, 1);
@@ -499,14 +512,14 @@ function CameraRig({ progress, reduced }: { progress: P; reduced: boolean }) {
       camera.lookAt(0, 0, 0);
       return;
     }
-    const pt = curve.getPointAt(p);
-    const look = curve.getPointAt(Math.min(0.999, p + 0.01));
-    camera.position.lerp(
-      pt.clone().add(new THREE.Vector3(mouse.current.x * CONFIG.mouseParallax, mouse.current.y * CONFIG.mouseParallax, 0)),
-      CONFIG.cameraLerp,
-    );
-    target.current.lerp(new THREE.Vector3(look.x, look.y, look.z - 6), CONFIG.cameraLerp);
-    camera.lookAt(target.current);
+    // Encuadre estable: la cámara siempre mira al centro de la escena,
+    // con un leve desplazamiento según el scroll y el ratón.
+    const z = 15 - Math.sin(p * Math.PI) * 2.5;
+    const y = 0.4 + Math.sin(p * Math.PI * 2) * 0.8;
+    const x = 2.2 + Math.sin(p * Math.PI * 3) * 1.2 + mouse.current.x * CONFIG.mouseParallax;
+    pos.current.lerp(new THREE.Vector3(x, y + mouse.current.y * CONFIG.mouseParallax, z), CONFIG.cameraLerp);
+    camera.position.copy(pos.current);
+    camera.lookAt(-2.5, 0, 0);
   });
 
   useFrame(({ pointer }) => {
@@ -559,6 +572,7 @@ export function Scene({
     >
       <ambientLight intensity={0.7} />
       <pointLight position={[8, 10, 8]} intensity={40} color={CONFIG.colors.force} />
+      <Starfield quality={quality} />
       <PerfGuard onLow={onLowPerf} />
       <CameraRig progress={progress} reduced={reduced} />
       <Tunnel progress={progress} quality={quality} />
