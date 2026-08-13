@@ -13,7 +13,7 @@ const ICE = "#EEEDFE";
 /** Punto de focus de la sección 7 (idéntico al del cubo amarillo). */
 export const BIKE_FOCUS = new THREE.Vector3(0, 0, -140);
 /** Ventana de scroll (índice de sección) de la sección 7. */
-export const BIKE_WINDOW: [number, number] = [5.3, 6.85];
+export const BIKE_WINDOW: [number, number] = [5.25, 6.45];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -178,8 +178,8 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     }
 
     const entry = smooth(clamp01(s / 0.3)); // nace de la estela del avión
-    const cruise = smooth(clamp01((s - 0.25) / 0.45)); // pasada lateral
-    const exit = smooth(clamp01((s - 0.78) / 0.22)); // se va a toda velocidad
+    const cruise = smooth(clamp01((s - 0.22) / 0.36)); // pasada lateral
+    const exit = smooth(clamp01((s - 0.58) / 0.42)); // se va a toda velocidad
     power.current = entry * (1 - exit * 0.4);
     spin.current = (0.35 + cruise * 0.5) * dt * 60 * 0.06;
 
