@@ -13,7 +13,7 @@ const ICE = "#EEEDFE";
 /** Punto de focus de la sección 5 (idéntico al del cubo rojo). */
 export const CAR_FOCUS = new THREE.Vector3(0, 0, -55);
 /** Ventana de scroll (índice de sección) de la sección 5. */
-export const CAR_WINDOW: [number, number] = [3.55, 5.05];
+export const CAR_WINDOW: [number, number] = [3.55, 4.85];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -207,7 +207,9 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
     if (!g) return;
     const s = carPhase(section.current);
     phase.current = s;
-    const live = section.current > CAR_WINDOW[0] - 0.6 && section.current < CAR_WINDOW[1] + 0.6;
+    // sigue vivo un poco antes de la ventana (entra desde el fondo) pero se apaga
+    // en cuanto termina, para no coincidir nunca con el avión
+    const live = section.current > CAR_WINDOW[0] - 0.6 && section.current < CAR_WINDOW[1] - 0.05;
     g.visible = live;
     if (!live) {
       pit.current = 0;
@@ -215,14 +217,15 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
       return;
     }
 
-    // entrada desde el fondo → parada → salida acelerando
+    // entrada desde el fondo → parada → salida acelerando por la pista
     const enter = smooth(clamp01(s / 0.3));
-    const exit = smooth(clamp01((s - 0.78) / 0.22));
-    const z = THREE.MathUtils.lerp(-28, 0, enter) + exit * 70;
-    const stopped = clamp01((s - 0.3) / 0.06) * (1 - clamp01((s - 0.78) / 0.06));
+    const exit = smooth(clamp01((s - 0.68) / 0.32));
+    const z = THREE.MathUtils.lerp(-28, 0, enter) + exit * 120;
+    const stopped = clamp01((s - 0.3) / 0.06) * (1 - clamp01((s - 0.68) / 0.06));
 
     pit.current = stopped;
     spin.current = Math.max(1 - stopped, exit);
+
 
     if (car.current) {
       car.current.position.z = z;

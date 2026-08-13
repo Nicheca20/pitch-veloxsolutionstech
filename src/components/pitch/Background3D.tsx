@@ -35,9 +35,11 @@ const FOCUS: Key[] = [
   { at: 1, v: [0, 0, -7] },
   { at: 2, v: [0, 0, -18] },
   { at: 3, v: [0, 0, -34] },
-  { at: 4, v: [0, 0, -55] }, // sección 5 → cubo 1
-  { at: 5, v: [0, 0, -95] }, // sección 6 → cubo 2
-  { at: 6, v: [0, 0, -140] }, // sección 7 → cubo 3
+  { at: 4, v: [0, 0, -55] }, // sección 5 → carro
+  { at: 4.5, v: [0, 0.6, -75] }, // puente: la cámara sigue la pista
+  { at: 5, v: [0, 1.2, -95] }, // sección 6 → avión (mirando algo hacia arriba)
+  { at: 5.5, v: [0, 0.8, -118] }, // puente: la estela baja hasta la banda de nubes
+  { at: 6, v: [0, 0, -140] }, // sección 7 → moto
   { at: 9, v: [0, 0, -210] },
 ];
 
@@ -48,10 +50,13 @@ const OFFSET: Key[] = [
   { at: 2, v: [-0.9, 1.4, 12] },
   { at: 3, v: [0.6, 0.9, 13] },
   { at: 4, v: [0, 0.8, 14] },
-  { at: 5, v: [0, 0.8, 14] },
+  { at: 4.5, v: [0, 0.2, 15] }, // se agacha a ras de pista tras el carro
+  { at: 5, v: [0, -0.6, 14] }, // por debajo del avión que despega
+  { at: 5.5, v: [0, 0.4, 14.5] },
   { at: 6, v: [0, 0.8, 14] },
   { at: 9, v: [0, 1.4, 16] },
 ];
+
 
 
 function sampleKeys(keys: Key[], t: number, out: THREE.Vector3) {
@@ -82,8 +87,9 @@ function CameraRig({ section }: { section: Ref }) {
   const offset = useRef(new THREE.Vector3());
   const smoothed = useRef(0);
 
-  useFrame(({ clock }) => {
-    smoothed.current += (section.current - smoothed.current) * 0.12;
+  useFrame(({ clock }, dt) => {
+    // suavizado independiente del framerate: misma sensación a 30 o 144 fps
+    smoothed.current += (section.current - smoothed.current) * (1 - Math.exp(-dt * 7));
     const t = smoothed.current;
     sampleKeys(FOCUS, t, focus.current);
     sampleKeys(OFFSET, t, offset.current);
@@ -129,33 +135,34 @@ function usePulse(section: Ref) {
   };
 }
 
-/** Grilla synthwave infinita que acompaña a la cámara. */
+/**
+ * Grilla synthwave infinita: una sola malla enorme que acompaña a la cámara y
+ * se desplaza en pasos exactos de celda, así el patrón nunca "corta" ni se reinicia.
+ */
 function SpeedGrid({ section }: { section: Ref }) {
   const group = useRef<THREE.Group>(null);
-  const a = useRef<THREE.GridHelper>(null);
-  const b = useRef<THREE.GridHelper>(null);
+  const grid = useRef<THREE.GridHelper>(null);
   const run = useRef(0);
-  const size = 120;
+  const size = 400;
+  const divisions = 200;
+  const cell = size / divisions;
 
   useFrame(({ camera }, dt) => {
     const k = tunnelIntensity(section.current);
-    run.current = (run.current + dt * 26 * k) % size;
+    run.current = (run.current + dt * 26 * k) % cell;
     if (group.current) group.current.position.z = camera.position.z;
-    if (a.current) a.current.position.z = run.current - size;
-    if (b.current) b.current.position.z = run.current - size * 2;
+    if (grid.current) grid.current.position.z = run.current;
   });
 
   return (
     <group ref={group} position={[0, -3.4, 0]}>
-      <gridHelper ref={a} args={[size, 60, GRID, GRID]}>
-        <lineBasicMaterial attach="material" color={GRID} transparent opacity={0.6} fog />
-      </gridHelper>
-      <gridHelper ref={b} args={[size, 60, GRID, GRID]}>
+      <gridHelper ref={grid} args={[size, divisions, GRID, GRID]} frustumCulled={false}>
         <lineBasicMaterial attach="material" color={GRID} transparent opacity={0.6} fog />
       </gridHelper>
     </group>
   );
 }
+
 
 /** Líneas de velocidad que atraviesan la cámara (túnel de secciones 0-4). */
 function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
