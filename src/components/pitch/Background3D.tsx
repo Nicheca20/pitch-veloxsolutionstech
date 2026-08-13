@@ -80,7 +80,7 @@ function CameraRig({ section }: { section: Ref }) {
   const offset = useRef(new THREE.Vector3());
   const smoothed = useRef(0);
 
-  useFrame(() => {
+  useFrame(({ clock }) => {
     smoothed.current += (section.current - smoothed.current) * 0.12;
     const t = smoothed.current;
     sampleKeys(FOCUS, t, focus.current);
