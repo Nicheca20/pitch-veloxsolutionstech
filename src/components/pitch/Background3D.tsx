@@ -14,10 +14,25 @@ type Ref = MutableRefObject<number>;
 /* ---------------------------------------------------------------- Keyframes */
 type Key = { at: number; v: [number, number, number] };
 
+const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
+const smoothstep = (x: number) => x * x * (3 - 2 * x);
+
+/**
+ * Intensidad global del túnel (velocidad de grilla, brillo, streaks).
+ * 1 en reposo; sube gradualmente al acercarse a la sección 5 (build-up).
+ */
+function tunnelIntensity(t: number) {
+  const buildUp = smoothstep(clamp01((t - 1.2) / 2.2)); // 0 en sec 1 → 1 en sec ~3.4
+  const settle = 1 - smoothstep(clamp01((t - 3.6) / 0.8)); // se calma al entrar al carro
+  return 1 + buildUp * settle * 1.6;
+}
+
 /** Keyframes por índice de sección (0 = primera pantalla). */
 const FOCUS: Key[] = [
   { at: 0, v: [0, 0, 0] },
+  { at: 1, v: [0, 0, -7] },
   { at: 2, v: [0, 0, -18] },
+  { at: 3, v: [0, 0, -34] },
   { at: 4, v: [0, 0, -55] }, // sección 5 → cubo 1
   { at: 5, v: [0, 0, -95] }, // sección 6 → cubo 2
   { at: 6, v: [0, 0, -140] }, // sección 7 → cubo 3
@@ -27,11 +42,15 @@ const FOCUS: Key[] = [
 /** Posición relativa de la cámara respecto del focus. */
 const OFFSET: Key[] = [
   { at: 0, v: [0, 1.2, 16] },
+  { at: 1, v: [0.8, 1.0, 13] },
+  { at: 2, v: [-0.9, 1.4, 12] },
+  { at: 3, v: [0.6, 0.9, 13] },
   { at: 4, v: [0, 0.8, 14] },
   { at: 5, v: [0, 0.8, 14] },
   { at: 6, v: [0, 0.8, 14] },
   { at: 9, v: [0, 1.4, 16] },
 ];
+
 
 function sampleKeys(keys: Key[], t: number, out: THREE.Vector3) {
   const first = keys[0]!;
