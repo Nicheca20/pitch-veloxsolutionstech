@@ -186,8 +186,8 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const r = rider.current;
     if (r) {
       // nace lejos en la estela y se acerca a la cámara, luego se aleja a fondo
-      r.position.z = THREE.MathUtils.lerp(-48, -9, entry) + exit * 80;
-      r.position.y = -1.2 + (1 - entry) * 2.4;
+      r.position.z = THREE.MathUtils.lerp(-48, -9, entry) - exit * 95;
+      r.position.y = -0.9 + (1 - entry) * 2.4;
       r.position.x = -3.4 + cruise * 2.6 + Math.sin(clock.elapsedTime * 0.6) * 0.5 * cruise;
       r.rotation.z = 0.16 * cruise + Math.sin(clock.elapsedTime * 1.3) * 0.06 * cruise;
       r.rotation.y = 0.55 - cruise * 0.35;
