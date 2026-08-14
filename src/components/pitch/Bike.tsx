@@ -122,6 +122,8 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
   const power = useRef(0);
   const cloud = useRef(0);
   const spin = useRef(0);
+  const wheels = useRef<THREE.Object3D[]>([]);
+
 
 
   const model = useMemo(() => {
