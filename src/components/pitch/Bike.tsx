@@ -156,12 +156,11 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
       mats.forEach((mm) => {
         const mat = mm as THREE.MeshStandardMaterial;
         if (!mat || !("isMeshStandardMaterial" in mat)) return;
-        mat.envMapIntensity = 1.8;
-        mat.color.lerp(new THREE.Color(FORCE), 0.45);
+        mat.envMapIntensity = 1.6;
+        // conservamos la librea original del modelo; sólo un realce sutil
         mat.emissive = new THREE.Color(VELOX);
-        mat.emissiveIntensity = 0.45;
-        mat.roughness = Math.min(mat.roughness, 0.5);
-        mat.metalness = Math.max(mat.metalness, 0.5);
+        mat.emissiveIntensity = 0.12;
+        mat.roughness = Math.min(mat.roughness, 0.7);
         mat.needsUpdate = true;
       });
     });
@@ -172,8 +171,8 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const g = root.current;
     if (!g) return;
     const s = bikePhase(section.current);
-    // la banda de nubes ya existe un poco antes: es la estela que dejó el avión
-    const live = section.current > BIKE_WINDOW[0] - 0.55 && section.current < BIKE_WINDOW[1] + 0.4;
+    // estrictamente dentro de la sección 7: nubes y moto no invaden la 6 ni la 8
+    const live = section.current >= BIKE_WINDOW[0] && section.current <= BIKE_WINDOW[1];
     g.visible = live;
     if (!live) {
       power.current = 0;
