@@ -18,7 +18,7 @@ export function Section({
   extra?: React.ReactNode;
   below?: React.ReactNode;
   right?: React.ReactNode;
-  align?: "center" | "start";
+  align?: "center" | "start" | undefined;
   className?: string | undefined;
 }) {
   const ref = useRef<HTMLElement>(null);
