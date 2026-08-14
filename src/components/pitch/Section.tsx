@@ -6,6 +6,7 @@ export function Section({
   data,
   first,
   afterTitle,
+  extra,
   below,
   right,
   className,
@@ -13,6 +14,7 @@ export function Section({
   data: SectionData;
   first?: boolean;
   afterTitle?: React.ReactNode;
+  extra?: React.ReactNode;
   below?: React.ReactNode;
   right?: React.ReactNode;
   className?: string | undefined;
@@ -96,6 +98,8 @@ export function Section({
           {data.note && (
             <p className="mt-8 border-l-2 border-[var(--velox)] pl-4 text-sm italic text-foreground/55">{data.note}</p>
           )}
+
+          {extra}
         </div>
 
         {right && (
