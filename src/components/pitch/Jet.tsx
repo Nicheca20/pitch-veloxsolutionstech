@@ -200,32 +200,44 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     return wrap;
   }, [scene]);
 
-  useFrame(({ clock }) => {
+  /** Fase suavizada: amortigua los cambios bruscos de velocidad de scroll. */
+  const phase = useRef<number | null>(null);
+
+  useFrame(({ clock }, delta) => {
     const g = root.current;
     if (!g) return;
-    const s = jetPhase(section.current);
+    const target = jetPhase(section.current);
     // nunca coincide con el carro: sólo vive dentro de su ventana
     const live = section.current >= JET_WINDOW[0] && section.current <= JET_WINDOW[1];
     g.visible = live;
     if (!live) {
       power.current = 0;
+      phase.current = null;
       return;
     }
 
+    // damping exponencial independiente del framerate (sin micro-saltos)
+    const dt = Math.min(delta, 1 / 30);
+    if (phase.current === null) phase.current = target;
+    phase.current += (target - phase.current) * (1 - Math.exp(-8 * dt));
+    const s = clamp01(phase.current);
+
     // surge desde abajo por la misma pista → rotación de nariz → despegue
     const roll = smooth(clamp01(s / 0.35)); // acelera y asoma sobre la pista
-    const lift = smooth(clamp01((s - 0.38) / 0.62)); // sube
-    power.current = clamp01(s / 0.2) * (0.35 + roll * 0.65);
+    const liftRaw = clamp01((s - 0.38) / 0.62);
+    const lift = smooth(liftRaw) * smooth(liftRaw); // easing consistente y continuo
+    const targetPower = clamp01(s / 0.2) * (0.35 + roll * 0.65);
+    power.current += (targetPower - power.current) * (1 - Math.exp(-10 * dt));
 
     if (craft.current) {
-      craft.current.position.z = THREE.MathUtils.lerp(30, 16, roll) - lift * lift * 70;
+      craft.current.position.z = THREE.MathUtils.lerp(30, 16, roll) - lift * 70;
       // arranca por debajo del encuadre y emerge subiendo
-      craft.current.position.y = THREE.MathUtils.lerp(-5, -0.6, roll) + lift * lift * 12;
-      craft.current.rotation.x = -lift * 0.42;
-      craft.current.rotation.z = Math.sin(clock.elapsedTime * 0.8) * 0.05 * lift;
+      craft.current.position.y = THREE.MathUtils.lerp(-5, -0.6, roll) + lift * 12;
+      craft.current.rotation.x = -smooth(liftRaw) * 0.42;
+      craft.current.rotation.z = Math.sin(clock.elapsedTime * 0.8) * 0.05 * smooth(liftRaw);
     }
-
   });
+
 
   return (
     <group ref={root} position={JET_FOCUS.toArray()} visible={false}>
