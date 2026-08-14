@@ -44,7 +44,9 @@ export function useScrollProgress(): ScrollProgress {
       const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
       progress.current = p;
       section.current = sectionIndex(window.scrollY);
-      setValue(p);
+      // perf: sólo re-renderizamos la UI cuando el progreso cambia de forma
+      // perceptible (~0.5%). Evita cientos de renders del árbol por scroll.
+      setValue((prev) => (Math.abs(prev - p) > 0.005 || p === 0 || p === 1 ? p : prev));
     };
     const onResize = () => {
       measure();
