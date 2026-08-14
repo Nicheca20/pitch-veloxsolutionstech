@@ -396,8 +396,8 @@ function Streaks({
     }
     attr.needsUpdate = true;
     if (mat.current) {
-      mat.current.opacity = Math.min(0.6, 0.12 + (k - 0.7) * 0.24);
-      mat.current.color.setHSL(0.68, 0.55, 0.6 + Math.sin(clock.elapsedTime + (ground ? 1 : 0)) * 0.06);
+      mat.current.opacity = Math.min(0.3, 0.07 + (k - 0.7) * 0.12);
+      mat.current.color.setHSL(0.68, 0.5, 0.62 + Math.sin(clock.elapsedTime + (ground ? 1 : 0)) * 0.04);
     }
   });
 
