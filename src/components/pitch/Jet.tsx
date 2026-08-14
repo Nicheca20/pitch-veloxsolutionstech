@@ -162,7 +162,28 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
 
     // orientar: el eje horizontal más largo es el fuselaje → alinearlo con Z
     const raw = new THREE.Box3().setFromObject(m);
-...
+    const rs = new THREE.Vector3();
+    raw.getSize(rs);
+    if (rs.x > rs.z) m.rotation.y = Math.PI / 2;
+
+    const wrap = new THREE.Group();
+    wrap.add(m);
+    m.updateWorldMatrix(true, true);
+    const box = new THREE.Box3().setFromObject(m, true);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+    const scale = 8 / Math.max(size.z, 0.001);
+    m.position.set(-center.x, -center.y, -center.z);
+    wrap.scale.setScalar(scale);
+    wrap.rotation.y = Math.PI; // la nariz del modelo mira a +Z: la giramos hacia -Z
+
+    wrap.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (mesh.isMesh) {
+        mesh.castShadow = false;
+        mesh.receiveShadow = false;
         mesh.frustumCulled = false;
         const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
         mats.forEach((mm) => {
