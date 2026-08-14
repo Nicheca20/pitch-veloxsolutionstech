@@ -185,7 +185,7 @@ function Pitch() {
     <div className="relative bg-background text-foreground">
       <VeloxBackground />
       <Preloader progress={loading} done={ready} />
-      <ProgressBar progress={barProgress} />
+      <ProgressBar progress={progress} />
 
       {/* Canvas 3D de modelos, por encima del fondo 2D */}
       <div
