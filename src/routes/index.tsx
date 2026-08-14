@@ -157,6 +157,34 @@ function Pitch() {
     };
   }, []);
 
+  /** Avance "tipo diapositiva": si hay un inicio de sección cerca, salta ahí;
+   *  si la sección es más alta que la pantalla, avanza ~85% de viewport.
+   *  Pensado para punteros láser / clickers (flechas, PageUp/PageDown, click). */
+  const step = useCallback(
+    (dir: 1 | -1) => {
+      const vh = window.innerHeight;
+      const y = window.scrollY;
+      const tops = sections
+        .map((s) => document.getElementById(s.id))
+        .filter(Boolean)
+        .map((el) => (el as HTMLElement).getBoundingClientRect().top + window.scrollY);
+
+      const page = y + dir * vh * 0.85;
+      // Buscamos el borde de sección en la dirección del avance
+      const edge =
+        dir === 1
+          ? tops.find((t) => t > y + 8)
+          : [...tops].reverse().find((t) => t < y - 8);
+
+      let target = page;
+      if (edge !== undefined) {
+        target = dir === 1 ? Math.min(page, edge) : Math.max(page, edge);
+      }
+      smoothScrollTo(target);
+    },
+    [smoothScrollTo],
+  );
+
   useEffect(() => {
     const NEXT = ["ArrowRight", "ArrowDown", "PageDown", " ", "Spacebar", "Enter"];
     const PREV = ["ArrowLeft", "ArrowUp", "PageUp", "Backspace"];
@@ -165,10 +193,10 @@ function Pitch() {
       if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
       if (NEXT.includes(e.key)) {
         e.preventDefault();
-        goTo(active + 1);
+        step(1);
       } else if (PREV.includes(e.key)) {
         e.preventDefault();
-        goTo(active - 1);
+        step(-1);
       } else if (e.key === "Home" || e.key === "Escape") {
         e.preventDefault();
         smoothScrollTo(0);
@@ -179,7 +207,29 @@ function Pitch() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [active, goTo, smoothScrollTo]);
+  }, [goTo, step, smoothScrollTo]);
+
+  // Click en cualquier parte vacía: avanza. Click derecho: retrocede.
+  useEffect(() => {
+    const interactive = (t: EventTarget | null) =>
+      !!(t as HTMLElement | null)?.closest?.("a,button,input,textarea,select,[role='button']");
+    const onClick = (e: MouseEvent) => {
+      if (interactive(e.target)) return;
+      step(1);
+    };
+    const onCtx = (e: MouseEvent) => {
+      if (interactive(e.target)) return;
+      e.preventDefault();
+      step(-1);
+    };
+    window.addEventListener("click", onClick);
+    window.addEventListener("contextmenu", onCtx);
+    return () => {
+      window.removeEventListener("click", onClick);
+      window.removeEventListener("contextmenu", onCtx);
+    };
+  }, [step]);
+
 
 
   return (
