@@ -190,7 +190,7 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     if (!g) return;
     const s = jetPhase(section.current);
     // nunca coincide con el carro: sólo vive dentro de su ventana
-    const live = section.current > JET_WINDOW[0] && section.current < JET_WINDOW[1] + 0.4;
+    const live = section.current >= JET_WINDOW[0] && section.current <= JET_WINDOW[1];
     g.visible = live;
     if (!live) {
       power.current = 0;
