@@ -596,8 +596,8 @@ function AccentStreaks({ section, count = 1800 }: { section: Ref; count?: number
     }
     attr.needsUpdate = true;
     material.uniforms['uScale']!.value = size.height * 0.5;
-    material.uniforms['uSize']!.value = 0.75 * (1 + (k - 1) * 0.6);
-    material.uniforms['uOpacity']!.value = 0.5;
+    material.uniforms['uSize']!.value = 0.6 * (1 + (k - 1) * 0.4);
+    material.uniforms['uOpacity']!.value = 0.22;
   });
 
   return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} />;
