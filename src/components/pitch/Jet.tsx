@@ -143,40 +143,27 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
   /** Copia centrada, escalada y orientada con la nariz hacia -Z. */
   const model = useMemo(() => {
     const m = scene.clone(true);
+
+    // el GLB trae un disco/plano de estudio: lo eliminamos antes de medir
+    const junk: THREE.Object3D[] = [];
+    m.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh || !mesh.geometry) return;
+      mesh.geometry.computeBoundingBox();
+      const bb = mesh.geometry.boundingBox;
+      if (!bb) return;
+      const dx = bb.max.x - bb.min.x;
+      const dy = bb.max.y - bb.min.y;
+      const dz = bb.max.z - bb.min.z;
+      const dims = [dx, dy, dz].sort((a, b) => a - b);
+      if (dims[0]! < 0.03 * dims[2]!) junk.push(mesh);
+    });
+    junk.forEach((o) => o.parent?.remove(o));
+
     // orientar: el eje horizontal más largo es el fuselaje → alinearlo con Z
     const raw = new THREE.Box3().setFromObject(m);
-    const rs = new THREE.Vector3();
-    raw.getSize(rs);
-    if (rs.x > rs.z) m.rotation.y = Math.PI / 2;
-
-    const wrap = new THREE.Group();
-    wrap.add(m);
-    m.updateWorldMatrix(true, true);
-    const box = new THREE.Box3().setFromObject(m, true);
-    const size = new THREE.Vector3();
-    const center = new THREE.Vector3();
-    box.getSize(size);
-    box.getCenter(center);
-    const scale = 8 / Math.max(size.z, 0.001);
-    m.position.set(-center.x, -center.y, -center.z);
-    wrap.scale.setScalar(scale);
-    wrap.rotation.y = Math.PI; // la nariz del modelo mira a +Z: la giramos hacia -Z
-
-    wrap.traverse((o) => {
-      const mesh = o as THREE.Mesh;
-      if (mesh.isMesh) {
-        mesh.castShadow = false;
-        mesh.receiveShadow = false;
+...
         mesh.frustumCulled = false;
-        // el GLB trae un disco plano de estudio: lo ocultamos
-        mesh.geometry.computeBoundingBox();
-        const bb = mesh.geometry.boundingBox;
-        if (bb) {
-          const dx = bb.max.x - bb.min.x;
-          const dy = bb.max.y - bb.min.y;
-          const dz = bb.max.z - bb.min.z;
-          if (dy < 0.05 * Math.max(dx, dz)) mesh.visible = false;
-        }
         const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
         mats.forEach((mm) => {
           const mat = mm as THREE.MeshStandardMaterial;
