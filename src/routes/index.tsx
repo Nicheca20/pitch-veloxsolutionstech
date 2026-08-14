@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { brand, sections } from "@/content";
 import { Section } from "@/components/pitch/Section";
 import { NavDots } from "@/components/pitch/NavDots";
@@ -34,17 +34,19 @@ function Pitch() {
   const [active, setActive] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [use3D, setUse3D] = useState(false);
-  const [reduced, setReduced] = useState(false);
   const [loading, setLoading] = useState(100);
   const [ready, setReady] = useState(false);
+  const tween = useRef<number | null>(null);
+  const reducedRef = useRef(false);
 
   useEffect(() => {
     setMounted(true);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setReduced(reduce);
+    reducedRef.current = reduce;
     // Fallback móvil: por debajo de 768px no intentamos WebGL completo
     setUse3D(window.innerWidth >= 768);
-    if (!reduce) document.documentElement.style.scrollBehavior = "smooth";
+    // El scroll animado lo controlamos nosotros (rAF + easing)
+    document.documentElement.style.scrollBehavior = "auto";
 
     let v = 0;
     const iv = setInterval(() => {
@@ -62,26 +64,81 @@ function Pitch() {
     setActive(Math.min(sections.length - 1, Math.round(barProgress * (sections.length - 1))));
   }, [barProgress]);
 
-  const goTo = useCallback((i: number) => {
-    const el = document.getElementById(sections[Math.max(0, Math.min(sections.length - 1, i))]!.id);
-    el?.scrollIntoView({ behavior: "smooth", block: "start" });
+  /** Scroll animado con easing (~1.2s), cancelable por el scroll del mouse. */
+  const smoothScrollTo = useCallback((to: number) => {
+    if (tween.current !== null) cancelAnimationFrame(tween.current);
+    const from = window.scrollY;
+    const max = document.body.scrollHeight - window.innerHeight;
+    const target = Math.max(0, Math.min(max, to));
+    const delta = target - from;
+    if (Math.abs(delta) < 1) return;
+    if (reducedRef.current) {
+      window.scrollTo(0, target);
+      return;
+    }
+    const duration = 1200;
+    const start = performance.now();
+    // easeInOutCubic
+    const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
+    const step = (now: number) => {
+      const p = Math.min(1, (now - start) / duration);
+      window.scrollTo(0, from + delta * ease(p));
+      if (p < 1) tween.current = requestAnimationFrame(step);
+      else tween.current = null;
+    };
+    tween.current = requestAnimationFrame(step);
+  }, []);
+
+  const goTo = useCallback(
+    (i: number) => {
+      const idx = Math.max(0, Math.min(sections.length - 1, i));
+      const el = document.getElementById(sections[idx]!.id);
+      if (!el) return;
+      smoothScrollTo(el.getBoundingClientRect().top + window.scrollY);
+    },
+    [smoothScrollTo],
+  );
+
+  // Si el usuario usa la rueda/gesto del mouse, cancelamos el tween en curso
+  useEffect(() => {
+    const cancel = () => {
+      if (tween.current !== null) {
+        cancelAnimationFrame(tween.current);
+        tween.current = null;
+      }
+    };
+    window.addEventListener("wheel", cancel, { passive: true });
+    window.addEventListener("touchstart", cancel, { passive: true });
+    return () => {
+      window.removeEventListener("wheel", cancel);
+      window.removeEventListener("touchstart", cancel);
+    };
   }, []);
 
   useEffect(() => {
+    const NEXT = ["ArrowRight", "ArrowDown", "PageDown", " ", "Spacebar", "Enter"];
+    const PREV = ["ArrowLeft", "ArrowUp", "PageUp", "Backspace"];
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowDown" || e.key === " " || e.key === "PageDown") {
+      const el = e.target as HTMLElement | null;
+      if (el && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName))) return;
+      if (NEXT.includes(e.key)) {
         e.preventDefault();
         goTo(active + 1);
-      } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+      } else if (PREV.includes(e.key)) {
         e.preventDefault();
         goTo(active - 1);
-      } else if (e.key === "Escape") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else if (e.key === "Home" || e.key === "Escape") {
+        e.preventDefault();
+        smoothScrollTo(0);
+      } else if (e.key === "End") {
+        e.preventDefault();
+        goTo(sections.length - 1);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [active, goTo]);
+  }, [active, goTo, smoothScrollTo]);
+
 
   return (
     <div className="relative bg-background text-foreground">
