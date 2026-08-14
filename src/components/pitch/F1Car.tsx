@@ -5,7 +5,6 @@ import { useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
 
 const MODEL = "/models/f1.glb";
-useGLTF.preload(MODEL, true);
 
 const VELOX = "#534AB7";
 const FORCE = "#7F77DD";
@@ -299,7 +298,7 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
 
   /** Copias fantasma: simulan desenfoque acumulando siluetas desplazadas. */
   const ghosts = useMemo(() => {
-    return [0, 1, 2, 3].map(() => {
+    return [0, 1].map(() => {
       const g = model.clone(true);
       g.traverse((o) => {
         const mesh = o as THREE.Mesh;
@@ -366,10 +365,10 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
 
     ghostRefs.current.forEach((gh, i) => {
       if (!gh) return;
-      const amt = fade * blur * (0.42 - i * 0.07);
+      const amt = fade * blur * (0.42 - i * 0.12);
       gh.visible = amt > 0.005;
       if (!gh.visible) return;
-      const ang = (i / 4) * Math.PI * 2 + 0.4;
+      const ang = (i / 2) * Math.PI * 2 + 0.4;
       const r = blur * (0.16 + i * 0.1);
       gh.position.set(Math.cos(ang) * r, Math.sin(ang) * r * 0.6, blur * (0.2 + i * 0.18));
       gh.scale.setScalar(1 + blur * 0.012 * (i + 1));

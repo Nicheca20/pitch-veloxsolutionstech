@@ -28,7 +28,8 @@ export default function VeloxBackground() {
     const AURA = "#AFA9EC";
     const ICE = "#EEEDFE";
 
-    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+    // perf: el fondo es un degradé suave; 1.25x basta y ahorra ~60% de fill-rate
+    const DPR = Math.min(window.devicePixelRatio || 1, 1.25);
     let W = 0;
     let H = 0;
     let horizon = 0;
@@ -194,8 +195,16 @@ export default function VeloxBackground() {
     }
     draw();
 
+    // perf: no gastar frames cuando la pestaña no está visible
+    const onVis = () => {
+      cancelAnimationFrame(raf);
+      if (!document.hidden) raf = requestAnimationFrame(draw);
+    };
+    document.addEventListener("visibilitychange", onVis);
+
     return () => {
       cancelAnimationFrame(raf);
+      document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("resize", resize);
     };
   }, []);

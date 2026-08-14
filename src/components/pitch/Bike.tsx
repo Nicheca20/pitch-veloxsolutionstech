@@ -5,7 +5,6 @@ import { useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
 
 const MODEL = "/models/moto.glb";
-useGLTF.preload(MODEL, true);
 
 const VELOX = "#534AB7";
 const FORCE = "#7F77DD";
@@ -26,7 +25,7 @@ export const bikePhase = (section: number) =>
 /** Banda de nubes/estela que hereda del avión y hace de pista. */
 function CloudTrack({ power }: { power: MutableRefObject<number> }) {
   const ref = useRef<THREE.Points>(null);
-  const count = 900;
+  const count = 420;
 
   const geometry = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -201,7 +200,6 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
         <primitive object={model} />
         <pointLight position={[0, 2, 3]} intensity={140} distance={45} color={VELOX} />
         <pointLight position={[6, 4, -6]} intensity={220} distance={55} color={FORCE} />
-        <pointLight position={[-6, 2, 5]} intensity={180} distance={55} color={ICE} />
         <hemisphereLight args={[FORCE, VELOX, 1.6]} />
       </group>
     </group>
