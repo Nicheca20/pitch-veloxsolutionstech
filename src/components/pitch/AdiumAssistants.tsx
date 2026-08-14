@@ -1,16 +1,20 @@
 import { useEffect, useRef, useState } from "react";
-import { MessageCircle, Headphones, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import whatsappAsset from "@/assets/whatsapp.png.asset.json";
+import salesforceAsset from "@/assets/salesforce.png.asset.json";
 
 const CARDS = [
   {
-    icon: MessageCircle,
+    logo: whatsappAsset.url,
+    logoAlt: "WhatsApp",
     eyebrow: "Asistente paciente",
     title: "WhatsApp 24/7",
     tag: "Atención continua, respuestas validadas y derivación sensible al equipo humano.",
   },
   {
-    icon: Headphones,
-    eyebrow: "Copiloto PSP",
+    logo: salesforceAsset.url,
+    logoAlt: "Salesforce",
+    eyebrow: "Copiloto",
     title: "Dentro del CRM",
     tag: "Resume la consulta, registra el caso y sugiere el próximo mejor contacto.",
   },
@@ -47,15 +51,15 @@ export function AdiumAssistants() {
   const base = Math.min(1, Math.max(0, (fill - 0.45) / 0.3));
 
   return (
-    <div ref={ref} className="relative mx-auto w-full max-w-3xl px-6 md:px-0 lg:pr-40">
-      <div className="mb-8 text-center text-[0.68rem] uppercase tracking-[0.32em] text-muted-foreground">
+    <div ref={ref} className="relative mx-auto w-full max-w-5xl px-6 md:px-0 lg:pr-40">
+      <div className="mb-8 text-center text-[1.22rem] uppercase tracking-[0.32em] text-foreground">
         Dos asistentes, una base de confianza
       </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
         {CARDS.map((c, i) => {
           const t = Math.min(1, Math.max(0, (fill - i * 0.14) / 0.3));
-          const Icon = c.icon;
+
           return (
             <div
               key={c.title}
@@ -67,17 +71,17 @@ export function AdiumAssistants() {
               }}
             >
               <div className="flex items-center gap-3">
-                <div className="flex size-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-                  <Icon className="size-5 text-ice" strokeWidth={1.4} />
+                <div className="flex size-14 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
+                  <img src={c.logo} alt={c.logoAlt} className="size-8 object-contain" loading="lazy" />
                 </div>
-                <div className="text-[0.62rem] uppercase tracking-[0.28em] text-muted-foreground">
+                <div className="text-[1.12rem] uppercase tracking-[0.28em] text-foreground">
                   {c.eyebrow}
                 </div>
               </div>
-              <div className="mt-5 text-lg font-semibold tracking-tight text-foreground">
+              <div className="mt-5 text-[2rem] font-semibold tracking-tight text-foreground">
                 {c.title}
               </div>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.tag}</p>
+              <p className="mt-2 text-[1.58rem] leading-relaxed text-foreground">{c.tag}</p>
             </div>
           );
         })}
@@ -93,7 +97,7 @@ export function AdiumAssistants() {
       </div>
 
       <div
-        className="mx-auto max-w-xl rounded-2xl border border-white/10 bg-galaxy/60 p-6 text-center transition-all duration-500"
+        className="mx-auto max-w-3xl rounded-2xl border border-white/10 bg-galaxy/60 p-6 text-center transition-all duration-500"
         style={{
           opacity: 0.25 + base * 0.75,
           transform: `translateY(${(1 - base) * 14}px)`,
@@ -101,15 +105,15 @@ export function AdiumAssistants() {
         }}
       >
         <div className="flex items-center justify-center gap-3">
-          <ShieldCheck className="size-5 text-ice" strokeWidth={1.4} />
-          <div className="text-[0.62rem] uppercase tracking-[0.28em] text-muted-foreground">
+          <ShieldCheck className="size-8 text-ice" strokeWidth={1.4} />
+          <div className="text-[1.12rem] uppercase tracking-[0.28em] text-foreground">
             Validación legal, médica y compliance
           </div>
         </div>
-        <div className="mt-4 text-lg font-semibold tracking-tight text-foreground">
+        <div className="mt-4 text-[2rem] font-semibold tracking-tight text-foreground">
           Todo validado antes de llegar al paciente o al equipo
         </div>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-2 text-[1.58rem] leading-relaxed text-foreground">
           Cada respuesta y sugerencia pasa por controles de seguridad y cumplimiento antes de publicarse.
         </p>
       </div>
