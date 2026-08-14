@@ -334,13 +334,52 @@ function GradientSky() {
   );
 }
 
-/** Campo de partículas suaves (sprite circular) con toda la paleta y brillo variable. */
+/** Material de puntos con forma suave (círculo o estela) calculada en el shader. */
+function makePointMaterial(stretch: number) {
+  return new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    uniforms: {
+      uSize: { value: 0.11 },
+      uScale: { value: 450 },
+      uOpacity: { value: 0.85 },
+      uStretch: { value: stretch },
+    },
+    vertexShader: `
+      uniform float uSize; uniform float uScale;
+      attribute vec3 color;
+      varying vec3 vColor;
+      void main() {
+        vColor = color;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = max(1.0, uSize * (uScale / max(0.1, -mv.z)));
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: `
+      uniform float uOpacity; uniform float uStretch;
+      varying vec3 vColor;
+      void main() {
+        vec2 uv = gl_PointCoord - 0.5;
+        // uStretch > 1 comprime el eje X → forma alargada tipo estela
+        float d = length(vec2(uv.x * uStretch, uv.y)) * 2.0;
+        float a = 1.0 - smoothstep(0.0, 1.0, d);
+        a = pow(a, 1.8);
+        if (a < 0.01) discard;
+        gl_FragColor = vec4(vColor, a * uOpacity);
+      }
+    `,
+  });
+}
+
+/** Campo de partículas suaves con toda la paleta y brillo variable. */
 function ParticleField({ section, count = 26000 }: { section: Ref; count?: number }) {
   const ref = useRef<THREE.Points>(null);
-  const mat = useRef<THREE.PointsMaterial>(null);
   const drift = useRef(0);
   const pulse = usePulse(section);
-  const sprite = useMemo(() => softDotTexture(), []);
+  const material = useMemo(() => makePointMaterial(1), []);
+  useEffect(() => () => material.dispose(), [material]);
 
   const geometry = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -353,7 +392,7 @@ function ParticleField({ section, count = 26000 }: { section: Ref; count?: numbe
       pos[i * 3 + 2] = (Math.random() - 0.5) * 170;
       const c = palette[Math.floor(Math.random() * palette.length)]!;
       // brillo variable: la mayoría tenues, unas pocas muy vivas
-      const b = 0.35 + Math.pow(Math.random(), 2.2) * 1.5;
+      const b = 0.3 + Math.pow(Math.random(), 2.4) * 1.6;
       tmp.copy(c).multiplyScalar(b);
       col[i * 3] = tmp.r;
       col[i * 3 + 1] = tmp.g;
@@ -365,7 +404,7 @@ function ParticleField({ section, count = 26000 }: { section: Ref; count?: numbe
     return g;
   }, [count]);
 
-  useFrame(({ camera, clock }, dt) => {
+  useFrame(({ camera, clock, size }, dt) => {
     const o = ref.current;
     if (!o) return;
     const k = tunnelIntensity(section.current);
@@ -375,35 +414,19 @@ function ParticleField({ section, count = 26000 }: { section: Ref; count?: numbe
     o.position.z = camera.position.z - 40 + drift.current;
     o.position.y = Math.sin(clock.elapsedTime * 0.15) * 0.6;
     o.scale.setScalar(1 + p * 0.14);
-    if (mat.current) {
-      mat.current.size = 0.11 * (1 + (k - 1) * 0.5 + p * 1.6);
-      mat.current.opacity = Math.min(1, 0.85 + p * 0.15);
-    }
+    material.uniforms['uScale']!.value = size.height * 0.5;
+    material.uniforms['uSize']!.value = 0.14 * (1 + (k - 1) * 0.5 + p * 1.4);
+    material.uniforms['uOpacity']!.value = Math.min(1, 0.7 + p * 0.3);
   });
 
-  return (
-    <points ref={ref} geometry={geometry} frustumCulled={false}>
-      <pointsMaterial
-        ref={mat}
-        size={0.11}
-        map={sprite}
-        alphaMap={sprite}
-        vertexColors
-        transparent
-        opacity={0.85}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        sizeAttenuation
-      />
-    </points>
-  );
+  return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} />;
 }
 
-/** Estelas de velocidad: sprites alargados (motion-blur) que cruzan la escena. */
-function AccentStreaks({ section, count = 1600 }: { section: Ref; count?: number }) {
+/** Estelas de velocidad: partículas alargadas (motion-blur) que cruzan la escena. */
+function AccentStreaks({ section, count = 1800 }: { section: Ref; count?: number }) {
   const ref = useRef<THREE.Points>(null);
-  const mat = useRef<THREE.PointsMaterial>(null);
-  const sprite = useMemo(() => streakTexture(), []);
+  const material = useMemo(() => makePointMaterial(4.5), []);
+  useEffect(() => () => material.dispose(), [material]);
   const depth = 200;
 
   const { geometry, speeds } = useMemo(() => {
@@ -419,7 +442,7 @@ function AccentStreaks({ section, count = 1600 }: { section: Ref; count?: number
       pos[i * 3 + 1] = Math.sin(a) * r * 0.5;
       pos[i * 3 + 2] = -Math.random() * depth;
       const c = palette[Math.floor(Math.random() * palette.length)]!;
-      tmp.copy(c).multiplyScalar(0.8 + Math.random() * 1.4);
+      tmp.copy(c).multiplyScalar(0.9 + Math.random() * 1.6);
       col[i * 3] = tmp.r;
       col[i * 3 + 1] = tmp.g;
       col[i * 3 + 2] = tmp.b;
@@ -431,7 +454,7 @@ function AccentStreaks({ section, count = 1600 }: { section: Ref; count?: number
     return { geometry: g, speeds };
   }, [count]);
 
-  useFrame(({ camera }, dt) => {
+  useFrame(({ camera, size }, dt) => {
     const o = ref.current;
     if (!o) return;
     o.position.z = camera.position.z;
@@ -444,26 +467,14 @@ function AccentStreaks({ section, count = 1600 }: { section: Ref; count?: number
       if (arr[i0]! > 14) arr[i0] = arr[i0]! - (depth + Math.random() * 40);
     }
     attr.needsUpdate = true;
-    if (mat.current) mat.current.size = 0.5 * (1 + (k - 1) * 0.6);
+    material.uniforms['uScale']!.value = size.height * 0.5;
+    material.uniforms['uSize']!.value = 0.75 * (1 + (k - 1) * 0.6);
+    material.uniforms['uOpacity']!.value = 0.5;
   });
 
-  return (
-    <points ref={ref} geometry={geometry} frustumCulled={false}>
-      <pointsMaterial
-        ref={mat}
-        size={0.5}
-        map={sprite}
-        alphaMap={sprite}
-        vertexColors
-        transparent
-        opacity={0.55}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        sizeAttenuation
-      />
-    </points>
-  );
+  return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} />;
 }
+
 
 
 /** Bloom dinámico: golpe de brillo en el hook + build-up hacia la sección 5. */
