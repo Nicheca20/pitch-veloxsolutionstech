@@ -11,7 +11,7 @@ import { DataCycle } from "@/components/pitch/DataCycle";
 import { CencorUnits } from "@/components/pitch/CencorUnits";
 import { ClientLogo } from "@/components/pitch/ClientLogo";
 import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
-import { DiferencialOverlay } from "@/components/pitch/DiferencialOverlay";
+import { GrowthEngine } from "@/components/pitch/GrowthEngine";
 import VeloxBackground from "@/components/pitch/VeloxBackground";
 
 import cronista from "@/assets/cronista.png.asset.json";
@@ -194,6 +194,8 @@ function Pitch() {
                   <SolutionTimeline />
                 ) : s.id === "como" ? (
                   <DataCycle />
+                ) : s.id === "diferencial" ? (
+                  <GrowthEngine />
                 ) : undefined
               }
               right={
@@ -210,12 +212,13 @@ function Pitch() {
                   ? "py-[10vh] min-h-[170vh]"
                   : s.id === "solucion"
                     ? "py-[10vh] min-h-[170vh]"
+                    : s.id === "diferencial"
+                      ? "py-[10vh] min-h-[170vh]"
                     : s.id === "cronista"
                       ? "min-h-[230vh]"
                       : undefined
               }
             />
-            {s.id === "diferencial" && <DiferencialOverlay section={section} />}
             {s.id === "cencor" && <CencorUnits />}
             {s.id === "cronista" && (
               <ClientLogo src={cronista.url} name="El Cronista" eyebrow="El Cronista" side="right" />
