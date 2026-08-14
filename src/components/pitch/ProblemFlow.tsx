@@ -119,7 +119,7 @@ export function ProblemFlow() {
             >
               {/* Nodo */}
               <span
-                className={`absolute left-6 top-1/2 z-10 flex h-9 w-9 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-sm transition-all duration-600 md:left-1/2 ${
+                className={`absolute left-6 top-1/2 z-10 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-sm transition-all duration-600 md:left-1/2 ${
                   isLast
                     ? "border-[var(--force)]/40 bg-[var(--galaxy)]/80"
                     : on
@@ -129,12 +129,12 @@ export function ProblemFlow() {
               >
                 {isLast ? (
                   <div className="relative flex items-center justify-center">
-                    <Icon className="h-4 w-4 text-foreground/30" strokeWidth={1.5} />
-                    <X className="absolute -right-0.5 -top-0.5 h-3 w-3 text-[var(--force)]" strokeWidth={3} />
+                    <Icon className="h-6 w-6 text-foreground/30" strokeWidth={1.5} />
+                    <X className="absolute -right-1 -top-1 h-4 w-4 text-[var(--force)]" strokeWidth={3} />
                   </div>
                 ) : (
                   <Icon
-                    className={`h-4 w-4 transition-colors duration-500 ${
+                    className={`h-6 w-6 transition-colors duration-500 ${
                       on ? "text-[var(--aura)]" : "text-foreground/40"
                     }`}
                     strokeWidth={1.6}
@@ -148,23 +148,16 @@ export function ProblemFlow() {
                   left ? "md:col-start-1 md:pr-14 md:text-right" : "md:col-start-2 md:pl-14"
                 }`}
               >
-                <span
-                  className={`text-[10px] font-semibold tracking-[0.28em] ${
-                    isLast ? "text-[var(--force)]/60" : on ? "text-[var(--force)]" : "text-foreground/40"
-                  }`}
-                >
-                  {step.index}
-                </span>
                 <h3
-                  className={`mt-0.5 text-[clamp(1rem,1.6vw,1.3rem)] font-semibold tracking-[-0.02em] ${
+                  className={`text-[clamp(1.35rem,2.4vw,2.1rem)] font-semibold tracking-[-0.02em] ${
                     isLast ? "text-foreground/40 line-through decoration-[var(--force)]" : "text-[var(--ice)]"
                   }`}
                 >
                   {step.title}
                 </h3>
-                <div className="mt-1 flex items-center gap-2">
+                <div className={`mt-2 flex items-center gap-2 ${left ? "md:justify-end" : ""}`}>
                   <span
-                    className={`rounded-full px-2 py-0.5 text-[9px] font-medium uppercase tracking-wider ${
+                    className={`rounded-full px-3 py-1 text-[clamp(0.75rem,1vw,0.95rem)] font-medium uppercase tracking-wider ${
                       isLast
                         ? "bg-[var(--force)]/10 text-[var(--force)]/80"
                         : on
@@ -174,9 +167,10 @@ export function ProblemFlow() {
                   >
                     {step.tag}
                   </span>
-                  {isLast && <Lock className="h-3 w-3 text-[var(--force)]/70" />}
+                  {isLast && <Lock className="h-4 w-4 text-[var(--force)]/70" />}
                 </div>
               </div>
+
             </div>
           );
         })}
