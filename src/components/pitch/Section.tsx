@@ -6,6 +6,7 @@ export function Section({
   data,
   first,
   afterTitle,
+  extra,
   below,
   right,
   className,
@@ -13,6 +14,7 @@ export function Section({
   data: SectionData;
   first?: boolean;
   afterTitle?: React.ReactNode;
+  extra?: React.ReactNode;
   below?: React.ReactNode;
   right?: React.ReactNode;
   className?: string | undefined;
