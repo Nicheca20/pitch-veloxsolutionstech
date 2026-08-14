@@ -46,7 +46,7 @@ export function LogoStrip() {
       </p>
 
 
-      <ul className="flex flex-wrap items-center justify-center gap-x-16 gap-y-10 md:gap-x-24">
+      <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-6 sm:gap-x-16 sm:gap-y-10 md:gap-x-24">
         {logos.map((l, i) => (
           <li
             key={l.name}
