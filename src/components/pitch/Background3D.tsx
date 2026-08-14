@@ -1,15 +1,18 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
-import { Suspense, useMemo, useRef, useState, type MutableRefObject } from "react";
+import { KernelSize } from "postprocessing";
+import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 import { CAR_WINDOW, F1Car, carPhase } from "./F1Car";
 import { JET_WINDOW, Jet } from "./Jet";
 import { BIKE_WINDOW, Bike } from "./Bike";
 
 const FOG = "#0a0820";
-const GRID = "#534AB7";
-const PARTICLE_COLORS = ["#534AB7", "#7F77DD", "#AFA9EC", "#EEEDFE"];
+const GRID = "#7F77DD";
+const PARTICLE_COLORS = ["#26215C", "#534AB7", "#7F77DD", "#AFA9EC", "#EEEDFE"];
+const ACCENT_COLORS = ["#AFA9EC", "#EEEDFE", "#7F77DD"];
+
 
 type Ref = MutableRefObject<number>;
 
@@ -136,32 +139,87 @@ function usePulse(section: Ref) {
 }
 
 /**
- * Grilla synthwave infinita: una sola malla enorme que acompaña a la cámara y
- * se desplaza en pasos exactos de celda, así el patrón nunca "corta" ni se reinicia.
+ * "Carretera" synthwave: plano con grilla procedural de líneas finas y luminosas,
+ * con degradé de brillo hacia el horizonte y color entre velox y aura.
  */
 function SpeedGrid({ section }: { section: Ref }) {
-  const group = useRef<THREE.Group>(null);
-  const grid = useRef<THREE.GridHelper>(null);
-  const run = useRef(0);
-  const size = 400;
-  const divisions = 200;
-  const cell = size / divisions;
+  const mesh = useRef<THREE.Mesh>(null);
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        uniforms: {
+          uRun: { value: 0 },
+          uIntensity: { value: 1 },
+          uNear: { value: new THREE.Color("#AFA9EC") },
+          uFar: { value: new THREE.Color("#534AB7") },
+        },
+        vertexShader: `
+          varying vec2 vUv;
+          varying vec3 vLocal;
+          void main() {
+            vUv = uv;
+            vLocal = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float uRun; uniform float uIntensity;
+          uniform vec3 uNear; uniform vec3 uFar;
+          varying vec3 vLocal;
+
+          float line(float coord, float width) {
+            float g = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
+            return 1.0 - smoothstep(0.0, width, g);
+          }
+
+          void main() {
+            // el plano está rotado: x = lateral, y local = profundidad
+            float cell = 2.0;
+            float x = vLocal.x / cell;
+            float z = (vLocal.y + uRun) / cell;
+            float g = max(line(x, 0.8), line(z, 1.0));
+            if (g < 0.01) discard;
+
+            float depth = clamp(abs(vLocal.y) / 190.0, 0.0, 1.0);
+            float side = clamp(abs(vLocal.x) / 120.0, 0.0, 1.0);
+            // brillo: fuerte cerca, degradé hacia el horizonte, se apaga a los lados
+            float glow = (1.0 - smoothstep(0.15, 1.0, depth)) * (1.0 - side * side);
+            glow += (1.0 - smoothstep(0.0, 0.35, depth)) * 0.5;
+            vec3 col = mix(uNear, uFar, smoothstep(0.0, 0.6, depth));
+            float nearFade = smoothstep(6.0, 26.0, length(vLocal.xy));
+            float a = g * glow * nearFade * 0.42 * uIntensity;
+            gl_FragColor = vec4(col * (0.6 + glow * 0.7), a);
+          }
+        `,
+      }),
+    [],
+  );
+  useEffect(() => () => material.dispose(), [material]);
 
   useFrame(({ camera }, dt) => {
     const k = tunnelIntensity(section.current);
-    run.current = (run.current + dt * 26 * k) % cell;
-    if (group.current) group.current.position.z = camera.position.z;
-    if (grid.current) grid.current.position.z = run.current;
+    material.uniforms['uRun']!.value = (material.uniforms['uRun']!.value + dt * 26 * k) % 2;
+    material.uniforms['uIntensity']!.value = 0.85 + (k - 1) * 0.35;
+    if (mesh.current) mesh.current.position.z = camera.position.z;
   });
 
   return (
-    <group ref={group} position={[0, -3.4, 0]}>
-      <gridHelper ref={grid} args={[size, divisions, GRID, GRID]} frustumCulled={false}>
-        <lineBasicMaterial attach="material" color={GRID} transparent opacity={0.6} fog />
-      </gridHelper>
-    </group>
+    <mesh
+      ref={mesh}
+      material={material}
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, -3.4, 0]}
+      frustumCulled={false}
+    >
+      <planeGeometry args={[400, 400]} />
+    </mesh>
   );
 }
+
 
 
 /** Líneas de velocidad que atraviesan la cámara (túnel de secciones 0-4). */
@@ -229,25 +287,116 @@ function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
   );
 }
 
-/** Campo de partículas flotante con blending aditivo, siempre alrededor de la cámara. */
-function ParticleField({ section, count = 30000 }: { section: Ref; count?: number }) {
+/** Cielo con degradé: galaxy oscuro arriba → velox/force hacia el horizonte. */
+function GradientSky() {
+  const ref = useRef<THREE.Mesh>(null);
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        depthWrite: false,
+        fog: false,
+        uniforms: {
+          top: { value: new THREE.Color("#07061a") },
+          mid: { value: new THREE.Color("#26215C") },
+          horizon: { value: new THREE.Color("#534AB7") },
+          low: { value: new THREE.Color("#120e33") },
+        },
+        vertexShader: `
+          varying vec3 vPos;
+          void main() {
+            vPos = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 top; uniform vec3 mid; uniform vec3 horizon; uniform vec3 low;
+          varying vec3 vPos;
+          void main() {
+            float h = normalize(vPos).y;
+            vec3 c = mix(mid, top, smoothstep(0.05, 0.9, h));
+            c = mix(c, horizon, smoothstep(0.28, 0.0, abs(h)) * 0.85);
+            c = mix(c, low, smoothstep(-0.05, -0.6, h));
+            gl_FragColor = vec4(c, 1.0);
+          }
+        `,
+      }),
+    [],
+  );
+  useEffect(() => () => material.dispose(), [material]);
+  useFrame(({ camera }) => {
+    if (ref.current) ref.current.position.copy(camera.position);
+  });
+  return (
+    <mesh ref={ref} material={material} frustumCulled={false} renderOrder={-1}>
+      <sphereGeometry args={[300, 32, 24]} />
+    </mesh>
+  );
+}
+
+/** Material de puntos con forma suave (círculo o estela) calculada en el shader. */
+function makePointMaterial(stretch: number) {
+  return new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    uniforms: {
+      uSize: { value: 0.11 },
+      uScale: { value: 450 },
+      uOpacity: { value: 0.85 },
+      uStretch: { value: stretch },
+    },
+    vertexShader: `
+      uniform float uSize; uniform float uScale;
+      attribute vec3 color;
+      varying vec3 vColor;
+      void main() {
+        vColor = color;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = max(1.0, uSize * (uScale / max(0.1, -mv.z)));
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: `
+      uniform float uOpacity; uniform float uStretch;
+      varying vec3 vColor;
+      void main() {
+        vec2 uv = gl_PointCoord - 0.5;
+        // uStretch > 1 comprime el eje X → forma alargada tipo estela
+        float d = length(vec2(uv.x * uStretch, uv.y)) * 2.0;
+        float a = 1.0 - smoothstep(0.0, 1.0, d);
+        a = pow(a, 1.8);
+        if (a < 0.01) discard;
+        gl_FragColor = vec4(vColor, a * uOpacity);
+      }
+    `,
+  });
+}
+
+/** Campo de partículas suaves con toda la paleta y brillo variable. */
+function ParticleField({ section, count = 26000 }: { section: Ref; count?: number }) {
   const ref = useRef<THREE.Points>(null);
-  const mat = useRef<THREE.PointsMaterial>(null);
   const drift = useRef(0);
   const pulse = usePulse(section);
+  const material = useMemo(() => makePointMaterial(1), []);
+  useEffect(() => () => material.dispose(), [material]);
 
   const geometry = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const col = new Float32Array(count * 3);
     const palette = PARTICLE_COLORS.map((c) => new THREE.Color(c));
+    const tmp = new THREE.Color();
     for (let i = 0; i < count; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 170;
       pos[i * 3 + 1] = (Math.random() - 0.5) * 80;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 170;
       const c = palette[Math.floor(Math.random() * palette.length)]!;
-      col[i * 3] = c.r;
-      col[i * 3 + 1] = c.g;
-      col[i * 3 + 2] = c.b;
+      // brillo variable: la mayoría tenues, unas pocas muy vivas
+      const b = 0.3 + Math.pow(Math.random(), 2.4) * 1.6;
+      tmp.copy(c).multiplyScalar(b);
+      col[i * 3] = tmp.r;
+      col[i * 3 + 1] = tmp.g;
+      col[i * 3 + 2] = tmp.b;
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
@@ -255,38 +404,78 @@ function ParticleField({ section, count = 30000 }: { section: Ref; count?: numbe
     return g;
   }, [count]);
 
-  useFrame(({ camera, clock }, dt) => {
+  useFrame(({ camera, clock, size }, dt) => {
     const o = ref.current;
     if (!o) return;
     const k = tunnelIntensity(section.current);
     const p = pulse(clock.elapsedTime);
-    // flujo hacia la cámara: el campo entero se desliza en +Z y se recicla
     drift.current = (drift.current + dt * 9 * k) % 170;
     o.rotation.y += dt * 0.02 * k;
     o.position.z = camera.position.z - 40 + drift.current;
     o.position.y = Math.sin(clock.elapsedTime * 0.15) * 0.6;
     o.scale.setScalar(1 + p * 0.14);
-    if (mat.current) {
-      mat.current.size = 0.09 * (1 + (k - 1) * 0.5 + p * 1.6);
-      mat.current.opacity = Math.min(1, 0.9 + p * 0.1);
-    }
+    material.uniforms['uScale']!.value = size.height * 0.5;
+    material.uniforms['uSize']!.value = 0.14 * (1 + (k - 1) * 0.5 + p * 1.4);
+    material.uniforms['uOpacity']!.value = Math.min(1, 0.7 + p * 0.3);
   });
 
-  return (
-    <points ref={ref} geometry={geometry} frustumCulled={false}>
-      <pointsMaterial
-        ref={mat}
-        size={0.09}
-        vertexColors
-        transparent
-        opacity={0.9}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        sizeAttenuation
-      />
-    </points>
-  );
+  return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} />;
 }
+
+/** Estelas de velocidad: partículas alargadas (motion-blur) que cruzan la escena. */
+function AccentStreaks({ section, count = 1800 }: { section: Ref; count?: number }) {
+  const ref = useRef<THREE.Points>(null);
+  const material = useMemo(() => makePointMaterial(4.5), []);
+  useEffect(() => () => material.dispose(), [material]);
+  const depth = 200;
+
+  const { geometry, speeds } = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    const speeds = new Float32Array(count);
+    const palette = ACCENT_COLORS.map((c) => new THREE.Color(c));
+    const tmp = new THREE.Color();
+    for (let i = 0; i < count; i++) {
+      const r = 4 + Math.random() * 46;
+      const a = Math.random() * Math.PI * 2;
+      pos[i * 3] = Math.cos(a) * r;
+      pos[i * 3 + 1] = Math.sin(a) * r * 0.5;
+      pos[i * 3 + 2] = -Math.random() * depth;
+      const c = palette[Math.floor(Math.random() * palette.length)]!;
+      tmp.copy(c).multiplyScalar(0.9 + Math.random() * 1.6);
+      col[i * 3] = tmp.r;
+      col[i * 3 + 1] = tmp.g;
+      col[i * 3 + 2] = tmp.b;
+      speeds[i] = 22 + Math.random() * 60;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    g.setAttribute("color", new THREE.BufferAttribute(col, 3));
+    return { geometry: g, speeds };
+  }, [count]);
+
+  useFrame(({ camera, size }, dt) => {
+    const o = ref.current;
+    if (!o) return;
+    o.position.z = camera.position.z;
+    const k = tunnelIntensity(section.current);
+    const attr = geometry.getAttribute("position") as THREE.BufferAttribute;
+    const arr = attr.array as Float32Array;
+    for (let i = 0; i < count; i++) {
+      const i0 = i * 3 + 2;
+      arr[i0] = arr[i0]! + speeds[i]! * k * dt;
+      if (arr[i0]! > 14) arr[i0] = arr[i0]! - (depth + Math.random() * 40);
+    }
+    attr.needsUpdate = true;
+    material.uniforms['uScale']!.value = size.height * 0.5;
+    material.uniforms['uSize']!.value = 0.75 * (1 + (k - 1) * 0.6);
+    material.uniforms['uOpacity']!.value = 0.5;
+  });
+
+  return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} />;
+}
+
+
 
 /** Bloom dinámico: golpe de brillo en el hook + build-up hacia la sección 5. */
 /** Monta el carro sólo cuando la sección 5 está cerca del viewport. */
@@ -339,18 +528,19 @@ function DynamicBloom({ section }: { section: Ref }) {
   useFrame(({ clock }) => {
     const k = tunnelIntensity(section.current);
     const p = pulse(clock.elapsedTime);
-    if (ref.current) ref.current.intensity = 0.45 + (k - 1) * 0.35 + p * 1.1;
+    if (ref.current) ref.current.intensity = 0.62 + (k - 1) * 0.4 + p * 1.2;
   });
   return (
     <Bloom
       ref={ref as never}
-      intensity={0.45}
-      luminanceThreshold={0.5}
-      luminanceSmoothing={0.3}
-      mipmapBlur
+      intensity={0.62}
+      luminanceThreshold={0.42}
+      luminanceSmoothing={0.5}
+      kernelSize={KernelSize.LARGE}
     />
   );
 }
+
 
 export function Background3D({ section }: { section: Ref }) {
   return (
@@ -361,15 +551,17 @@ export function Background3D({ section }: { section: Ref }) {
       onCreated={({ gl, scene }) => {
         gl.shadowMap.enabled = false;
         gl.setClearColor(0x000000, 0);
-        scene.fog = new THREE.Fog(FOG, 14, 95);
+        scene.fog = new THREE.Fog(FOG, 18, 120);
       }}
     >
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[6, 8, 6]} intensity={0.6} color="#AFA9EC" />
-      <directionalLight position={[-8, -4, -6]} intensity={0.35} color="#534AB7" />
+      <ambientLight intensity={0.55} />
+      <directionalLight position={[6, 8, 6]} intensity={0.7} color="#AFA9EC" />
+      <directionalLight position={[-8, -4, -6]} intensity={0.4} color="#534AB7" />
+      <GradientSky />
       <CameraRig section={section} />
       <SpeedGrid section={section} />
       <ParticleField section={section} />
+      <AccentStreaks section={section} />
       <Streaks section={section} />
       <LazyCar section={section} />
       <LazyJet section={section} />
@@ -379,5 +571,5 @@ export function Background3D({ section }: { section: Ref }) {
       </EffectComposer>
     </Canvas>
   );
-
 }
+
