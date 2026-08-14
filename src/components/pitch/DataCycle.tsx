@@ -76,10 +76,10 @@ export function DataCycle() {
           </filter>
         </defs>
 
-        {/* Ciclo exterior: rombo suave con esquinas redondeadas */}
+        {/* Ciclo exterior: rombo más compacto para dejar espacio a los labels */}
         <path
           ref={pathRef}
-          d="M200 82 L318 200 L200 318 L82 200 Z"
+          d="M200 124 L276 200 L200 276 L124 200 Z"
           fill="none"
           stroke="url(#data-cycle-gradient)"
           strokeWidth="1.5"
@@ -94,10 +94,10 @@ export function DataCycle() {
         {/* Líneas radiales al centro */}
         <g opacity={radialOpacity}>
           {[
-            [200, 82, 200, 200],
-            [318, 200, 200, 200],
-            [200, 318, 200, 200],
-            [82, 200, 200, 200],
+            [200, 124, 200, 200],
+            [276, 200, 200, 200],
+            [200, 276, 200, 200],
+            [124, 200, 200, 200],
           ].map(([x1, y1, x2, y2], i) => (
             <line
               key={i}
