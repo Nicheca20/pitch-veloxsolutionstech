@@ -190,19 +190,17 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const r = rider.current;
     if (r) {
       r.visible = true;
-      // un solo paso continuo: del fondo hasta pasar junto a la cámara
-      const travel = s * s * (3 - 2 * s); // aceleración suave, siempre creciente
-      r.position.z = THREE.MathUtils.lerp(-70, 30, travel);
-      r.position.x = THREE.MathUtils.lerp(0.4, -4.2, travel);
-      r.position.y = -0.2 + (1 - entry) * 1.6;
-      // derecha: sólo una leve inclinación al acelerar
-      r.rotation.set(
-        -0.03 * entry,
-        THREE.MathUtils.lerp(0.06, -0.14, travel),
-        Math.sin(clock.elapsedTime * 1.2) * 0.035 * entry,
-      );
-      r.scale.setScalar(0.9 + entry * 0.1);
+      // un solo paso continuo y monótono: entra por la derecha, pasa junto a la
+      // cámara y sale por la izquierda, acercándose ligeramente (sensación de velocidad)
+      const travel = s * s * (3 - 2 * s); // siempre creciente
+      r.position.x = THREE.MathUtils.lerp(26, -30, travel);
+      r.position.z = THREE.MathUtils.lerp(-24, 4, travel);
+      r.position.y = -0.2 + (1 - entry) * 1.4;
+      // derecha (vertical): sólo una leve inclinación natural al acelerar
+      r.rotation.set(0, 0, -0.05 * entry + Math.sin(clock.elapsedTime * 1.2) * 0.02 * entry);
+      r.scale.setScalar(0.92 + entry * 0.08);
     }
+
     // disolvencia general para dar paso al wordmark del CTA
     g.traverse((o) => {
       const mesh = o as THREE.Mesh;
