@@ -238,9 +238,11 @@ function Pitch() {
               right={
                 s.id === "hook" ? (
                   <img
+                    loading="lazy"
+                    decoding="async"
                     src={veloxLogo.url}
                     alt="Velox Solutions"
-                    className="h-auto w-[min(58vw,14rem)] object-contain opacity-90 drop-shadow-[0_0_40px_rgba(255,255,255,0.18)] md:w-[min(38vw,19rem)]"
+                    className="h-auto w-[min(58vw,14rem)] object-contain opacity-90 md:w-[min(38vw,19rem)]"
                   />
                 ) : undefined
               }

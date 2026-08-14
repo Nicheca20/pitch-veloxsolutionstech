@@ -66,13 +66,6 @@ export function CapabilityWheel() {
 
   return (
     <div ref={ref} className="w-full">
-      <div className="mb-8 flex items-center gap-3">
-        <span className="h-px w-8 bg-velox-gradient" />
-        <span className="text-[11px] uppercase tracking-[0.28em] text-foreground/55">
-          Dónde ya estamos aplicando IA
-        </span>
-      </div>
-
       <div
         className="relative mx-auto h-[26rem] w-full overflow-hidden sm:h-[22rem]"
         style={{ perspective: "1400px" }}
@@ -95,7 +88,6 @@ export function CapabilityWheel() {
                 style={{
                   transform: `rotateY(${i * STEP}deg) translateZ(min(50vw, 23rem))`,
 
-                  filter: front ? "none" : `blur(${1.5 + dist * 1.6}px)`,
                   opacity: front ? 1 : Math.max(0.12, 0.5 - dist * 0.14),
                   borderColor: front
                     ? "color-mix(in oklab, var(--force) 70%, transparent)"
@@ -110,9 +102,6 @@ export function CapabilityWheel() {
                 aria-hidden={!front}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-[11px] font-semibold tracking-[0.3em] text-[var(--force)]">
-                    {it.n}
-                  </span>
                   <span className="text-[11px] uppercase tracking-[0.24em] text-foreground/55">
                     {it.tag}
                   </span>

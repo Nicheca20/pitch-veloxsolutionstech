@@ -42,6 +42,8 @@ export function ClientLogo({
         {eyebrow}
       </p>
       <img
+        loading="lazy"
+        decoding="async"
         src={src}
         alt={`Logo de ${name}`}
         loading="lazy"
