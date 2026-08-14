@@ -1,3 +1,4 @@
+import { softPointTexture } from "./soft-point";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, MeshReflectorMaterial } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
