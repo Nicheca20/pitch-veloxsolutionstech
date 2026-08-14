@@ -71,9 +71,10 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
 /* ------------------------------------------------------------------- Estela */
 /** Toberas: mismas posiciones que los conos del postquemador. */
 const NOZZLES: [number, number, number][] = [
-  [-0.28, 0.15, 3.6],
-  [0.28, 0.15, 3.6],
+  [-0.3, 0.15, 3.6],
+  [0.3, 0.15, 3.6],
 ];
+
 
 function Trail({ power }: { power: MutableRefObject<number> }) {
   const ref = useRef<THREE.Points>(null);
@@ -87,13 +88,14 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
         ox: n[0],
         oy: n[1],
         oz: n[2],
-        jx: (Math.random() - 0.5) * 0.22,
-        jy: (Math.random() - 0.5) * 0.22,
-        spread: 0.25 + Math.random() * 0.9,
+        jx: (Math.random() - 0.5) * 0.1,
+        jy: (Math.random() - 0.5) * 0.1,
+        spread: 0.3 + Math.random() * 0.5,
         speed: 0.35 + Math.random() * 0.9,
         offset: Math.random(),
       };
     });
+
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     return { geometry: g, seeds };
@@ -114,13 +116,14 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
       const s = seeds[i]!;
       const life = (t * s.speed + s.offset) % 1;
       const d = life * 20;
-      // nace exactamente en la tobera y se abre hacia atrás (+Z) cayendo un poco
+      // nace exactamente en la tobera y se aleja recto por el eje del motor (+Z)
       attr.setXYZ(
         i,
-        s.ox + (s.jx + s.ox * 0.35) * life * s.spread,
-        s.oy + s.jy * life * s.spread - life * 1.1,
+        s.ox + s.jx * life * s.spread,
+        s.oy + s.jy * life * s.spread,
         s.oz + d,
       );
+
     }
     attr.needsUpdate = true;
   });
