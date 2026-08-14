@@ -218,7 +218,7 @@ function Pitch() {
                   <img
                     src={veloxLogo.url}
                     alt="Velox Solutions"
-                    className="h-auto w-[min(52.5vw,27.5rem)] object-contain opacity-90 drop-shadow-[0_0_40px_rgba(255,255,255,0.18)]"
+                    className="h-auto w-[min(38vw,19rem)] object-contain opacity-90 drop-shadow-[0_0_40px_rgba(255,255,255,0.18)]"
                   />
                 ) : undefined
               }
@@ -226,7 +226,7 @@ function Pitch() {
                  franja de ecosistema y mantener el hilo conductor. */
               className={
                 s.id === "hook"
-                  ? "!min-h-[48vh] !justify-start !pt-[10vh]"
+                  ? "!min-h-[44vh] !justify-start !pt-[8vh]"
                   : s.id === "problema" ||
                       s.id === "consecuencia" ||
                       s.id === "solucion" ||
