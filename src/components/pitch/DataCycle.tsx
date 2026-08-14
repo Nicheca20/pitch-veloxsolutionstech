@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 const STAGES = [
-  { label: "Descubrir", pos: "left-1/2 top-[8%] -translate-x-1/2 -translate-y-1/2", dot: "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2" },
-  { label: "Definir", pos: "left-[92%] top-1/2 -translate-x-1/2 -translate-y-1/2", dot: "left-0 top-1/2 -translate-x-1/2 -translate-y-1/2" },
-  { label: "Diseñar", pos: "left-1/2 top-[92%] -translate-x-1/2 -translate-y-1/2", dot: "top-0 left-1/2 -translate-x-1/2 -translate-y-1/2" },
-  { label: "Entregar", pos: "left-[8%] top-1/2 -translate-x-1/2 -translate-y-1/2", dot: "right-0 top-1/2 translate-x-1/2 -translate-y-1/2" },
+  { label: "Descubrir", x: 50, y: 8, card: "left-1/2 bottom-5 -translate-x-1/2" },
+  { label: "Definir", x: 92, y: 50, card: "left-5 top-1/2 -translate-y-1/2" },
+  { label: "Diseñar", x: 50, y: 92, card: "left-1/2 top-5 -translate-x-1/2" },
+  { label: "Entregar", x: 8, y: 50, card: "right-5 top-1/2 -translate-y-1/2" },
 ];
 
 export function DataCycle() {
@@ -142,20 +142,25 @@ export function DataCycle() {
         return (
           <div
             key={stage.label}
-            className={`absolute z-20 ${stage.pos}`}
+            className="absolute z-20 h-0 w-0"
             style={{
+              left: `${stage.x}%`,
+              top: `${stage.y}%`,
               opacity: local,
-              transform: `translate(${stage.pos.includes("-translate-x-1/2") ? "-50%" : stage.pos.includes("translate-x-1/2") ? "50%" : "0"}, ${stage.pos.includes("-translate-y-1/2") ? "-50%" : stage.pos.includes("translate-y-1/2") ? "50%" : "0"}) scale(${0.85 + local * 0.15})`,
-              transition: "opacity 600ms ease-out, transform 600ms ease-out",
+              transition: "opacity 600ms ease-out",
             }}
           >
-            <div className="relative rounded-lg border border-[var(--force)]/40 bg-[var(--galaxy)]/80 px-5 py-3 text-center shadow-[0_0_26px_-4px_var(--velox)] backdrop-blur-md">
+            <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--force)] shadow-[0_0_14px_var(--aura)]" />
+            <div
+              className={`absolute whitespace-nowrap rounded-lg border border-[var(--force)]/40 bg-[var(--galaxy)]/80 px-5 py-3 text-center shadow-[0_0_26px_-4px_var(--velox)] backdrop-blur-md ${stage.card}`}
+              style={{
+                transform: `${stage.card.includes("-translate-x-1/2") ? "translateX(-50%) " : ""}${stage.card.includes("-translate-y-1/2") ? "translateY(-50%) " : ""}scale(${0.85 + local * 0.15})`,
+                transition: "transform 600ms ease-out",
+              }}
+            >
               <span className="text-[clamp(0.85rem,2vw,1.1rem)] font-semibold uppercase tracking-[0.12em] text-[var(--ice)]">
                 {stage.label}
               </span>
-              <span
-                className={`absolute h-2.5 w-2.5 rounded-full bg-[var(--force)] shadow-[0_0_14px_var(--aura)] ${stage.dot}`}
-              />
             </div>
           </div>
         );
