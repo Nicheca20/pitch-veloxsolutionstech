@@ -202,26 +202,85 @@ function Pitch() {
     return () => window.removeEventListener("keydown", onKey);
   }, [goTo, step, smoothScrollTo]);
 
-  // Click en cualquier parte vacía: avanza. Click derecho: retrocede.
+  // Click: avanza un paso. Mantener presionado: avanza de forma continua
+  // al mismo ritmo (1 % del viewport cada ~120 ms). Click derecho: retrocede.
   useEffect(() => {
     const interactive = (t: EventTarget | null) =>
       !!(t as HTMLElement | null)?.closest?.("a,button,input,textarea,select,[role='button']");
+
+    let holdTimer: number | null = null;
+    let raf = 0;
+    let holding = false;
+    let last = 0;
+
+    const stopHold = () => {
+      if (holdTimer !== null) window.clearTimeout(holdTimer);
+      holdTimer = null;
+      if (raf) cancelAnimationFrame(raf);
+      raf = 0;
+      holding = false;
+    };
+
+    const startHold = (dir: 1 | -1) => {
+      holding = true;
+      if (tween.current !== null) {
+        cancelAnimationFrame(tween.current);
+        tween.current = null;
+      }
+      last = performance.now();
+      const loop = (now: number) => {
+        const dt = now - last;
+        last = now;
+        const vh = window.innerHeight;
+        const max = document.body.scrollHeight - vh;
+        // misma velocidad que los pasos: 1 % del viewport cada 120 ms
+        const delta = dir * vh * 0.01 * (dt / 120);
+        window.scrollTo(0, Math.max(0, Math.min(max, window.scrollY + delta)));
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+    };
+
+    const onDown = (e: MouseEvent) => {
+      if (interactive(e.target)) return;
+      if (e.button !== 0 && e.button !== 2) return;
+      const dir: 1 | -1 = e.button === 2 ? -1 : 1;
+      holdTimer = window.setTimeout(() => startHold(dir), 280);
+    };
+    const onUp = () => {
+      const wasHolding = holding;
+      stopHold();
+      return wasHolding;
+    };
     const onClick = (e: MouseEvent) => {
       if (interactive(e.target)) return;
+      if (holding) return;
       step(1);
     };
     const onCtx = (e: MouseEvent) => {
       if (interactive(e.target)) return;
       e.preventDefault();
+      if (holding) return;
       step(-1);
     };
+
+    window.addEventListener("mousedown", onDown);
+    window.addEventListener("mouseup", onUp);
+    window.addEventListener("mouseleave", stopHold);
+    window.addEventListener("blur", stopHold);
     window.addEventListener("click", onClick);
     window.addEventListener("contextmenu", onCtx);
     return () => {
+      stopHold();
+      window.removeEventListener("mousedown", onDown);
+      window.removeEventListener("mouseup", onUp);
+      window.removeEventListener("mouseleave", stopHold);
+      window.removeEventListener("blur", stopHold);
       window.removeEventListener("click", onClick);
       window.removeEventListener("contextmenu", onCtx);
     };
   }, [step]);
+
 
 
 
