@@ -21,7 +21,7 @@ export function VeleiroLogo() {
   return (
     <div ref={ref} className="mt-8">
       <div
-        className="flex items-center justify-center gap-4 md:gap-6"
+        className="flex items-center justify-start gap-4 md:gap-6"
         style={{
           opacity: on ? 1 : 0,
           transform: on ? "translateY(0)" : "translateY(8px)",

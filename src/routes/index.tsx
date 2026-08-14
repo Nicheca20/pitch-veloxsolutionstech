@@ -226,7 +226,7 @@ function Pitch() {
                  franja de ecosistema y mantener el hilo conductor. */
               className={
                 s.id === "hook"
-                  ? "!min-h-[38vh] !justify-start !pt-[6vh]"
+                  ? "!min-h-[55vh] !justify-start !pt-[10vh]"
                   : s.id === "problema" ||
                       s.id === "consecuencia" ||
                       s.id === "solucion" ||
