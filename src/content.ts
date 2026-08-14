@@ -54,7 +54,6 @@ export const sections: Section[] = [
     index: "05",
     kicker: "Cómo funciona",
     title: "Un activo de datos único.",
-    bullets: ["Descubrir", "Definir", "Diseñar", "Entregar"],
     body: "Flujos pre-construidos, gobernanza y human-in-the-loop en cada agente.",
     metrics: [{ value: 60, suffix: "%", label: "Menos esfuerzo de análisis funcional" }],
   },
