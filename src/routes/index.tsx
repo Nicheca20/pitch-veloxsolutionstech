@@ -260,6 +260,7 @@ function Pitch() {
                   <CapabilityWheel />
                 ) : undefined
               }
+              align={s.id === "cta" ? "start" : undefined}
               /* Ritmo vertical ajustado: en móvil/tablet las secciones se
                  compactan para evitar huecos enormes al scrollear. */
               className={
