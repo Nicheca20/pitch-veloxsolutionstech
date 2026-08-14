@@ -144,11 +144,20 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
   const model = useMemo(() => {
     const m = scene.clone(true);
 
-    // orientar: el eje horizontal más largo es el fuselaje → alinearlo con Z
-    const raw = new THREE.Box3().setFromObject(m);
-    const rs = new THREE.Vector3();
-    raw.getSize(rs);
-    if (rs.x > rs.z) m.rotation.y = Math.PI / 2;
+    // orientar: el eje más largo es el fuselaje → alinearlo con Z
+    const measure = () => {
+      m.updateWorldMatrix(true, true);
+      return new THREE.Box3().setFromObject(m, true).getSize(new THREE.Vector3());
+    };
+    let rs = measure();
+    if (rs.y > rs.x && rs.y > rs.z) {
+      m.rotation.x = -Math.PI / 2; // modelo Z-up: lo acostamos
+      rs = measure();
+    }
+    if (rs.x > rs.z) {
+      m.rotation.y += Math.PI / 2;
+      rs = measure();
+    }
 
     const wrap = new THREE.Group();
     wrap.add(m);
