@@ -172,17 +172,6 @@ function StartLights({ phase }: { phase: MutableRefObject<number> }) {
 function TrackMarks({ y = -0.95 }: { y?: number }) {
   return (
     <group position={[0, y, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      {/* línea de largada */}
-      <mesh position={[0, -7, 0]}>
-        <planeGeometry args={[10, 0.35]} />
-        <meshBasicMaterial
-          color={ICE}
-          transparent
-          opacity={0.55}
-          depthWrite={false}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
       {/* carriles del pit */}
       {[-3.2, 3.2].map((x) => (
         <mesh key={x} position={[x, 0, 0]}>
