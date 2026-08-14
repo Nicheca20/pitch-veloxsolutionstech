@@ -12,8 +12,8 @@ const ICE = "#EEEDFE";
 
 /** Punto de focus de la sección 6 (idéntico al del cubo verde). */
 export const JET_FOCUS = new THREE.Vector3(0, 0, -140);
-/** Ventana de scroll (índice de sección) de la sección 6. */
-export const JET_WINDOW: [number, number] = [7.05, 7.95];
+/** Ventana de scroll (índice de sección) de la sección de El Cronista. */
+export const JET_WINDOW: [number, number] = [7.0, 8.0];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -197,12 +197,27 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
           mat.emissiveIntensity = 0.12;
           mat.roughness = Math.min(mat.roughness, 0.7);
           mat.toneMapped = true;
+          mat.transparent = true; // permite el fundido de entrada/salida
+          mat.depthWrite = true;
           mat.needsUpdate = true;
         });
       }
     });
     return wrap;
   }, [scene]);
+
+  /** Materiales cacheados para el fundido (sin traverse por frame). */
+  const fadeMats = useMemo(() => {
+    const list: THREE.Material[] = [];
+    model.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      mats.forEach((m) => m && list.push(m));
+    });
+    return list;
+  }, [model]);
+  const opacity = useRef(0);
 
   /** Fase suavizada: seguimiento sin overshoot ni vibración en umbrales. */
   const phase = useRef<number | null>(null);
@@ -219,45 +234,50 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
       return;
     }
 
-    // seguimiento exponencial con delta capado y factor alto para evitar rebote
+    // seguimiento exponencial con delta capado (más lento: animación apreciable)
     const dt = Math.min(delta, 1 / 30);
-    const k = 12;
-    const follow = 1 - Math.exp(-k * dt);
+    const follow = 1 - Math.exp(-7 * dt);
     if (phase.current === null) phase.current = target;
     phase.current += (target - phase.current) * follow;
     const s = clamp01(phase.current);
 
-    // curvas compuestas C1: inicio suave, transición continua, salida suave
-    // 0..0.35: asoma desde el fondo y sube a la pista
-    // 0.35..0.70: transición al despegue
-    // 0.70..1.00: asciende y sale de plano
-    const t0 = smoother(s / 0.35);
-    const t1 = smoother(clamp01((s - 0.30) / 0.45));
-    const t2 = smoother(clamp01((s - 0.78) / 0.22));
+    // TIEMPO 1 (0.00–0.45): entrada heroica desde el horizonte hacia la cámara
+    // TIEMPO 2 (0.45–0.68): se luce, grande y centrado, con banqueo suave
+    // TIEMPO 3 (0.68–1.00): despegue ascendente y salida limpia hacia arriba
+    const t1 = smoother(clamp01(s / 0.45));
+    const hold = smoother(clamp01((s - 0.45) / 0.23));
+    const t3 = smoother(clamp01((s - 0.68) / 0.32));
 
-    // posición Z: acercamiento suave desde lejos → paso → salida (moderada,
-    // para que el avión siga en cuadro mientras despega)
-    const zApproach = THREE.MathUtils.lerp(34, 14, t0);
-    const zExit = t2 * t2 * -26;
+    // Z: llega muy cerca de cámara (plano protagonista) y luego se aleja subiendo
+    const z = THREE.MathUtils.lerp(46, 2.4, t1) + t3 * t3 * -22;
 
-    // posición Y: empieza bajo el encuadre, asoma, luego despega ascendente
-    const yApproach = THREE.MathUtils.lerp(-5.2, -0.6, t0);
-    const yLift = t1 * 5.2 + t2 * t2 * 3.0;
+    // Y: nace bajo el encuadre, se centra y luego asciende al cielo
+    const y = THREE.MathUtils.lerp(-6.5, -0.5, t1) + hold * 0.3 + t3 * t3 * 16;
 
-    // rotación X: nariz se levanta progresivamente durante el despegue
-    const pitch = -t1 * 0.36;
+    // nariz: neutra al acercarse, se levanta en el despegue
+    const pitch = -t3 * 0.55;
 
+    // banqueo: sutil al lucirse, se endereza al ascender
+    const roll = Math.sin(s * Math.PI * 1.6) * 0.22 * hold * (1 - t3) + t3 * 0.06;
+    const yaw = 0.12 * hold * (1 - t3);
 
-    // postquemador: enciende suavemente y se mantiene durante el despegue
-    const targetPower = clamp01(s / 0.22) * (0.35 + t0 * 0.65);
-    power.current += (targetPower - power.current) * (1 - Math.exp(-14 * dt));
+    // postquemador: enciende al entrar y va al máximo en el despegue
+    const targetPower = clamp01(s / 0.18) * (0.45 + t1 * 0.25 + t3 * 0.3);
+    power.current += (targetPower - power.current) * (1 - Math.exp(-10 * dt));
+
+    // fundido de extremos: nunca hay pop
+    const targetOpacity = smooth(clamp01(s / 0.1)) * (1 - smooth(clamp01((s - 0.9) / 0.1)));
+    opacity.current += (targetOpacity - opacity.current) * (1 - Math.exp(-10 * dt));
+    for (let i = 0; i < fadeMats.length; i++) {
+      const m = fadeMats[i] as THREE.MeshStandardMaterial | undefined;
+      if (m) m.opacity = opacity.current;
+    }
 
     if (craft.current) {
-      craft.current.position.z = zApproach + zExit;
-      craft.current.position.y = yApproach + yLift;
-      craft.current.rotation.x = pitch;
-      // leve balanceo natural, muy sutil y sin saltos de frecuencia
-      craft.current.rotation.z = Math.sin(s * Math.PI * 2.2) * 0.02 * t1;
+      craft.current.position.set(0, y, z);
+      craft.current.rotation.set(pitch, yaw, roll);
+      const grow = THREE.MathUtils.lerp(0.9, 1, t1);
+      craft.current.scale.setScalar(grow);
     }
   });
 

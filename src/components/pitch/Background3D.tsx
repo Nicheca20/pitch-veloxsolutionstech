@@ -66,7 +66,8 @@ const FOCUS: Key[] = [
   { at: 6, v: [0, 0, -70] },
   { at: 6.5, v: [0, 0, -95] }, // sección 07 (Cencor) → carro
   { at: 7, v: [0, 0.6, -115] },
-  { at: 7.5, v: [0, 1.2, -140] }, // sección 08 (Cronista) → avión
+  { at: 7.4, v: [0, 1.2, -140] }, // sección 08 (Cronista) → avión
+  { at: 8.0, v: [0, 1.8, -142] },
   { at: 9, v: [0, 1.2, -190] },
 ];
 
@@ -81,7 +82,8 @@ const OFFSET: Key[] = [
   { at: 6, v: [0, 0.6, 14] },
   { at: 6.5, v: [0, 0.8, 14] }, // carro
   { at: 7, v: [0, 0.2, 15] },
-  { at: 7.5, v: [0, -0.6, 14] }, // avión
+  { at: 7.4, v: [0, -0.4, 13] }, // avión: plano protagonista
+  { at: 8.0, v: [0, 0.4, 15] },
   { at: 9, v: [0, 1.4, 16] },
 ];
 
