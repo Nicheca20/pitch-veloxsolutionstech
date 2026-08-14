@@ -71,8 +71,8 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
 /* ------------------------------------------------------------------- Estela */
 /** Toberas: mismas posiciones que los conos del postquemador. */
 const NOZZLES: [number, number, number][] = [
-  [-0.3, 0.15, 3.6],
-  [0.3, 0.15, 3.6],
+  [-0.3, -0.05, 3.6],
+  [0.3, -0.05, 3.6],
 ];
 
 
