@@ -213,7 +213,7 @@ function Pitch() {
                   : s.id === "solucion"
                     ? "py-[10vh] min-h-[170vh]"
                     : s.id === "diferencial"
-                      ? "py-[10vh] min-h-[190vh]"
+                      ? "py-[10vh] min-h-[170vh]"
                     : s.id === "cronista"
                       ? "min-h-[230vh]"
                       : undefined
