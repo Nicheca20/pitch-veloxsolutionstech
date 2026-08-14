@@ -7,6 +7,8 @@ import { LogoStrip } from "@/components/pitch/LogoStrip";
 import { CencorUnits } from "@/components/pitch/CencorUnits";
 import { ClientLogo } from "@/components/pitch/ClientLogo";
 import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
+import VeloxBackground from "@/components/pitch/VeloxBackground";
+
 import cronista from "@/assets/cronista.png.asset.json";
 import adium from "@/assets/adium.png.asset.json";
 
