@@ -196,7 +196,9 @@ function Pitch() {
                   ? "py-[10vh] min-h-[170vh]"
                   : s.id === "solucion"
                     ? "py-[10vh] min-h-[170vh]"
-                    : undefined
+                    : s.id === "cronista"
+                      ? "min-h-[230vh]"
+                      : undefined
               }
             />
             {s.id === "cencor" && <CencorUnits />}
