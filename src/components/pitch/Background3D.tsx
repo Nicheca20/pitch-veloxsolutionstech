@@ -181,7 +181,7 @@ function SpeedGrid({ section }: { section: Ref }) {
             float cell = 2.0;
             float x = vLocal.x / cell;
             float z = (vLocal.y + uRun) / cell;
-            float g = max(line(x, 1.1), line(z, 1.4));
+            float g = max(line(x, 0.8), line(z, 1.0));
             if (g < 0.01) discard;
 
             float depth = clamp(abs(vLocal.y) / 190.0, 0.0, 1.0);
@@ -190,8 +190,9 @@ function SpeedGrid({ section }: { section: Ref }) {
             float glow = (1.0 - smoothstep(0.15, 1.0, depth)) * (1.0 - side * side);
             glow += (1.0 - smoothstep(0.0, 0.35, depth)) * 0.5;
             vec3 col = mix(uNear, uFar, smoothstep(0.0, 0.6, depth));
-            float a = g * glow * 0.85 * uIntensity;
-            gl_FragColor = vec4(col * (0.7 + glow * 1.1), a);
+            float nearFade = smoothstep(6.0, 26.0, length(vLocal.xy));
+            float a = g * glow * nearFade * 0.42 * uIntensity;
+            gl_FragColor = vec4(col * (0.6 + glow * 0.7), a);
           }
         `,
       }),
@@ -375,7 +376,7 @@ function ParticleField({ section, count = 26000 }: { section: Ref; count?: numbe
     o.position.y = Math.sin(clock.elapsedTime * 0.15) * 0.6;
     o.scale.setScalar(1 + p * 0.14);
     if (mat.current) {
-      mat.current.size = 0.22 * (1 + (k - 1) * 0.5 + p * 1.6);
+      mat.current.size = 0.11 * (1 + (k - 1) * 0.5 + p * 1.6);
       mat.current.opacity = Math.min(1, 0.85 + p * 0.15);
     }
   });
@@ -384,7 +385,7 @@ function ParticleField({ section, count = 26000 }: { section: Ref; count?: numbe
     <points ref={ref} geometry={geometry} frustumCulled={false}>
       <pointsMaterial
         ref={mat}
-        size={0.22}
+        size={0.11}
         map={sprite}
         alphaMap={sprite}
         vertexColors
@@ -443,14 +444,14 @@ function AccentStreaks({ section, count = 1600 }: { section: Ref; count?: number
       if (arr[i0]! > 14) arr[i0] = arr[i0]! - (depth + Math.random() * 40);
     }
     attr.needsUpdate = true;
-    if (mat.current) mat.current.size = 0.9 * (1 + (k - 1) * 0.6);
+    if (mat.current) mat.current.size = 0.5 * (1 + (k - 1) * 0.6);
   });
 
   return (
     <points ref={ref} geometry={geometry} frustumCulled={false}>
       <pointsMaterial
         ref={mat}
-        size={0.9}
+        size={0.5}
         map={sprite}
         alphaMap={sprite}
         vertexColors
@@ -516,13 +517,13 @@ function DynamicBloom({ section }: { section: Ref }) {
   useFrame(({ clock }) => {
     const k = tunnelIntensity(section.current);
     const p = pulse(clock.elapsedTime);
-    if (ref.current) ref.current.intensity = 0.85 + (k - 1) * 0.5 + p * 1.4;
+    if (ref.current) ref.current.intensity = 0.62 + (k - 1) * 0.4 + p * 1.2;
   });
   return (
     <Bloom
       ref={ref as never}
-      intensity={0.85}
-      luminanceThreshold={0.32}
+      intensity={0.62}
+      luminanceThreshold={0.42}
       luminanceSmoothing={0.4}
       mipmapBlur
     />
