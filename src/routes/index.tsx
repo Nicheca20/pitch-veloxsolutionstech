@@ -5,6 +5,7 @@ import { Section } from "@/components/pitch/Section";
 import { NavDots } from "@/components/pitch/NavDots";
 import { LogoStrip } from "@/components/pitch/LogoStrip";
 import { SolutionTimeline } from "@/components/pitch/SolutionTimeline";
+import { ProblemFlow } from "@/components/pitch/ProblemFlow";
 import { CencorUnits } from "@/components/pitch/CencorUnits";
 import { ClientLogo } from "@/components/pitch/ClientLogo";
 import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
@@ -179,7 +180,10 @@ function Pitch() {
             <Section
               data={s}
               first={i === 0}
-              afterTitle={s.id === "solucion" ? <VeleiroLogo /> : undefined}
+              afterTitle={
+                s.id === "solucion" ? <VeleiroLogo /> : s.id === "problema" ? <ProblemFlow /> : undefined
+              }
+              className={s.id === "problema" ? "items-start py-[12vh] min-h-[145vh]" : undefined}
             />
             {s.id === "problema" && <SolutionTimeline />}
             {s.id === "cencor" && <CencorUnits />}

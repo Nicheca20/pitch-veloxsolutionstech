@@ -206,3 +206,19 @@ html {
     -webkit-text-fill-color: #000 !important;
   }
 }
+
+/* Parpadeo sutil de error para el nodo bloqueado del flujo de problema */
+@keyframes pulse-error {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(232, 76, 136, 0.25);
+    border-color: color-mix(in oklab, var(--force) 40%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 18px 4px rgba(232, 76, 136, 0.18);
+    border-color: color-mix(in oklab, var(--force) 75%, transparent);
+  }
+}
+
+@utility animate-pulse-error {
+  animation: pulse-error 2.2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
