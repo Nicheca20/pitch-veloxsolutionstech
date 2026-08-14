@@ -106,9 +106,15 @@ export function ProblemFlow() {
           return (
             <div
               key={step.index}
-              className={`relative grid grid-cols-1 items-center gap-4 pl-14 md:grid-cols-2 md:pl-0 ${
-                on ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              } transition-all duration-600 ease-out`}
+              className={`relative grid grid-cols-1 items-center gap-4 pl-14 md:grid-cols-2 md:pl-0 transition-all duration-600 ease-out ${
+                isLast
+                  ? on
+                    ? "opacity-60 translate-y-0"
+                    : "opacity-0 translate-y-4"
+                  : on
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4"
+              }`}
               style={{ transitionDelay: `${i * 70}ms` }}
             >
               {/* Nodo */}
