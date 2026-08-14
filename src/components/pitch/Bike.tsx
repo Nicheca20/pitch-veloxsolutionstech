@@ -165,8 +165,14 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
         mat.needsUpdate = true;
       });
     });
+    // ruedas reales del GLB (si el modelo las trae como nodos separados)
+    wheels.current = [];
+    wrap.traverse((o) => {
+      if (/wheel|rueda|tire|tyre|rim|disc/i.test(o.name)) wheels.current.push(o);
+    });
     return wrap;
   }, [scene]);
+
 
   useFrame(({ clock }, dt) => {
     const g = root.current;
