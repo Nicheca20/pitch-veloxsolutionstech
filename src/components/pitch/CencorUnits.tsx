@@ -33,9 +33,7 @@ export function CencorUnits() {
       className="pointer-events-none absolute bottom-8 left-4 z-10 md:bottom-12 md:left-16 lg:left-24"
     >
       <p
-        className={`text-[10px] uppercase tracking-[0.34em] text-foreground/60 transition-all duration-700 ${
-          on ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
-        }`}
+        className={`text-[10px] uppercase tracking-[0.34em] text-foreground/60 transition-opacity duration-700 ${on ? "opacity-100" : "opacity-0"}`}
       >
         Grupo Cencor
       </p>
@@ -47,7 +45,6 @@ export function CencorUnits() {
             style={{
               transitionDelay: `${300 + i * 180}ms`,
               opacity: on ? 1 : 0,
-              transform: on ? "translateY(0)" : "translateY(8px)",
               filter: on
                 ? "drop-shadow(0 0 14px rgba(10,8,32,0.7))"
                 : "drop-shadow(0 0 14px rgba(10,8,32,0.7))",
