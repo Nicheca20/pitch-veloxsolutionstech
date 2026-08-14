@@ -44,11 +44,11 @@ export function DiferencialOverlay({ section }: { section: MutableRefObject<numb
       aria-hidden="true"
     >
       <div className="text-veil max-w-4xl text-center">
-        <p className="text-[clamp(1.1rem,2.2vw,1.65rem)] leading-relaxed text-foreground/90">
+        <p className="text-[clamp(1.1rem,2.2vw,1.65rem)] font-medium leading-relaxed text-foreground">
           Nuestros agentes detectan upsell con las soluciones implementadas/producción, eso hace que
           constantemente detectemos oportunidades de consumo de créditos de AgentForce/IA.
         </p>
-        <p className="mt-6 text-[clamp(1.1rem,2.2vw,1.65rem)] leading-relaxed text-foreground/90">
+        <p className="mt-6 text-[clamp(1.1rem,2.2vw,1.65rem)] font-medium leading-relaxed text-foreground">
           Replicamos nuestros agentes en diferentes industrias, generando una capa base con la que
           avanzamos rápidamente en semanas.
         </p>
