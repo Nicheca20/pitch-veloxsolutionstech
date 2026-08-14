@@ -144,20 +144,20 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
   const model = useMemo(() => {
     const m = scene.clone(true);
 
-    // el GLB trae un disco/plano de estudio: lo eliminamos antes de medir
+    // el GLB trae un disco/plano de estudio y un domo de fondo: los eliminamos
     const junk: THREE.Object3D[] = [];
+    m.updateWorldMatrix(true, true);
+    const full = new THREE.Box3().setFromObject(m);
+    const fullSize = full.getSize(new THREE.Vector3());
     m.traverse((o) => {
       const mesh = o as THREE.Mesh;
       if (!mesh.isMesh || !mesh.geometry) return;
-      mesh.geometry.computeBoundingBox();
-      const bb = mesh.geometry.boundingBox;
-      if (!bb) return;
-      const dx = bb.max.x - bb.min.x;
-      const dy = bb.max.y - bb.min.y;
-      const dz = bb.max.z - bb.min.z;
-      const dims = [dx, dy, dz].sort((a, b) => a - b);
-      // planos/discos de estudio o domos de fondo: muy chatos o desmesurados
-      if (dims[0]! < 0.03 * dims[2]! || dx * dz > 350) junk.push(mesh);
+      const wb = new THREE.Box3().setFromObject(mesh);
+      const d = wb.getSize(new THREE.Vector3());
+      const dims = [d.x, d.y, d.z].sort((a, b) => a - b);
+      const flat = dims[0]! < 0.04 * dims[2]!;
+      const huge = dims[2]! > 0.85 * Math.max(fullSize.x, fullSize.z) && dims[1]! < 0.25 * dims[2]!;
+      if (flat || huge) junk.push(mesh);
     });
     junk.forEach((o) => o.parent?.remove(o));
 
