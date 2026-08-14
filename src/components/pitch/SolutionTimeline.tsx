@@ -23,7 +23,7 @@ const PHASES = [
 ] as const;
 
 export function SolutionTimeline() {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [fill, setFill] = useState(0);
   const [visible, setVisible] = useState<boolean[]>([false, false, false]);
   const nodes = useRef<(HTMLLIElement | null)[]>([]);
@@ -68,23 +68,16 @@ export function SolutionTimeline() {
   }, []);
 
   return (
-    <section
-      ref={ref}
-      id="asi-lo-resolvemos"
-      className="relative z-10 flex min-h-screen items-center px-6 py-24 md:px-16 lg:px-24"
-    >
-      <div className="relative mx-auto w-full max-w-5xl">
-        <div className="text-veil relative mb-16 max-w-[46rem]">
-          <div className="mb-5 flex items-center gap-3">
-            <span className="h-px w-8 bg-velox-gradient" />
-            <span className="text-[11px] uppercase tracking-[0.28em] text-foreground/55">
-              Así lo resolvemos
-            </span>
-          </div>
-          <h2 className="text-balance text-[clamp(2rem,5.2vw,4.4rem)] font-bold leading-[1.02] tracking-[-0.03em]">
-            Contexto que no se pierde en ninguna fase.
-          </h2>
+    <div ref={ref} id="asi-lo-resolvemos" className="relative mx-auto w-full max-w-5xl">
+      <div className="text-veil relative mb-14 flex flex-col items-center text-center">
+        <div className="mb-4 flex items-center gap-3">
+          <span className="h-px w-8 bg-velox-gradient" />
+          <span className="text-[11px] uppercase tracking-[0.28em] text-foreground/55">
+            Así lo resolvemos
+          </span>
+          <span className="h-px w-8 bg-velox-gradient" />
         </div>
+      </div>
 
         <div className="relative">
           {/* Línea central */}
@@ -142,8 +135,7 @@ export function SolutionTimeline() {
               );
             })}
           </ul>
-        </div>
       </div>
-    </section>
+    </div>
   );
 }

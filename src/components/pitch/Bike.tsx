@@ -11,9 +11,9 @@ const FORCE = "#7F77DD";
 const ICE = "#EEEDFE";
 
 /** Punto de focus de la sección 7 (idéntico al del cubo amarillo). */
-export const BIKE_FOCUS = new THREE.Vector3(0, 0, -140);
+export const BIKE_FOCUS = new THREE.Vector3(0, 0, -55);
 /** Ventana de scroll (índice de sección) de la sección 7. */
-export const BIKE_WINDOW: [number, number] = [5.55, 6.6];
+export const BIKE_WINDOW: [number, number] = [5.05, 5.95];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);

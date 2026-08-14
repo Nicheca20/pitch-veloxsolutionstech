@@ -72,7 +72,7 @@ export function ProblemFlow() {
   }, [fill]);
 
   return (
-    <div ref={ref} className="relative mt-6 w-full max-w-xl md:min-h-[85vh]">
+    <div ref={ref} className="relative mx-auto w-full max-w-xl md:min-h-[85vh]">
       <div className="relative flex flex-col justify-between md:min-h-[85vh] gap-4 md:gap-5">
         {/* Línea central */}
         <div className="absolute left-6 top-0 h-full w-px md:left-1/2 md:-translate-x-1/2">

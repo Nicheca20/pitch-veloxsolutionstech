@@ -11,9 +11,9 @@ const FORCE = "#7F77DD";
 const ICE = "#EEEDFE";
 
 /** Punto de focus de la sección 5 (idéntico al del cubo rojo). */
-export const CAR_FOCUS = new THREE.Vector3(0, 0, -55);
+export const CAR_FOCUS = new THREE.Vector3(0, 0, -95);
 /** Ventana de scroll (índice de sección) de la sección 5. */
-export const CAR_WINDOW: [number, number] = [3.6, 4.5];
+export const CAR_WINDOW: [number, number] = [6.05, 6.95];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
