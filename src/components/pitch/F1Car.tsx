@@ -249,6 +249,21 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
         mesh.castShadow = false;
         mesh.receiveShadow = false;
         mesh.frustumCulled = false;
+        // materiales propios para poder atenuar la opacidad con el scroll
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        mesh.material = Array.isArray(mesh.material)
+          ? mats.map((mm) => {
+              const c = (mm as THREE.Material).clone();
+              c.transparent = true;
+              c.depthWrite = true;
+              return c;
+            })
+          : (() => {
+              const c = (mats[0] as THREE.Material).clone();
+              c.transparent = true;
+              c.depthWrite = true;
+              return c;
+            })();
         // el GLB trae un piso plano de estudio: lo ocultamos
         mesh.geometry.computeBoundingBox();
         const bb = mesh.geometry.boundingBox;
@@ -266,13 +281,22 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
 
   useEffect(() => () => void model.traverse(() => {}), [model]);
 
+  const setOpacity = (v: number) => {
+    model.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      mats.forEach((mm) => {
+        (mm as THREE.Material).opacity = v;
+      });
+    });
+  };
+
   useFrame(() => {
     const g = root.current;
     if (!g) return;
     const s = carPhase(section.current);
     phase.current = s;
-    // sigue vivo un poco antes de la ventana (entra desde el fondo) pero se apaga
-    // en cuanto termina, para no coincidir nunca con el avión
     // estrictamente dentro de su propia sección: nunca invade la 6 ni la 4
     const live = section.current >= CAR_WINDOW[0] && section.current <= CAR_WINDOW[1];
     g.visible = live;
@@ -282,21 +306,27 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
       return;
     }
 
-    // entrada desde el fondo → parada → salida acelerando por la pista
-    const enter = smooth(clamp01(s / 0.3));
-    const exit = smooth(clamp01((s - 0.68) / 0.32));
-    const z = THREE.MathUtils.lerp(-28, 0, enter) + exit * 120;
-    const stopped = clamp01((s - 0.3) / 0.06) * (1 - clamp01((s - 0.68) / 0.06));
+    // acercamiento continuo desde el fondo → parada (pit) → salida acelerando
+    const approach = smooth(clamp01(s / 0.42));
+    const exit = smooth(clamp01((s - 0.7) / 0.3));
+    const z = THREE.MathUtils.lerp(-120, 0, approach) + exit * exit * 150;
+    const stopped = clamp01((s - 0.42) / 0.08) * (1 - clamp01((s - 0.7) / 0.06));
 
-    pit.current = stopped;
-    spin.current = Math.max(1 - stopped, exit);
+    // fundido en ambos extremos: nunca aparece ni desaparece de golpe
+    const fade = smooth(clamp01(s / 0.14)) * smooth(clamp01((1 - s) / 0.12));
+    setOpacity(fade);
+    const scale = THREE.MathUtils.lerp(0.55, 1, approach);
+    g.scale.setScalar(scale);
 
+    pit.current = stopped * fade;
+    spin.current = Math.max(1 - stopped, exit) * fade;
 
     if (car.current) {
       car.current.position.z = z;
       car.current.position.y = Math.sin(s * 40) * 0.015 * (1 - stopped);
     }
   });
+
 
   return (
     <group ref={root} position={CAR_FOCUS.toArray()} visible={false}>
