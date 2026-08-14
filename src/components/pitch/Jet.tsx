@@ -71,9 +71,10 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
 /* ------------------------------------------------------------------- Estela */
 /** Toberas: mismas posiciones que los conos del postquemador. */
 const NOZZLES: [number, number, number][] = [
-  [-0.28, 0.15, 3.6],
-  [0.28, 0.15, 3.6],
+  [-0.3, 0.15, 3.6],
+  [0.3, 0.15, 3.6],
 ];
+
 
 function Trail({ power }: { power: MutableRefObject<number> }) {
   const ref = useRef<THREE.Points>(null);
