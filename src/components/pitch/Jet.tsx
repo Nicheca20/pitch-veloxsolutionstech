@@ -168,6 +168,7 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     box.getSize(size);
     box.getCenter(center);
     const scale = 8 / Math.max(size.z, 0.001);
+    console.log('JETDBG', size.toArray(), scale);
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
     wrap.rotation.y = Math.PI; // la nariz del modelo mira a +Z: la giramos hacia -Z
