@@ -7,11 +7,12 @@ import github from "@/assets/github.png.asset.json";
 type Logo = { name: string; src: string; className: string };
 
 const logos: Logo[] = [
-  { name: "Salesforce", src: salesforce.url, className: "h-12 md:h-16" },
-  { name: "Agentforce", src: agentforce.url, className: "h-8 md:h-11" },
-  { name: "Slack", src: slack.url, className: "h-9 md:h-12" },
-  { name: "GitHub", src: github.url, className: "h-12 md:h-16" },
+  { name: "Salesforce", src: salesforce.url, className: "h-20 md:h-28" },
+  { name: "Agentforce", src: agentforce.url, className: "h-14 md:h-20" },
+  { name: "Slack", src: slack.url, className: "h-16 md:h-22" },
+  { name: "GitHub", src: github.url, className: "h-20 md:h-28" },
 ];
+
 
 export function LogoStrip() {
   const ref = useRef<HTMLElement>(null);
@@ -36,12 +37,13 @@ export function LogoStrip() {
       className="relative flex min-h-[46vh] flex-col items-center justify-center gap-12 px-6 py-16 md:px-16"
     >
       <p
-        className={`text-veil text-[11px] uppercase tracking-[0.34em] text-foreground/55 transition-all duration-700 ${
+        className={`text-veil text-[clamp(0.95rem,1.6vw,1.4rem)] font-semibold uppercase tracking-[0.28em] text-foreground/80 transition-all duration-700 ${
           on ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
         }`}
       >
         Construimos y trabajamos con el ecosistema
       </p>
+
 
       <ul className="flex flex-wrap items-center justify-center gap-x-16 gap-y-10 md:gap-x-24">
         {logos.map((l, i) => (
