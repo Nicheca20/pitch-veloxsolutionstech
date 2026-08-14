@@ -73,7 +73,7 @@ const NOZZLES: [number, number, number][] = [
 
 function Trail({ power }: { power: MutableRefObject<number> }) {
   const ref = useRef<THREE.Points>(null);
-  const count = 420;
+  const count = 140;
 
   const { geometry, seeds } = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -95,12 +95,15 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
     return { geometry: g, seeds };
   }, []);
 
+  const tick = useRef(0);
   useFrame(({ clock }) => {
     const o = ref.current;
     if (!o) return;
     const p = power.current;
     o.visible = p > 0.02;
     if (!o.visible) return;
+    (o.material as THREE.PointsMaterial).opacity = p * 0.8;
+    if (++tick.current % 2) return;
     const attr = geometry.attributes["position"] as THREE.BufferAttribute;
     const t = clock.elapsedTime;
     for (let i = 0; i < seeds.length; i++) {
@@ -116,7 +119,6 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
       );
     }
     attr.needsUpdate = true;
-    (o.material as THREE.PointsMaterial).opacity = p * 0.8;
   });
 
   return (
@@ -231,10 +233,7 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
         <primitive object={model} />
         <Afterburner power={power} />
         <Trail power={power} />
-        <pointLight position={[0, 2.5, 4]} intensity={90} distance={40} color={VELOX} />
-        <pointLight position={[7, 6, -8]} intensity={160} distance={50} color={FORCE} />
-        <pointLight position={[-8, 3, 6]} intensity={120} distance={50} color={ICE} />
-        <hemisphereLight args={[FORCE, VELOX, 1.2]} />
+        <pointLight position={[4, 5, -2]} intensity={140} distance={50} color={FORCE} />
       </group>
     </group>
   );
