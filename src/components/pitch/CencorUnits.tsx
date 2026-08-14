@@ -30,7 +30,7 @@ export function CencorUnits() {
     <div
       ref={ref}
       aria-label="Unidades de Grupo Cencor"
-      className="pointer-events-none absolute bottom-10 left-6 z-10 max-w-[26rem] md:left-16 lg:left-24"
+      className="pointer-events-none absolute bottom-10 left-6 z-10 max-w-[52rem] md:left-16 lg:left-24"
     >
       <p
         className={`text-[9px] uppercase tracking-[0.34em] text-foreground/40 transition-all duration-700 ${
@@ -39,7 +39,7 @@ export function CencorUnits() {
       >
         Grupo Cencor
       </p>
-      <ul className="mt-4 flex flex-wrap items-center gap-x-8 gap-y-4">
+      <ul className="mt-5 flex flex-wrap items-center gap-x-14 gap-y-6">
         {units.map((u, i) => (
           <li
             key={u.name}
@@ -54,7 +54,7 @@ export function CencorUnits() {
               src={u.src}
               alt={`Logo de ${u.name}`}
               loading="lazy"
-              className="h-5 w-auto object-contain grayscale md:h-6"
+              className="h-11 w-auto object-contain grayscale md:h-14"
             />
           </li>
         ))}
