@@ -5,6 +5,10 @@ import { Section } from "@/components/pitch/Section";
 import { NavDots } from "@/components/pitch/NavDots";
 import { LogoStrip } from "@/components/pitch/LogoStrip";
 import { CencorUnits } from "@/components/pitch/CencorUnits";
+import { ClientLogo } from "@/components/pitch/ClientLogo";
+import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
+import cronista from "@/assets/cronista.png.asset.json";
+import adium from "@/assets/adium.png.asset.json";
 
 
 import { ProgressBar } from "@/components/pitch/ProgressBar";
@@ -167,8 +171,18 @@ function Pitch() {
         </h1>
         {sections.map((s, i) => (
           <div key={s.id} className="relative">
-            <Section data={s} first={i === 0} />
+            <Section
+              data={s}
+              first={i === 0}
+              afterTitle={s.id === "solucion" ? <VeleiroLogo /> : undefined}
+            />
             {s.id === "cencor" && <CencorUnits />}
+            {s.id === "cronista" && (
+              <ClientLogo src={cronista.url} name="El Cronista" eyebrow="El Cronista" side="right" />
+            )}
+            {s.id === "adium" && (
+              <ClientLogo src={adium.url} name="Adium" eyebrow="Adium Pharma" side="right" />
+            )}
             {i === 0 && <LogoStrip />}
           </div>
         ))}

@@ -79,43 +79,104 @@ function Sparks({ active }: { active: MutableRefObject<number> }) {
 /* --------------------------------------------------------------- Semáforo */
 function StartLights({ phase }: { phase: MutableRefObject<number> }) {
   const lamps = useRef<(THREE.Mesh | null)[]>([]);
-  const colors = useMemo(
-    () => [new THREE.Color("#ff3b3b"), new THREE.Color("#ffb020"), new THREE.Color("#3bff8f")],
-    [],
-  );
+  const RED = useMemo(() => new THREE.Color("#ff2f2f"), []);
+  const GREEN = useMemo(() => new THREE.Color("#28ff92"), []);
+  const OFF = useMemo(() => new THREE.Color("#141130"), []);
+  const pairs = 5;
 
   useFrame(() => {
     const p = phase.current;
-    // rojo → ámbar → verde a lo largo de la parada
-    const stage = p < 0.45 ? 0 : p < 0.7 ? 1 : 2;
+    // rojas encendiéndose una a una durante el pit; verdes al acelerar
+    const lit = p < 0.68 ? Math.min(pairs, Math.floor(((p - 0.2) / 0.48) * pairs) + 1) : pairs;
+    const green = p >= 0.68;
     lamps.current.forEach((m, i) => {
       if (!m) return;
+      const col = Math.floor(i / 2);
+      const on = green || (col < lit && p > 0.2);
+      const c = green ? GREEN : RED;
       const mat = m.material as THREE.MeshStandardMaterial;
-      const on = i === stage;
-      mat.color.copy(on ? colors[i]! : new THREE.Color("#1a1733"));
-      mat.emissive.copy(on ? colors[i]! : new THREE.Color("#000000"));
-      mat.emissiveIntensity = on ? 2.4 : 0;
+      mat.color.copy(on ? c : OFF);
+      mat.emissive.copy(on ? c : OFF);
+      mat.emissiveIntensity = on ? 3.2 : 0;
     });
   });
 
+  const span = 9;
   return (
-    <group position={[5.4, 0.9, -1.8]}>
-      <mesh position={[0, -1.4, 0]}>
-        <boxGeometry args={[0.12, 2.6, 0.12]} />
-        <meshStandardMaterial color="#241f4a" />
-      </mesh>
-      {[0, 1, 2].map((i) => (
-        <mesh
-          key={i}
-          position={[0, 0.7 - i * 0.6, 0]}
-          ref={(el) => {
-            lamps.current[i] = el;
-          }}
-        >
-          <sphereGeometry args={[0.19, 14, 10]} />
-          <meshStandardMaterial color="#1a1733" />
+    <group position={[0, 0, 7]}>
+      {/* postes */}
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[(s * span) / 2, 1.4, 0]}>
+          <boxGeometry args={[0.28, 5.6, 0.28]} />
+          <meshStandardMaterial color="#241f4a" metalness={0.6} roughness={0.4} />
         </mesh>
       ))}
+      {/* viga horizontal */}
+      <mesh position={[0, 4.0, 0]}>
+        <boxGeometry args={[span + 0.6, 0.85, 0.4]} />
+        <meshStandardMaterial color="#1b1740" metalness={0.7} roughness={0.35} />
+      </mesh>
+      {/* pares de luces */}
+      {Array.from({ length: pairs * 2 }, (_, i) => {
+        const col = Math.floor(i / 2);
+        const row = i % 2;
+        const x = (col - (pairs - 1) / 2) * 1.5;
+        return (
+          <mesh
+            key={i}
+            position={[x, 4.18 - row * 0.36, 0.24]}
+            ref={(el) => {
+              lamps.current[i] = el;
+            }}
+          >
+            <sphereGeometry args={[0.15, 14, 10]} />
+            <meshStandardMaterial color="#141130" />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+/* ------------------------------------------------- Marcas de piso (largada) */
+function TrackMarks({ y = -0.95 }: { y?: number }) {
+  return (
+    <group position={[0, y, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      {/* línea de largada */}
+      <mesh position={[0, -7, 0]}>
+        <planeGeometry args={[10, 0.35]} />
+        <meshBasicMaterial
+          color={ICE}
+          transparent
+          opacity={0.55}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+      {/* carriles del pit */}
+      {[-3.2, 3.2].map((x) => (
+        <mesh key={x} position={[x, 0, 0]}>
+          <planeGeometry args={[0.14, 46]} />
+          <meshBasicMaterial
+            color={FORCE}
+            transparent
+            opacity={0.32}
+            depthWrite={false}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+      ))}
+      {/* caja de parada */}
+      <mesh position={[0, 0.6, 0]}>
+        <planeGeometry args={[5.2, 0.12]} />
+        <meshBasicMaterial
+          color={VELOX}
+          transparent
+          opacity={0.5}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
     </group>
   );
 }
@@ -244,6 +305,7 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
         <pointLight position={[0, 2.2, 1.5]} intensity={12} distance={12} color={VELOX} />
       </group>
       <StartLights phase={phase} />
+      <TrackMarks />
     </group>
   );
 }

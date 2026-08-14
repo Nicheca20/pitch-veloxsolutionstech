@@ -2,7 +2,15 @@ import { useEffect, useRef, useState } from "react";
 import type { Section as SectionData } from "@/content";
 import { MetricValue } from "./Metric";
 
-export function Section({ data, first }: { data: SectionData; first?: boolean }) {
+export function Section({
+  data,
+  first,
+  afterTitle,
+}: {
+  data: SectionData;
+  first?: boolean;
+  afterTitle?: React.ReactNode;
+}) {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState(false);
 
@@ -39,6 +47,8 @@ export function Section({ data, first }: { data: SectionData; first?: boolean })
         >
           {data.title}
         </h2>
+
+        {afterTitle}
 
         {data.body && (
           <p className="mt-6 max-w-[62ch] text-[clamp(1rem,1.5vw,1.25rem)] leading-relaxed text-foreground/70">

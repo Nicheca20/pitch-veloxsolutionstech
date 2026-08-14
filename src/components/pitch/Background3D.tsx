@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment } from "@react-three/drei";
+import { Environment, MeshReflectorMaterial } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
@@ -31,6 +31,27 @@ function tunnelIntensity(t: number) {
   const settle = 1 - smoothstep(clamp01((t - 3.6) / 0.8)); // se calma al entrar al carro
   return 1 + buildUp * settle * 1.6;
 }
+
+/** Altura del piso reflectante (los modelos apoyan sobre él). */
+export const FLOOR_Y = -1.25;
+
+/**
+ * Factor de "velocidad" según la sección: pico en las secciones con vehículo,
+ * más calmado en las secciones de solo texto para que el título se lea.
+ */
+function speedFactor(t: number) {
+  const bump = (a: number, b: number) =>
+    smoothstep(clamp01((t - (a - 0.5)) / 0.6)) * (1 - smoothstep(clamp01((t - b) / 0.6)));
+  const vehicles = Math.max(
+    bump(CAR_WINDOW[0], CAR_WINDOW[1]),
+    bump(JET_WINDOW[0], JET_WINDOW[1]),
+    bump(BIKE_WINDOW[0], BIKE_WINDOW[1]),
+  );
+  return 0.7 + vehicles * 1.5;
+}
+
+/** Intensidad combinada usada por grilla, estelas y partículas. */
+const flow = (t: number) => tunnelIntensity(t) * speedFactor(t);
 
 /** Keyframes por índice de sección (0 = primera pantalla). */
 const FOCUS: Key[] = [
@@ -178,21 +199,23 @@ function SpeedGrid({ section }: { section: Ref }) {
 
           void main() {
             // el plano está rotado: x = lateral, y local = profundidad
-            float cell = 2.0;
-            float x = vLocal.x / cell;
-            float z = (vLocal.y + uRun) / cell;
-            float g = max(line(x, 0.8), line(z, 1.0));
-            if (g < 0.01) discard;
-
             float depth = clamp(abs(vLocal.y) / 190.0, 0.0, 1.0);
             float side = clamp(abs(vLocal.x) / 120.0, 0.0, 1.0);
-            // brillo: fuerte cerca, degradé hacia el horizonte, se apaga a los lados
-            float glow = (1.0 - smoothstep(0.15, 1.0, depth)) * (1.0 - side * side);
-            glow += (1.0 - smoothstep(0.0, 0.35, depth)) * 0.5;
-            vec3 col = mix(uNear, uFar, smoothstep(0.0, 0.6, depth));
-            float nearFade = smoothstep(6.0, 26.0, length(vLocal.xy));
-            float a = g * glow * nearFade * 0.42 * uIntensity;
-            gl_FragColor = vec4(col * (0.6 + glow * 0.7), a);
+
+            // carriles de fuga (líneas finas a lo largo de la profundidad)
+            float lanes = line(vLocal.x / 6.0, 0.7);
+            // barridos que se acercan a la cámara (líneas transversales rápidas)
+            float sweeps = line((vLocal.y + uRun) / 9.0, 0.55);
+            float g = max(lanes * 0.9, sweeps);
+            if (g < 0.01) discard;
+
+            // más brillante cerca del horizonte, se apaga a los lados
+            float horizon = smoothstep(0.05, 0.62, depth) * (1.0 - smoothstep(0.72, 1.0, depth));
+            float glow = (0.35 + horizon * 1.25) * (1.0 - side * side);
+            vec3 col = mix(uNear, uFar, smoothstep(0.15, 0.75, depth));
+            float nearFade = smoothstep(4.0, 22.0, length(vLocal.xy));
+            float a = g * glow * nearFade * 0.5 * uIntensity;
+            gl_FragColor = vec4(col * (0.7 + glow * 0.8), a);
           }
         `,
       }),
@@ -201,9 +224,9 @@ function SpeedGrid({ section }: { section: Ref }) {
   useEffect(() => () => material.dispose(), [material]);
 
   useFrame(({ camera }, dt) => {
-    const k = tunnelIntensity(section.current);
-    material.uniforms['uRun']!.value = (material.uniforms['uRun']!.value + dt * 26 * k) % 2;
-    material.uniforms['uIntensity']!.value = 0.85 + (k - 1) * 0.35;
+    const k = Math.min(3.2, flow(section.current));
+    material.uniforms['uRun']!.value = (material.uniforms['uRun']!.value + dt * 60 * k) % 9;
+    material.uniforms['uIntensity']!.value = 0.7 + (k - 1) * 0.4;
     if (mesh.current) mesh.current.position.z = camera.position.z;
   });
 
@@ -212,7 +235,7 @@ function SpeedGrid({ section }: { section: Ref }) {
       ref={mesh}
       material={material}
       rotation={[-Math.PI / 2, 0, 0]}
-      position={[0, -3.4, 0]}
+      position={[0, FLOOR_Y + 0.02, 0]}
       frustumCulled={false}
     >
       <planeGeometry args={[400, 400]} />
@@ -220,10 +243,113 @@ function SpeedGrid({ section }: { section: Ref }) {
   );
 }
 
+/** Piso infinito reflectante: los modelos se reflejan con blur suave. */
+function ReflectiveFloor() {
+  const mesh = useRef<THREE.Mesh>(null);
+  useFrame(({ camera }) => {
+    if (mesh.current) mesh.current.position.z = camera.position.z;
+  });
+  return (
+    <mesh
+      ref={mesh}
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, FLOOR_Y, 0]}
+      frustumCulled={false}
+    >
+      <planeGeometry args={[420, 420]} />
+      <MeshReflectorMaterial
+        resolution={512}
+        mirror={0.72}
+        mixBlur={7}
+        mixStrength={2.2}
+        blur={[400, 120]}
+        depthScale={1.1}
+        minDepthThreshold={0.3}
+        maxDepthThreshold={1.4}
+        color="#0b0920"
+        metalness={0.75}
+        roughness={0.85}
+      />
+    </mesh>
+  );
+}
+
+/** Línea de horizonte luminosa que late (con bloom). */
+function HorizonGlow() {
+  const mesh = useRef<THREE.Mesh>(null);
+  const mat = useRef<THREE.MeshBasicMaterial>(null);
+  useFrame(({ camera, clock }) => {
+    const m = mesh.current;
+    if (!m) return;
+    m.position.set(camera.position.x * 0.2, FLOOR_Y + 1.6, camera.position.z - 185);
+    if (mat.current) mat.current.opacity = 0.42 + Math.sin(clock.elapsedTime * 1.1) * 0.12;
+  });
+  return (
+    <group>
+      <mesh ref={mesh} frustumCulled={false}>
+        <planeGeometry args={[520, 5]} />
+        <meshBasicMaterial
+          ref={mat}
+          color="#AFA9EC"
+          transparent
+          opacity={0.45}
+          depthWrite={false}
+          blending={THREE.AdditiveBlending}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+/** Estrellas tenues en el cielo. */
+function Stars({ count = 1400 }: { count?: number }) {
+  const ref = useRef<THREE.Points>(null);
+  const geometry = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const r = 150 + Math.random() * 110;
+      const a = Math.random() * Math.PI * 2;
+      const h = Math.random();
+      pos[i * 3] = Math.cos(a) * r;
+      pos[i * 3 + 1] = 20 + h * 130;
+      pos[i * 3 + 2] = Math.sin(a) * r;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    return g;
+  }, [count]);
+  useFrame(({ camera }) => {
+    if (ref.current) ref.current.position.z = camera.position.z;
+  });
+  return (
+    <points ref={ref} geometry={geometry} frustumCulled={false}>
+      <pointsMaterial
+        size={0.5}
+        sizeAttenuation
+        color="#EEEDFE"
+        transparent
+        opacity={0.5}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
+  );
+}
 
 
-/** Líneas de velocidad que atraviesan la cámara (túnel de secciones 0-4). */
-function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
+
+/** Líneas de velocidad que atraviesan la cámara (cielo o a ras de piso). */
+function Streaks({
+  section,
+  count = 700,
+  ground = false,
+  color = "#AFA9EC",
+}: {
+  section: Ref;
+  count?: number;
+  ground?: boolean;
+  color?: string;
+}) {
   const ref = useRef<THREE.LineSegments>(null);
   const mat = useRef<THREE.LineBasicMaterial>(null);
   const depth = 220;
@@ -234,8 +360,8 @@ function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
     for (let i = 0; i < count; i++) {
       const r = 6 + Math.random() * 42;
       const a = Math.random() * Math.PI * 2;
-      const x = Math.cos(a) * r;
-      const y = Math.sin(a) * r * 0.45;
+      const x = ground ? (Math.random() - 0.5) * 90 : Math.cos(a) * r;
+      const y = ground ? FLOOR_Y + 0.12 + Math.random() * 0.5 : Math.sin(a) * r * 0.45;
       const z = -Math.random() * depth;
       const len = 2 + Math.random() * 6;
       pos.set([x, y, z, x, y, z - len], i * 6);
@@ -250,7 +376,7 @@ function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
     const o = ref.current;
     if (!o) return;
     o.position.z = camera.position.z;
-    const k = tunnelIntensity(section.current);
+    const k = Math.min(3.2, flow(section.current));
     const attr = geometry.getAttribute("position") as THREE.BufferAttribute;
     const arr = attr.array as Float32Array;
     for (let i = 0; i < count; i++) {
@@ -267,9 +393,8 @@ function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
     }
     attr.needsUpdate = true;
     if (mat.current) {
-      const fade = 1 - clamp01((section.current - CAR_WINDOW[0] + 0.6) / 1.2);
-      mat.current.opacity = (0.16 + (k - 1) * 0.3) * fade;
-      mat.current.color.setHSL(0.68, 0.6, 0.55 + Math.sin(clock.elapsedTime) * 0.05);
+      mat.current.opacity = Math.min(0.6, 0.12 + (k - 0.7) * 0.24);
+      mat.current.color.setHSL(0.68, 0.55, 0.6 + Math.sin(clock.elapsedTime + (ground ? 1 : 0)) * 0.06);
     }
   });
 
@@ -277,7 +402,7 @@ function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
     <lineSegments ref={ref} geometry={geometry} frustumCulled={false}>
       <lineBasicMaterial
         ref={mat}
-        color="#AFA9EC"
+        color={color}
         transparent
         opacity={0.2}
         depthWrite={false}
@@ -297,10 +422,10 @@ function GradientSky() {
         depthWrite: false,
         fog: false,
         uniforms: {
-          top: { value: new THREE.Color("#07061a") },
-          mid: { value: new THREE.Color("#26215C") },
+          top: { value: new THREE.Color("#08070f") },
+          mid: { value: new THREE.Color("#17114a") },
           horizon: { value: new THREE.Color("#534AB7") },
-          low: { value: new THREE.Color("#120e33") },
+          low: { value: new THREE.Color("#0b0920") },
         },
         vertexShader: `
           varying vec3 vPos;
@@ -407,7 +532,7 @@ function ParticleField({ section, count = 26000 }: { section: Ref; count?: numbe
   useFrame(({ camera, clock, size }, dt) => {
     const o = ref.current;
     if (!o) return;
-    const k = tunnelIntensity(section.current);
+    const k = Math.min(3.2, flow(section.current));
     const p = pulse(clock.elapsedTime);
     drift.current = (drift.current + dt * 9 * k) % 170;
     o.rotation.y += dt * 0.02 * k;
@@ -458,7 +583,7 @@ function AccentStreaks({ section, count = 1800 }: { section: Ref; count?: number
     const o = ref.current;
     if (!o) return;
     o.position.z = camera.position.z;
-    const k = tunnelIntensity(section.current);
+    const k = Math.min(3.2, flow(section.current));
     const attr = geometry.getAttribute("position") as THREE.BufferAttribute;
     const arr = attr.array as Float32Array;
     for (let i = 0; i < count; i++) {
@@ -526,7 +651,7 @@ function DynamicBloom({ section }: { section: Ref }) {
   const ref = useRef<{ intensity: number } | null>(null);
   const pulse = usePulse(section);
   useFrame(({ clock }) => {
-    const k = tunnelIntensity(section.current);
+    const k = Math.min(3.2, flow(section.current));
     const p = pulse(clock.elapsedTime);
     if (ref.current) ref.current.intensity = 0.62 + (k - 1) * 0.4 + p * 1.2;
   });
@@ -558,11 +683,15 @@ export function Background3D({ section }: { section: Ref }) {
       <directionalLight position={[6, 8, 6]} intensity={0.7} color="#AFA9EC" />
       <directionalLight position={[-8, -4, -6]} intensity={0.4} color="#534AB7" />
       <GradientSky />
+      <Stars />
       <CameraRig section={section} />
+      <ReflectiveFloor />
       <SpeedGrid section={section} />
+      <HorizonGlow />
       <ParticleField section={section} />
       <AccentStreaks section={section} />
-      <Streaks section={section} />
+      <Streaks section={section} count={800} color="#AFA9EC" />
+      <Streaks section={section} count={420} ground color="#7F77DD" />
       <LazyCar section={section} />
       <LazyJet section={section} />
       <LazyBike section={section} />
