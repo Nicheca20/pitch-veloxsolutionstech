@@ -7,12 +7,14 @@ export function Section({
   first,
   afterTitle,
   below,
+  right,
   className,
 }: {
   data: SectionData;
   first?: boolean;
   afterTitle?: React.ReactNode;
   below?: React.ReactNode;
+  right?: React.ReactNode;
   className?: string | undefined;
 }) {
   const ref = useRef<HTMLElement>(null);
