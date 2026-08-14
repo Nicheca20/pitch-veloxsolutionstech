@@ -35,7 +35,7 @@ export function ClientLogo({
       }`}
     >
       <p
-        className={`text-[10px] uppercase tracking-[0.34em] text-foreground/60 transition-opacity duration-700 ${on ? "opacity-100" : "opacity-0"}`}
+        className={`text-[10px] uppercase tracking-[0.34em] text-foreground/60 transition-all duration-700 ${on ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}
       >
         {eyebrow}
       </p>
@@ -43,9 +43,10 @@ export function ClientLogo({
         src={src}
         alt={`Logo de ${name}`}
         loading="lazy"
-        className="mt-4 h-12 w-auto object-contain transition-opacity duration-[900ms] ease-out md:h-16"
+        className="mt-4 h-12 w-auto object-contain transition-all duration-[900ms] ease-out md:h-16"
         style={{
           opacity: on ? 0.75 : 0,
+          transform: on ? "translateY(0)" : "translateY(8px)",
           transitionDelay: "260ms",
         }}
       />
