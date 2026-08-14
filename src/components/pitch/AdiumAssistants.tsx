@@ -51,10 +51,11 @@ export function AdiumAssistants() {
   const base = Math.min(1, Math.max(0, (fill - 0.45) / 0.3));
 
   return (
-    <div ref={ref} className="relative mx-auto w-full max-w-5xl px-6 md:px-0 lg:pr-40">
-      <div className="mb-8 text-center text-[1rem] uppercase tracking-[0.32em] text-foreground">
+    <div ref={ref} className="relative mx-auto w-full max-w-5xl px-0 lg:pr-40">
+      <div className="mb-8 text-center text-[0.8rem] uppercase tracking-[0.22em] text-foreground sm:text-[1rem] sm:tracking-[0.32em]">
         Dos asistentes, una base de confianza
       </div>
+
 
       <div className="grid gap-6 sm:grid-cols-2">
         {CARDS.map((c, i) => {
