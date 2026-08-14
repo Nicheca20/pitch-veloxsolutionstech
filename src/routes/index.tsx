@@ -260,17 +260,6 @@ function Pitch() {
                   <CapabilityWheel />
                 ) : undefined
               }
-              right={
-                s.id === "hook" ? (
-                  <img
-                    loading="lazy"
-                    decoding="async"
-                    src={veloxLogo.url}
-                    alt="Velox Solutions"
-                    className="h-auto w-[min(58vw,14rem)] object-contain opacity-90 md:w-[min(38vw,19rem)]"
-                  />
-                ) : undefined
-              }
               /* Ritmo vertical ajustado: en móvil/tablet las secciones se
                  compactan para evitar huecos enormes al scrollear. */
               className={
