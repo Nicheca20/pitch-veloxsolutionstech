@@ -4,6 +4,8 @@ import { brand, sections } from "@/content";
 import { Section } from "@/components/pitch/Section";
 import { NavDots } from "@/components/pitch/NavDots";
 import { LogoStrip } from "@/components/pitch/LogoStrip";
+import { CencorUnits } from "@/components/pitch/CencorUnits";
+
 
 import { ProgressBar } from "@/components/pitch/ProgressBar";
 import { Preloader } from "@/components/pitch/Preloader";
@@ -164,11 +166,13 @@ function Pitch() {
           {brand.name} — {brand.tagline}
         </h1>
         {sections.map((s, i) => (
-          <div key={s.id}>
+          <div key={s.id} className="relative">
             <Section data={s} first={i === 0} />
+            {s.id === "cencor" && <CencorUnits />}
             {i === 0 && <LogoStrip />}
           </div>
         ))}
+
 
 
         <footer className="relative z-10 px-6 pb-24 md:px-16 lg:px-24">
