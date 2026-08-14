@@ -9,6 +9,7 @@ export function Section({
   extra,
   below,
   right,
+  align,
   className,
 }: {
   data: SectionData;
@@ -17,6 +18,7 @@ export function Section({
   extra?: React.ReactNode;
   below?: React.ReactNode;
   right?: React.ReactNode;
+  align?: "center" | "start";
   className?: string | undefined;
 }) {
   const ref = useRef<HTMLElement>(null);
