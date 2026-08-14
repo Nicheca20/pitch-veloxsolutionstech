@@ -15,6 +15,7 @@ import VeloxBackground from "@/components/pitch/VeloxBackground";
 
 import cronista from "@/assets/cronista.png.asset.json";
 import adium from "@/assets/adium.png.asset.json";
+import veloxLogo from "@/assets/velox-logo.png.asset.json";
 
 
 import { ProgressBar } from "@/components/pitch/ProgressBar";
@@ -192,6 +193,15 @@ function Pitch() {
                   <SolutionTimeline />
                 ) : s.id === "como" ? (
                   <DataCycle />
+                ) : undefined
+              }
+              right={
+                s.id === "hook" ? (
+                  <img
+                    src={veloxLogo.url}
+                    alt="Velox Solutions"
+                    className="h-auto w-[min(42vw,22rem)] object-contain opacity-90 drop-shadow-[0_0_40px_rgba(255,255,255,0.18)]"
+                  />
                 ) : undefined
               }
               className={
