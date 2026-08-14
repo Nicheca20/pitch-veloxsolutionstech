@@ -164,6 +164,7 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
         mat.needsUpdate = true;
       });
     });
+    console.log('BIKE_BUILD', rs.toArray(), wrap.rotation.y);
     return wrap;
   }, [scene]);
 
