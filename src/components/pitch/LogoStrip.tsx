@@ -68,7 +68,6 @@ export function LogoStrip() {
               decoding="async"
               src={l.src}
               alt={`Logo de ${l.name}`}
-              loading="lazy"
               className={`w-auto object-contain ${l.className}`}
             />
             {l.caption && (

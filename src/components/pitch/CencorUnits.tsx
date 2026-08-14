@@ -58,7 +58,6 @@ export function CencorUnits() {
               decoding="async"
               src={u.src}
               alt={`Logo de ${u.name}`}
-              loading="lazy"
               className="h-12 w-auto object-contain md:h-16"
             />
           </li>

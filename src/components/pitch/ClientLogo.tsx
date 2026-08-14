@@ -46,7 +46,6 @@ export function ClientLogo({
         decoding="async"
         src={src}
         alt={`Logo de ${name}`}
-        loading="lazy"
         className="mt-4 h-12 w-auto object-contain transition-all duration-[900ms] ease-out md:h-16"
         style={{
           opacity: on ? 0.75 : 0,
