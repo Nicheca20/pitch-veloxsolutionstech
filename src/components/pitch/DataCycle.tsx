@@ -53,10 +53,11 @@ export function DataCycle() {
   return (
     <div
       ref={ref}
-      className="relative mx-auto aspect-square w-full max-w-[640px] select-none"
+      className="relative mx-auto aspect-square w-[74%] max-w-[640px] select-none sm:w-[86%] md:w-full"
       style={{ overflow: "visible" }}
       aria-label="Ciclo de trabajo: Activo de datos único conecta Descubrir, Definir, Diseñar y Entregar"
     >
+
       {/* SVG: ciclo exterior + radiales */}
       <svg
         className="absolute inset-0 h-full w-full"
@@ -152,15 +153,16 @@ export function DataCycle() {
           >
             <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--force)] shadow-[0_0_14px_var(--aura)]" />
             <div
-              className={`absolute whitespace-nowrap rounded-lg border border-[var(--force)]/40 bg-[var(--galaxy)]/80 px-5 py-3 text-center shadow-[0_0_26px_-4px_var(--velox)] ${stage.card}`}
+              className={`absolute whitespace-nowrap rounded-lg border border-[var(--force)]/40 bg-[var(--galaxy)]/80 px-3 py-2 text-center shadow-[0_0_26px_-4px_var(--velox)] sm:px-5 sm:py-3 ${stage.card}`}
               style={{
                 transform: `${stage.card.includes("-translate-x-1/2") ? "translateX(-50%) " : ""}${stage.card.includes("-translate-y-1/2") ? "translateY(-50%) " : ""}scale(${0.85 + local * 0.15})`,
                 transition: "transform 600ms ease-out",
               }}
             >
-              <span className="text-[clamp(0.85rem,2vw,1.1rem)] font-semibold uppercase tracking-[0.12em] text-[var(--ice)]">
+              <span className="text-[clamp(0.7rem,2vw,1.1rem)] font-semibold uppercase tracking-[0.12em] text-[var(--ice)]">
                 {stage.label}
               </span>
+
             </div>
           </div>
         );
