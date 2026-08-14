@@ -1,6 +1,6 @@
 import { softPointTexture } from "./soft-point";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { AdaptiveDpr, Environment, MeshReflectorMaterial, PerformanceMonitor } from "@react-three/drei";
+import { AdaptiveDpr, Environment, MeshReflectorMaterial } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
@@ -8,6 +8,8 @@ import * as THREE from "three";
 import { CAR_WINDOW, F1Car, carPhase } from "./F1Car";
 import { JET_WINDOW, Jet } from "./Jet";
 import { BIKE_WINDOW, Bike } from "./Bike";
+import { QualityProvider, QualitySensor, TextureBudget, useAdaptiveQuality } from "./quality";
+
 
 const FOG = "#0a0820";
 const GRID = "#7F77DD";
@@ -776,68 +778,55 @@ function DynamicBloom({ section, quality }: { section: Ref; quality: number }) {
       luminanceThreshold={0.42}
       luminanceSmoothing={0.5}
       mipmapBlur
-      resolutionScale={quality > 0.6 ? 0.45 : 0.3}
-      kernelSize={KernelSize.SMALL}
+      resolutionScale={quality}
+      kernelSize={quality > 0.4 ? KernelSize.MEDIUM : KernelSize.SMALL}
     />
   );
 }
 
 export function Background3D({ section }: { section: Ref }) {
-  // dpr adaptativo: baja solo si los fps caen (limitado a 2 como máximo)
-  const [dpr, setDpr] = useState(() =>
-    typeof window === "undefined" ? 1.25 : Math.min(1.5, window.devicePixelRatio || 1),
-  );
-  const [quality, setQuality] = useState(1);
+  // calidad adaptativa: el sensor mide FPS reales y ajusta DPR, texturas y bloom
+  const { tier, onTier, config } = useAdaptiveQuality();
+  const dpr = Math.min(config.dpr, typeof window === "undefined" ? 1.5 : window.devicePixelRatio || 1);
 
   return (
-    <Canvas
-      dpr={dpr}
-      frameloop="always"
-      gl={{
-        antialias: false,
-        alpha: true,
-        powerPreference: "high-performance",
-        stencil: false,
-        depth: true,
-      }}
-      camera={{ fov: 65, near: 0.1, far: 400, position: [0, 1.2, 16] }}
-      onCreated={({ gl, scene }) => {
-        gl.shadowMap.enabled = false;
-        gl.setClearColor(0x000000, 0);
-        scene.fog = new THREE.Fog(FOG, 18, 120);
-      }}
-    >
-      <PerformanceMonitor
-        bounds={() => [50, 60]}
-        flipflops={3}
-        onIncline={() => {
-          setDpr((d) => Math.min(1.75, d + 0.15));
-          setQuality(1);
+    <QualityProvider value={tier}>
+      <Canvas
+        dpr={dpr}
+        frameloop="always"
+        gl={{
+          antialias: false,
+          alpha: true,
+          powerPreference: "high-performance",
+          stencil: false,
+          depth: true,
         }}
-        onDecline={() => {
-          setDpr((d) => Math.max(0.9, d - 0.15));
-          setQuality(0.5);
+        camera={{ fov: 65, near: 0.1, far: 400, position: [0, 1.2, 16] }}
+        onCreated={({ gl, scene }) => {
+          gl.shadowMap.enabled = false;
+          gl.setClearColor(0x000000, 0);
+          scene.fog = new THREE.Fog(FOG, 18, 120);
         }}
-        onFallback={() => {
-          setDpr(0.9);
-          setQuality(0.5);
-        }}
-      />
-      <AdaptiveDpr />
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[6, 8, 6]} intensity={0.7} color="#AFA9EC" />
-      <directionalLight position={[-8, -4, -6]} intensity={0.4} color="#534AB7" />
-      <CameraRig section={section} />
+      >
+        <QualitySensor tier={tier} onTier={onTier} />
+        <TextureBudget />
+        <AdaptiveDpr />
+        <ambientLight intensity={0.55} />
+        <directionalLight position={[6, 8, 6]} intensity={0.7} color="#AFA9EC" />
+        <directionalLight position={[-8, -4, -6]} intensity={0.4} color="#534AB7" />
+        <CameraRig section={section} />
 
-      <LazyEnvironment section={section} />
-      <LazyCar section={section} />
-      <LazyJet section={section} />
-      <LazyBike section={section} />
-      <EffectComposer enableNormalPass={false} multisampling={0}>
-        <DynamicBloom section={section} quality={quality} />
-      </EffectComposer>
-    </Canvas>
+        {config.env ? <LazyEnvironment section={section} /> : null}
+        <LazyCar section={section} />
+        <LazyJet section={section} />
+        <LazyBike section={section} />
+        <EffectComposer enableNormalPass={false} multisampling={0}>
+          <DynamicBloom section={section} quality={config.bloom} />
+        </EffectComposer>
+      </Canvas>
+    </QualityProvider>
   );
 }
+
 
 
