@@ -226,8 +226,8 @@ function SpeedGrid({ section }: { section: Ref }) {
 
   useFrame(({ camera }, dt) => {
     const k = Math.min(3.2, flow(section.current));
-    material.uniforms['uRun']!.value = (material.uniforms['uRun']!.value + dt * 60 * k) % 9;
-    material.uniforms['uIntensity']!.value = 0.7 + (k - 1) * 0.4;
+    material.uniforms['uRun']!.value = (material.uniforms['uRun']!.value + dt * 16 * k) % 9;
+    material.uniforms['uIntensity']!.value = 0.42 + (k - 1) * 0.22;
     if (mesh.current) mesh.current.position.z = camera.position.z;
   });
 
