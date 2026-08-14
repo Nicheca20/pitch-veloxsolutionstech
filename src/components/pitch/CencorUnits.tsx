@@ -30,31 +30,34 @@ export function CencorUnits() {
     <div
       ref={ref}
       aria-label="Unidades de Grupo Cencor"
-      className="pointer-events-none absolute bottom-10 left-6 z-10 max-w-[52rem] md:left-16 lg:left-24"
+      className="pointer-events-none absolute bottom-8 left-4 z-10 md:bottom-12 md:left-16 lg:left-24"
     >
       <p
-        className={`text-[9px] uppercase tracking-[0.34em] text-foreground/40 transition-all duration-700 ${
+        className={`text-[10px] uppercase tracking-[0.34em] text-foreground/60 transition-all duration-700 ${
           on ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
         }`}
       >
         Grupo Cencor
       </p>
-      <ul className="mt-5 flex flex-wrap items-center gap-x-14 gap-y-6">
+      <ul className="mt-4 flex flex-wrap items-center gap-x-10 gap-y-5 md:gap-x-16">
         {units.map((u, i) => (
           <li
             key={u.name}
             className="transition-all duration-[900ms] ease-out"
             style={{
               transitionDelay: `${300 + i * 180}ms`,
-              opacity: on ? 0.45 : 0,
-              transform: on ? "translateY(0)" : "translateY(6px)",
+              opacity: on ? 1 : 0,
+              transform: on ? "translateY(0)" : "translateY(8px)",
+              filter: on
+                ? "drop-shadow(0 0 14px rgba(10,8,32,0.7))"
+                : "drop-shadow(0 0 14px rgba(10,8,32,0.7))",
             }}
           >
             <img
               src={u.src}
               alt={`Logo de ${u.name}`}
               loading="lazy"
-              className="h-11 w-auto object-contain grayscale md:h-14"
+              className="h-12 w-auto object-contain md:h-16"
             />
           </li>
         ))}
