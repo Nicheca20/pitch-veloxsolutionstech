@@ -4,10 +4,10 @@ import agentforce from "@/assets/agentforce.png.asset.json";
 import slack from "@/assets/slack.png.asset.json";
 import github from "@/assets/github.png.asset.json";
 
-type Logo = { name: string; src: string; className: string };
+type Logo = { name: string; src: string; className: string; caption?: string };
 
 const logos: Logo[] = [
-  { name: "Salesforce", src: salesforce.url, className: "h-20 md:h-28" },
+  { name: "Salesforce", src: salesforce.url, className: "h-20 md:h-28", caption: "Data Cloud 360" },
   { name: "Agentforce", src: agentforce.url, className: "h-14 md:h-20" },
   { name: "Slack", src: slack.url, className: "h-16 md:h-22" },
   { name: "GitHub", src: github.url, className: "h-20 md:h-28" },
@@ -49,7 +49,7 @@ export function LogoStrip() {
         {logos.map((l, i) => (
           <li
             key={l.name}
-            className="flex items-center transition-all duration-[900ms] ease-out"
+            className="flex flex-col items-center transition-all duration-[900ms] ease-out"
             style={{
               transitionDelay: `${250 + i * 260}ms`,
               opacity: on ? 1 : 0.5,
@@ -65,6 +65,11 @@ export function LogoStrip() {
               loading="lazy"
               className={`w-auto object-contain ${l.className}`}
             />
+            {l.caption && (
+              <span className="mt-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/70 md:text-[11px]">
+                {l.caption}
+              </span>
+            )}
           </li>
         ))}
       </ul>
