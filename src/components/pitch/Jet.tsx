@@ -144,23 +144,6 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
   const model = useMemo(() => {
     const m = scene.clone(true);
 
-    // el GLB trae un disco/plano de estudio y un domo de fondo: los eliminamos
-    const junk: THREE.Object3D[] = [];
-    m.updateWorldMatrix(true, true);
-    const full = new THREE.Box3().setFromObject(m);
-    const fullSize = full.getSize(new THREE.Vector3());
-    m.traverse((o) => {
-      const mesh = o as THREE.Mesh;
-      if (!mesh.isMesh || !mesh.geometry) return;
-      const wb = new THREE.Box3().setFromObject(mesh);
-      const d = wb.getSize(new THREE.Vector3());
-      const dims = [d.x, d.y, d.z].sort((a, b) => a - b);
-      const flat = dims[0]! < 0.04 * dims[2]!;
-      const huge = dims[2]! > 0.85 * Math.max(fullSize.x, fullSize.z) && dims[1]! < 0.25 * dims[2]!;
-      if (flat || huge) junk.push(mesh);
-    });
-    junk.forEach((o) => o.parent?.remove(o));
-
     // orientar: el eje horizontal más largo es el fuselaje → alinearlo con Z
     const raw = new THREE.Box3().setFromObject(m);
     const rs = new THREE.Vector3();
