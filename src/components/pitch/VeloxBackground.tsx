@@ -29,9 +29,11 @@ export default function VeloxBackground() {
     const ICE = "#EEEDFE";
 
     // perf: el fondo es un degradé suave; 1.25x basta y ahorra ~60% de fill-rate
-    const DPR = 1; // perf: el fondo es sólo degradés y líneas suaves
+    const DPR = 0.75; // perf: el fondo es sólo degradés y líneas suaves; se escala vía CSS
     let W = 0;
     let H = 0;
+    let staticCv: HTMLCanvasElement | null = null;
+    let staticDirty = true;
     let horizon = 0;
 
     function resize() {
@@ -63,6 +65,53 @@ export default function VeloxBackground() {
       reflectGrad = ctx.createLinearGradient(0, horizon, 0, horizon + 140);
       reflectGrad.addColorStop(0, "rgba(175,169,236,0.28)");
       reflectGrad.addColorStop(1, "rgba(83,74,183,0)");
+      staticDirty = true;
+    }
+
+    // perf: todo lo que no cambia por frame (cielo, estrellas, piso, líneas
+    // convergentes) se pinta una sola vez en un canvas offscreen.
+    function buildStatic() {
+      staticDirty = false;
+      const cv = staticCv ?? (staticCv = document.createElement("canvas"));
+      cv.width = Math.max(1, Math.round(W * DPR));
+      cv.height = Math.max(1, Math.round(H * DPR));
+      const c = cv.getContext("2d");
+      if (!c) return;
+      c.setTransform(DPR, 0, 0, DPR, 0, 0);
+      c.clearRect(0, 0, W, H);
+      c.fillStyle = skyGrad;
+      c.fillRect(0, 0, W, horizon);
+      c.fillStyle = ICE;
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i]!;
+        c.globalAlpha = s.b;
+        c.fillRect(s.x * W, s.y * horizon, s.s, s.s);
+      }
+      c.globalAlpha = 1;
+      c.fillStyle = horizonGrad;
+      c.fillRect(0, horizon - 80, W, 90);
+      c.fillStyle = floorGrad;
+      c.fillRect(0, horizon, W, H - horizon);
+      c.fillStyle = reflectGrad;
+      c.fillRect(0, horizon, W, 140);
+      const cx = W / 2;
+      c.strokeStyle = VELOX;
+      c.globalAlpha = 0.28;
+      c.lineWidth = 0.6;
+      c.beginPath();
+      for (let m = -7; m <= 7; m++) {
+        c.moveTo(cx + m * (W / 7), H);
+        c.lineTo(cx, horizon);
+      }
+      c.stroke();
+      c.strokeStyle = AURA;
+      c.globalAlpha = 0.85;
+      c.lineWidth = 2;
+      c.beginPath();
+      c.moveTo(0, horizon);
+      c.lineTo(W, horizon);
+      c.stroke();
+      c.globalAlpha = 1;
     }
 
     resize();
@@ -126,18 +175,9 @@ export default function VeloxBackground() {
       t += 1;
       const cx = W / 2;
 
-      // Cielo
-      ctx.fillStyle = skyGrad;
-      ctx.fillRect(0, 0, W, horizon);
-
-      // Estrellas
-      for (let i = 0; i < stars.length; i++) {
-        const s = stars[i];
-        ctx.globalAlpha = s.b * (0.6 + 0.4 * Math.sin(t * 0.03 + i));
-        ctx.fillStyle = ICE;
-        ctx.fillRect(s.x * W, s.y * horizon, s.s, s.s);
-      }
-      ctx.globalAlpha = 1;
+      // Capa estática (cielo, estrellas, piso, líneas convergentes)
+      if (staticDirty) buildStatic();
+      if (staticCv) ctx.drawImage(staticCv, 0, 0, W, H);
 
       // Estelas radiales del cielo
       for (let j = 0; j < streaks.length; j++) {
@@ -154,29 +194,9 @@ export default function VeloxBackground() {
         if (y1 < horizon) line(x1, y1, x2, y2, col, 1 + st.r * 1.2, 0.08 + st.r * 0.5);
       }
 
-      // Glow del horizonte
-      ctx.fillStyle = horizonGrad;
-      ctx.fillRect(0, horizon - 80, W, 90);
-      line(0, horizon, W, horizon, AURA, 2, 0.85);
+      // Pulso del horizonte
       const pulse = 0.5 + 0.5 * Math.sin(t * 0.04);
       line(0, horizon, W, horizon, ICE, 4, 0.22 * pulse);
-
-      // Piso base
-      ctx.fillStyle = floorGrad;
-      ctx.fillRect(0, horizon, W, H - horizon);
-
-      // Reflejo del horizonte sobre el piso (efecto espejo)
-      ctx.fillStyle = reflectGrad;
-      ctx.fillRect(0, horizon, W, 140);
-
-      // Brillos verticales que caen (reflejo)
-      for (let r = 0; r < 5; r++) {
-        const rx = cx + ((r - 2) / 2) * W * 0.42;
-        ctx.globalAlpha = 0.1 + 0.05 * Math.sin(t * 0.05 + r);
-        ctx.fillStyle = reflectGrad;
-        ctx.fillRect(rx - 16, horizon, 32, 100);
-      }
-      ctx.globalAlpha = 1;
 
       // Líneas de perspectiva horizontales que se acercan
       const off = (t * 0.009) % 1;
@@ -186,12 +206,6 @@ export default function VeloxBackground() {
         const y = horizon + persp * (H - horizon);
         const glow = 1 - tt;
         line(0, y, W, y, FORCE, 0.6 + glow * 1.2, 0.12 + glow * 0.5);
-      }
-
-      // Líneas verticales convergentes al punto de fuga
-      for (let m = -7; m <= 7; m++) {
-        const bx = cx + m * (W / 7);
-        line(bx, H, cx, horizon, VELOX, 0.6, 0.28);
       }
 
       // Estelas sobre el piso (velocidad)

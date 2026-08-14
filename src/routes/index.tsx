@@ -50,7 +50,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Pitch() {
-  const { section, value: barProgress } = useScrollProgress();
+  const { section, progress } = useScrollProgress();
   const [active, setActive] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [use3D, setUse3D] = useState(false);
@@ -80,9 +80,30 @@ function Pitch() {
     return () => clearInterval(iv);
   }, []);
 
+  // El índice activo y el hint de scroll se leen desde el ref en un rAF propio:
+  // así el scroll no re-renderiza toda la página cuadro a cuadro.
+  const hintRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    setActive(Math.min(sections.length - 1, Math.round(barProgress * (sections.length - 1))));
-  }, [barProgress]);
+    let raf = 0;
+    let lastIdx = -1;
+    let lastHint = -1;
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const p = progress.current;
+      const idx = Math.min(sections.length - 1, Math.round(p * (sections.length - 1)));
+      if (idx !== lastIdx) {
+        lastIdx = idx;
+        setActive(idx);
+      }
+      const hint = p > 0.01 ? 0 : 1;
+      if (hint !== lastHint) {
+        lastHint = hint;
+        if (hintRef.current) hintRef.current.style.opacity = String(hint);
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [progress]);
 
   /** Scroll animado con easing (~1.2s), cancelable por el scroll del mouse. */
   const smoothScrollTo = useCallback((to: number) => {
@@ -164,7 +185,7 @@ function Pitch() {
     <div className="relative bg-background text-foreground">
       <VeloxBackground />
       <Preloader progress={loading} done={ready} />
-      <ProgressBar progress={barProgress} />
+      <ProgressBar progress={progress} />
 
       {/* Canvas 3D de modelos, por encima del fondo 2D */}
       <div
@@ -286,9 +307,9 @@ function Pitch() {
       />
 
       <div
-        className={`fixed inset-x-0 bottom-8 z-20 flex justify-center text-[10px] uppercase tracking-[0.3em] text-foreground/45 transition-opacity duration-500 print:hidden ${
-          barProgress > 0.01 ? "opacity-0" : "opacity-100"
-        }`}
+        ref={hintRef}
+        style={{ opacity: 1 }}
+        className="fixed inset-x-0 bottom-8 z-20 flex justify-center text-[10px] uppercase tracking-[0.3em] text-foreground/45 transition-opacity duration-500 print:hidden"
       >
         <span className="animate-bounce">Scroll ↓</span>
       </div>

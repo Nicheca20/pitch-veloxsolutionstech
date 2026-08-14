@@ -1,18 +1,19 @@
-import { useEffect, useRef, useState, type MutableRefObject } from "react";
+import { useEffect, useRef, type MutableRefObject } from "react";
 
 export type ScrollProgress = {
   /** 0..1 sobre el largo total de la página (ref, sin re-render). */
   progress: MutableRefObject<number>;
-  /** Índice de sección fraccional: scrollY / altura de viewport. */
+  /** Índice de sección fraccional: medido sobre el DOM real. */
   section: MutableRefObject<number>;
-  /** Copia de `progress` en estado, para UI (barra, dots). */
-  value: number;
 };
 
+/**
+ * Progreso de scroll interpolado cuadro a cuadro. No dispara re-renders de
+ * React: quien necesite pintar lee los refs dentro de su propio rAF.
+ */
 export function useScrollProgress(): ScrollProgress {
   const progress = useRef(0);
   const section = useRef(0);
-  const [value, setValue] = useState(0);
 
   useEffect(() => {
     let raf = 0;
@@ -26,7 +27,6 @@ export function useScrollProgress(): ScrollProgress {
       });
     };
 
-    /** Índice de sección fraccional, medido sobre el DOM real (alturas variables). */
     const sectionIndex = (y: number) => {
       if (!bounds.length) return 0;
       const probe = y + window.innerHeight * 0.35;
@@ -50,8 +50,6 @@ export function useScrollProgress(): ScrollProgress {
       targetSection = sectionIndex(window.scrollY);
     };
 
-    // Loop continuo con interpolación: el valor nunca "salta" de una posición a
-    // otra, se desliza hacia el destino (misma sensación a 30 o 144 fps).
     let lastT = performance.now();
     const tick = (now: number) => {
       const dt = Math.min(0.05, (now - lastT) / 1000);
@@ -61,9 +59,6 @@ export function useScrollProgress(): ScrollProgress {
       const ds = targetSection - section.current;
       progress.current += dp * k;
       section.current += ds * k;
-      setValue((prev) =>
-        Math.abs(prev - progress.current) > 0.001 ? progress.current : prev,
-      );
       if (Math.abs(dp) < 0.0002 && Math.abs(ds) < 0.0005) {
         idle += dt;
       } else {
@@ -86,25 +81,19 @@ export function useScrollProgress(): ScrollProgress {
       raf = requestAnimationFrame(tick);
     };
 
-    const read = () => {
+    const onScroll = () => {
       sample();
       start();
     };
     const onResize = () => {
       measure();
-      read();
+      onScroll();
     };
 
-    const onScroll = () => {
-      sample();
-      start();
-    };
     measure();
     sample();
     progress.current = target;
     section.current = targetSection;
-    setValue(target);
-    // Las secciones se montan/animan tras el primer render: re-medimos poco después.
     const t1 = window.setTimeout(onResize, 300);
     const t2 = window.setTimeout(onResize, 1500);
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -116,8 +105,7 @@ export function useScrollProgress(): ScrollProgress {
       window.removeEventListener("resize", onResize);
       cancelAnimationFrame(raf);
     };
-
   }, []);
 
-  return { progress, section, value };
+  return { progress, section };
 }
