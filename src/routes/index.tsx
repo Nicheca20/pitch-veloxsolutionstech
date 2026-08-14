@@ -211,6 +211,7 @@ function Pitch() {
     let holdTimer: number | null = null;
     let raf = 0;
     let holding = false;
+    let didHold = false;
     let last = 0;
 
     const stopHold = () => {
@@ -223,6 +224,7 @@ function Pitch() {
 
     const startHold = (dir: 1 | -1) => {
       holding = true;
+      didHold = true;
       if (tween.current !== null) {
         cancelAnimationFrame(tween.current);
         tween.current = null;
@@ -242,25 +244,24 @@ function Pitch() {
     };
 
     const onDown = (e: MouseEvent) => {
+      didHold = false;
       if (interactive(e.target)) return;
       if (e.button !== 0 && e.button !== 2) return;
       const dir: 1 | -1 = e.button === 2 ? -1 : 1;
       holdTimer = window.setTimeout(() => startHold(dir), 280);
     };
     const onUp = () => {
-      const wasHolding = holding;
       stopHold();
-      return wasHolding;
     };
     const onClick = (e: MouseEvent) => {
       if (interactive(e.target)) return;
-      if (holding) return;
+      if (didHold) return;
       step(1);
     };
     const onCtx = (e: MouseEvent) => {
       if (interactive(e.target)) return;
       e.preventDefault();
-      if (holding) return;
+      if (didHold) return;
       step(-1);
     };
 
