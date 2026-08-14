@@ -157,29 +157,14 @@ function Pitch() {
     };
   }, []);
 
-  /** Avance "tipo diapositiva": si hay un inicio de sección cerca, salta ahí;
-   *  si la sección es más alta que la pantalla, avanza ~85% de viewport.
-   *  Pensado para punteros láser / clickers (flechas, PageUp/PageDown, click). */
+  /** Avance fino por click: cada avance baja solo ~25 % del viewport.
+   *  Así no se saltan las animaciones ni los modelos 3D al usar un puntero láser/clicker. */
   const step = useCallback(
     (dir: 1 | -1) => {
       const vh = window.innerHeight;
       const y = window.scrollY;
-      const tops = sections
-        .map((s) => document.getElementById(s.id))
-        .filter(Boolean)
-        .map((el) => (el as HTMLElement).getBoundingClientRect().top + window.scrollY);
-
-      const page = y + dir * vh * 0.85;
-      // Buscamos el borde de sección en la dirección del avance
-      const edge =
-        dir === 1
-          ? tops.find((t) => t > y + 8)
-          : [...tops].reverse().find((t) => t < y - 8);
-
-      let target = page;
-      if (edge !== undefined) {
-        target = dir === 1 ? Math.min(page, edge) : Math.max(page, edge);
-      }
+      const max = document.body.scrollHeight - vh;
+      const target = Math.max(0, Math.min(max, y + dir * vh * 0.25));
       smoothScrollTo(target);
     },
     [smoothScrollTo],
