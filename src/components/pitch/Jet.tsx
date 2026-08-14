@@ -36,17 +36,17 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
     g.scale.set(1, 1, (0.5 + p * 1.6) * flicker);
     g.children.forEach((c) => {
       const m = (c as THREE.Mesh).material as THREE.MeshBasicMaterial;
-      m.opacity = p * 0.85 * flicker;
+      m.opacity = p * 0.55 * flicker;
     });
   });
 
   return (
     <group ref={core} position={[0, 0.15, 3.2]}>
       {[
-        [-0.28, 0.2, FORCE],
-        [0.28, 0.2, FORCE],
-        [-0.28, 0.1, ICE],
-        [0.28, 0.1, ICE],
+        [-0.3, 0.13, FORCE],
+        [0.3, 0.13, FORCE],
+        [-0.3, 0.07, ICE],
+        [0.3, 0.07, ICE],
       ].map(([x, r, color], i) => (
         <mesh key={i} position={[x as number, 0, 0.4]} rotation={[Math.PI / 2, 0, 0]}>
           <coneGeometry args={[r as number, 1.5, 14, 1, true]} />
@@ -156,7 +156,8 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
       const dy = bb.max.y - bb.min.y;
       const dz = bb.max.z - bb.min.z;
       const dims = [dx, dy, dz].sort((a, b) => a - b);
-      if (dims[0]! < 0.03 * dims[2]!) junk.push(mesh);
+      // planos/discos de estudio o domos de fondo: muy chatos o desmesurados
+      if (dims[0]! < 0.03 * dims[2]! || dx * dz > 350) junk.push(mesh);
     });
     junk.forEach((o) => o.parent?.remove(o));
 
