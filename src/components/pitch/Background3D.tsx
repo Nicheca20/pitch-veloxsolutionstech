@@ -8,6 +8,8 @@ import * as THREE from "three";
 import { CAR_WINDOW, F1Car, carPhase } from "./F1Car";
 import { JET_WINDOW, Jet } from "./Jet";
 import { BIKE_WINDOW, Bike } from "./Bike";
+import { QualityProvider, QualitySensor, TextureBudget, useAdaptiveQuality } from "./quality";
+
 
 const FOG = "#0a0820";
 const GRID = "#7F77DD";
