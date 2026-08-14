@@ -225,15 +225,17 @@ function Pitch() {
               /* Ritmo vertical uniforme: todas las secciones con contenido
                  extendido miden lo mismo, para no romper el hilo conductor. */
               className={
-                s.id === "problema" ||
-                s.id === "consecuencia" ||
-                s.id === "solucion" ||
-                s.id === "diferencial" ||
-                s.id === "cronista" ||
-                s.id === "adium" ||
-                s.id === "cta"
-                  ? "py-[10vh] min-h-[170vh]"
-                  : undefined
+                s.id === "hook"
+                  ? "min-h-[78vh] justify-start pt-[18vh]"
+                  : s.id === "problema" ||
+                      s.id === "consecuencia" ||
+                      s.id === "solucion" ||
+                      s.id === "diferencial" ||
+                      s.id === "cronista" ||
+                      s.id === "adium" ||
+                      s.id === "cta"
+                    ? "py-[10vh] min-h-[170vh]"
+                    : undefined
               }
 
             />
