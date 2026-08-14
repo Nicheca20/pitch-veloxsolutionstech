@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 const STAGES = [
-  { label: "Descubrir", pos: "left-1/2 top-2 -translate-x-1/2", dot: "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2" },
-  { label: "Definir", pos: "right-2 top-1/2 translate-x-1/2 -translate-y-1/2", dot: "left-0 top-1/2 -translate-x-1/2 -translate-y-1/2" },
-  { label: "Diseñar", pos: "left-1/2 bottom-2 -translate-x-1/2 translate-y-1/2", dot: "top-0 left-1/2 -translate-x-1/2 -translate-y-1/2" },
-  { label: "Entregar", pos: "left-2 top-1/2 -translate-x-1/2 -translate-y-1/2", dot: "right-0 top-1/2 translate-x-1/2 -translate-y-1/2" },
+  { label: "Descubrir", pos: "left-1/2 top-[8%] -translate-x-1/2", dot: "bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2" },
+  { label: "Definir", pos: "right-[8%] top-1/2 translate-x-1/2 -translate-y-1/2", dot: "left-0 top-1/2 -translate-x-1/2 -translate-y-1/2" },
+  { label: "Diseñar", pos: "left-1/2 bottom-[8%] -translate-x-1/2 translate-y-1/2", dot: "top-0 left-1/2 -translate-x-1/2 -translate-y-1/2" },
+  { label: "Entregar", pos: "left-[8%] top-1/2 -translate-x-1/2 -translate-y-1/2", dot: "right-0 top-1/2 translate-x-1/2 -translate-y-1/2" },
 ];
 
 export function DataCycle() {
