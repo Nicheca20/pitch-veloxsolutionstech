@@ -114,14 +114,16 @@ export default function VeloxBackground() {
     }
 
     let last = 0;
-    const FRAME = 1000 / 30; // perf: 30fps es suficiente para el fondo
+    // 60fps para que el fondo no se vea "a saltos"; el paso de tiempo se
+    // reduce a la mitad para conservar la misma velocidad aparente.
+    const FRAME = 1000 / 60;
 
     function draw(now?: number) {
       raf = requestAnimationFrame(draw);
       const ts = now ?? 0;
       if (ts - last < FRAME) return;
       last = ts;
-      t += 2;
+      t += 1;
       const cx = W / 2;
 
       // Cielo
