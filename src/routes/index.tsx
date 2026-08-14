@@ -307,9 +307,9 @@ function Pitch() {
       />
 
       <div
-        className={`fixed inset-x-0 bottom-8 z-20 flex justify-center text-[10px] uppercase tracking-[0.3em] text-foreground/45 transition-opacity duration-500 print:hidden ${
-          barProgress > 0.01 ? "opacity-0" : "opacity-100"
-        }`}
+        ref={hintRef}
+        style={{ opacity: 1 }}
+        className="fixed inset-x-0 bottom-8 z-20 flex justify-center text-[10px] uppercase tracking-[0.3em] text-foreground/45 transition-opacity duration-500 print:hidden"
       >
         <span className="animate-bounce">Scroll ↓</span>
       </div>
