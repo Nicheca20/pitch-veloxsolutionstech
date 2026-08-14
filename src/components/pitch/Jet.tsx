@@ -71,8 +71,8 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
 /* ------------------------------------------------------------------- Estela */
 /** Toberas: mismas posiciones que los conos del postquemador. */
 const NOZZLES: [number, number, number][] = [
-  [-0.3, -0.05, 3.6],
-  [0.3, -0.05, 3.6],
+  [-0.3, -0.16, 3.42],
+  [0.3, -0.16, 3.42],
 ];
 
 
@@ -88,9 +88,9 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
         ox: n[0],
         oy: n[1],
         oz: n[2],
-        jx: (Math.random() - 0.5) * 0.1,
-        jy: (Math.random() - 0.5) * 0.1,
-        spread: 0.3 + Math.random() * 0.5,
+        jx: (Math.random() - 0.5) * 0.055,
+        jy: (Math.random() - 0.5) * 0.055,
+        spread: 0.18 + Math.random() * 0.3,
         speed: 0.35 + Math.random() * 0.9,
         offset: Math.random(),
       };
@@ -116,12 +116,14 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
       const s = seeds[i]!;
       const life = (t * s.speed + s.offset) % 1;
       const d = life * 20;
+      // Densidad extra al inicio: evita el hueco visual entre tobera y estela.
+      const nozzleLife = life * life;
       // nace exactamente en la tobera y se aleja recto por el eje del motor (+Z)
       attr.setXYZ(
         i,
-        s.ox + s.jx * life * s.spread,
-        s.oy + s.jy * life * s.spread,
-        s.oz + d,
+        s.ox + s.jx * nozzleLife * s.spread,
+        s.oy + s.jy * nozzleLife * s.spread,
+        s.oz + nozzleLife * d,
       );
 
     }
