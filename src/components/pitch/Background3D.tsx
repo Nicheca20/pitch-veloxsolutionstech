@@ -259,17 +259,17 @@ function ReflectiveFloor() {
     >
       <planeGeometry args={[420, 420]} />
       <MeshReflectorMaterial
-        resolution={512}
-        mirror={0.72}
-        mixBlur={7}
-        mixStrength={2.2}
-        blur={[400, 120]}
-        depthScale={1.1}
-        minDepthThreshold={0.3}
-        maxDepthThreshold={1.4}
-        color="#0b0920"
-        metalness={0.75}
-        roughness={0.85}
+        resolution={1024}
+        mirror={0.95}
+        mixBlur={2.2}
+        mixStrength={3.2}
+        blur={[220, 60]}
+        depthScale={0.9}
+        minDepthThreshold={0.2}
+        maxDepthThreshold={1.2}
+        color="#0a0820"
+        metalness={0.9}
+        roughness={0.45}
       />
     </mesh>
   );
