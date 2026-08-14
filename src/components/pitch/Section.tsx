@@ -9,6 +9,7 @@ export function Section({
   extra,
   below,
   right,
+  align,
   className,
 }: {
   data: SectionData;
@@ -17,6 +18,7 @@ export function Section({
   extra?: React.ReactNode;
   below?: React.ReactNode;
   right?: React.ReactNode;
+  align?: "center" | "start" | undefined;
   className?: string | undefined;
 }) {
   const ref = useRef<HTMLElement>(null);
@@ -49,9 +51,9 @@ export function Section({
 
     >
       <div
-        className={`relative z-10 flex w-full items-center gap-8 ${
-          right ? "flex-col lg:flex-row lg:justify-between" : ""
-        }`}
+        className={`relative z-10 flex w-full gap-8 ${
+          align === "start" ? "items-start" : "items-center"
+        } ${right ? "flex-col lg:flex-row lg:justify-between" : ""}`}
       >
         {/* Kicker + título: SIEMPRE alineados a la izquierda */}
         <div className={`text-veil text-left ${right ? "w-full lg:max-w-[42%]" : "w-full max-w-[46rem]"}`}>
@@ -103,7 +105,7 @@ export function Section({
         </div>
 
         {right && (
-          <div className="flex w-full items-center justify-center lg:w-[58%] lg:justify-start lg:pl-8">
+          <div className={`flex w-full justify-center lg:w-[58%] lg:justify-start lg:pl-8 ${align === "start" ? "items-start" : "items-center"}`}>
             {right}
           </div>
         )}
