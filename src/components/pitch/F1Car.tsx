@@ -1,4 +1,5 @@
 import { useFrame } from "@react-three/fiber";
+import { softPointTexture } from "./soft-point";
 import { useGLTF } from "@react-three/drei";
 import { useEffect, useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
@@ -68,6 +69,8 @@ function Sparks({ active }: { active: MutableRefObject<number> }) {
       <pointsMaterial
         size={0.05}
         color={ICE}
+        map={softPointTexture()}
+        alphaMap={softPointTexture()}
         transparent
         depthWrite={false}
         blending={THREE.AdditiveBlending}

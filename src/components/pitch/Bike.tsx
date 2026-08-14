@@ -1,4 +1,5 @@
 import { useFrame } from "@react-three/fiber";
+import { softPointTexture } from "./soft-point";
 import { useGLTF } from "@react-three/drei";
 import { useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
@@ -67,6 +68,8 @@ function CloudTrack({ power }: { power: MutableRefObject<number> }) {
       <pointsMaterial
         size={0.16}
         vertexColors
+        map={softPointTexture()}
+        alphaMap={softPointTexture()}
         transparent
         opacity={0.5}
         depthWrite={false}
