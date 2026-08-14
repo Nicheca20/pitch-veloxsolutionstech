@@ -226,8 +226,8 @@ function SpeedGrid({ section }: { section: Ref }) {
 
   useFrame(({ camera }, dt) => {
     const k = Math.min(3.2, flow(section.current));
-    material.uniforms['uRun']!.value = (material.uniforms['uRun']!.value + dt * 60 * k) % 9;
-    material.uniforms['uIntensity']!.value = 0.7 + (k - 1) * 0.4;
+    material.uniforms['uRun']!.value = (material.uniforms['uRun']!.value + dt * 16 * k) % 9;
+    material.uniforms['uIntensity']!.value = 0.42 + (k - 1) * 0.22;
     if (mesh.current) mesh.current.position.z = camera.position.z;
   });
 
@@ -259,17 +259,17 @@ function ReflectiveFloor() {
     >
       <planeGeometry args={[420, 420]} />
       <MeshReflectorMaterial
-        resolution={512}
-        mirror={0.72}
-        mixBlur={7}
-        mixStrength={2.2}
-        blur={[400, 120]}
-        depthScale={1.1}
-        minDepthThreshold={0.3}
-        maxDepthThreshold={1.4}
-        color="#0b0920"
-        metalness={0.75}
-        roughness={0.85}
+        resolution={1024}
+        mirror={0.95}
+        mixBlur={2.2}
+        mixStrength={3.2}
+        blur={[220, 60]}
+        depthScale={0.9}
+        minDepthThreshold={0.2}
+        maxDepthThreshold={1.2}
+        color="#0a0820"
+        metalness={0.9}
+        roughness={0.45}
       />
     </mesh>
   );
@@ -361,14 +361,14 @@ function Streaks({
     const pos = new Float32Array(count * 6);
     const speeds = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      const r = 6 + Math.random() * 42;
+      const r = 8 + Math.random() * 44;
       const a = Math.random() * Math.PI * 2;
       const x = ground ? (Math.random() - 0.5) * 90 : Math.cos(a) * r;
       const y = ground ? FLOOR_Y + 0.12 + Math.random() * 0.5 : Math.sin(a) * r * 0.45;
       const z = -Math.random() * depth;
-      const len = 2 + Math.random() * 6;
+      const len = 9 + Math.random() * 20;
       pos.set([x, y, z, x, y, z - len], i * 6);
-      speeds[i] = 28 + Math.random() * 55;
+      speeds[i] = 16 + Math.random() * 30;
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
@@ -396,8 +396,8 @@ function Streaks({
     }
     attr.needsUpdate = true;
     if (mat.current) {
-      mat.current.opacity = Math.min(0.6, 0.12 + (k - 0.7) * 0.24);
-      mat.current.color.setHSL(0.68, 0.55, 0.6 + Math.sin(clock.elapsedTime + (ground ? 1 : 0)) * 0.06);
+      mat.current.opacity = Math.min(0.3, 0.07 + (k - 0.7) * 0.12);
+      mat.current.color.setHSL(0.68, 0.5, 0.62 + Math.sin(clock.elapsedTime + (ground ? 1 : 0)) * 0.04);
     }
   });
 
@@ -537,14 +537,14 @@ function ParticleField({ section, count = 26000 }: { section: Ref; count?: numbe
     if (!o) return;
     const k = Math.min(3.2, flow(section.current));
     const p = pulse(clock.elapsedTime);
-    drift.current = (drift.current + dt * 9 * k) % 170;
-    o.rotation.y += dt * 0.02 * k;
+    drift.current = (drift.current + dt * 5 * k) % 170;
+    o.rotation.y += dt * 0.01 * k;
     o.position.z = camera.position.z - 40 + drift.current;
     o.position.y = Math.sin(clock.elapsedTime * 0.15) * 0.6;
     o.scale.setScalar(1 + p * 0.14);
     material.uniforms['uScale']!.value = size.height * 0.5;
-    material.uniforms['uSize']!.value = 0.14 * (1 + (k - 1) * 0.5 + p * 1.4);
-    material.uniforms['uOpacity']!.value = Math.min(1, 0.7 + p * 0.3);
+    material.uniforms['uSize']!.value = 0.12 * (1 + (k - 1) * 0.4 + p * 1.2);
+    material.uniforms['uOpacity']!.value = Math.min(0.6, 0.35 + p * 0.25);
   });
 
   return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} />;
@@ -596,8 +596,8 @@ function AccentStreaks({ section, count = 1800 }: { section: Ref; count?: number
     }
     attr.needsUpdate = true;
     material.uniforms['uScale']!.value = size.height * 0.5;
-    material.uniforms['uSize']!.value = 0.75 * (1 + (k - 1) * 0.6);
-    material.uniforms['uOpacity']!.value = 0.5;
+    material.uniforms['uSize']!.value = 0.6 * (1 + (k - 1) * 0.4);
+    material.uniforms['uOpacity']!.value = 0.22;
   });
 
   return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} />;
@@ -691,10 +691,10 @@ export function Background3D({ section }: { section: Ref }) {
       <ReflectiveFloor />
       <SpeedGrid section={section} />
       <HorizonGlow />
-      <ParticleField section={section} />
-      <AccentStreaks section={section} />
-      <Streaks section={section} count={800} color="#AFA9EC" />
-      <Streaks section={section} count={420} ground color="#7F77DD" />
+      <ParticleField section={section} count={5000} />
+      <AccentStreaks section={section} count={420} />
+      <Streaks section={section} count={260} color="#AFA9EC" />
+      <Streaks section={section} count={120} ground color="#7F77DD" />
       <LazyCar section={section} />
       <LazyJet section={section} />
       <LazyBike section={section} />
