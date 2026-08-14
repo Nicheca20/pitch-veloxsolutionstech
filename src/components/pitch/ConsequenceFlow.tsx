@@ -19,7 +19,7 @@ const STEPS = [
   },
   {
     icon: TrendingDown,
-    title: "Deal muerto antes del go-live",
+    title: "Deal muerto",
     tag: "sin renovación",
   },
 ] as const;
