@@ -3,6 +3,8 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { brand, sections } from "@/content";
 import { Section } from "@/components/pitch/Section";
 import { NavDots } from "@/components/pitch/NavDots";
+import { LogoStrip } from "@/components/pitch/LogoStrip";
+
 import { ProgressBar } from "@/components/pitch/ProgressBar";
 import { Preloader } from "@/components/pitch/Preloader";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
@@ -162,8 +164,12 @@ function Pitch() {
           {brand.name} — {brand.tagline}
         </h1>
         {sections.map((s, i) => (
-          <Section key={s.id} data={s} first={i === 0} />
+          <div key={s.id}>
+            <Section data={s} first={i === 0} />
+            {i === 0 && <LogoStrip />}
+          </div>
         ))}
+
 
         <footer className="relative z-10 px-6 pb-24 md:px-16 lg:px-24">
           <div className="text-veil relative grid gap-6 sm:grid-cols-2">
