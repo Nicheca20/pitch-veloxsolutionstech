@@ -364,15 +364,17 @@ export function Background3D({ section }: { section: Ref }) {
       onCreated={({ gl, scene }) => {
         gl.shadowMap.enabled = false;
         gl.setClearColor(0x000000, 0);
-        scene.fog = new THREE.Fog(FOG, 14, 95);
+        scene.fog = new THREE.Fog(FOG, 18, 120);
       }}
     >
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[6, 8, 6]} intensity={0.6} color="#AFA9EC" />
-      <directionalLight position={[-8, -4, -6]} intensity={0.35} color="#534AB7" />
+      <ambientLight intensity={0.55} />
+      <directionalLight position={[6, 8, 6]} intensity={0.7} color="#AFA9EC" />
+      <directionalLight position={[-8, -4, -6]} intensity={0.4} color="#534AB7" />
+      <GradientSky />
       <CameraRig section={section} />
       <SpeedGrid section={section} />
       <ParticleField section={section} />
+      <AccentStreaks section={section} />
       <Streaks section={section} />
       <LazyCar section={section} />
       <LazyJet section={section} />
@@ -382,5 +384,5 @@ export function Background3D({ section }: { section: Ref }) {
       </EffectComposer>
     </Canvas>
   );
-
 }
+
