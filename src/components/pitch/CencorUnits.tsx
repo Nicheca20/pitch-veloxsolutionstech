@@ -54,6 +54,8 @@ export function CencorUnits() {
             }}
           >
             <img
+              loading="lazy"
+              decoding="async"
               src={u.src}
               alt={`Logo de ${u.name}`}
               loading="lazy"

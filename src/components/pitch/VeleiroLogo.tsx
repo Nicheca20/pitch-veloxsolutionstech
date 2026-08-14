@@ -30,6 +30,8 @@ export function VeleiroLogo() {
       >
         <div className="flex h-10 items-center md:h-12 lg:h-14">
           <img
+            loading="lazy"
+            decoding="async"
             src={veleiro.url}
             alt="Veleiro AI"
             className="h-full w-auto object-contain"
@@ -40,6 +42,8 @@ export function VeleiroLogo() {
         </div>
         <div className="flex h-10 items-center pt-1 md:h-12 lg:h-14">
           <img
+            loading="lazy"
+            decoding="async"
             src={agentforce.url}
             alt="AgentForce"
             className="h-full w-auto object-contain"

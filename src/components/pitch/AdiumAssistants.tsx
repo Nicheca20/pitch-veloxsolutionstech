@@ -73,7 +73,7 @@ export function AdiumAssistants() {
             >
               <div className="flex items-center gap-3">
                 <div className="flex size-14 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
-                  <img src={c.logo} alt={c.logoAlt} className="size-8 object-contain" loading="lazy" />
+                  <img loading="lazy" decoding="async" src={c.logo} alt={c.logoAlt} className="size-8 object-contain" loading="lazy" />
                 </div>
                 <div className="text-[0.85rem] uppercase tracking-[0.28em] text-foreground">
                   {c.eyebrow}

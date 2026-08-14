@@ -64,6 +64,8 @@ export function LogoStrip() {
             }}
           >
             <img
+              loading="lazy"
+              decoding="async"
               src={l.src}
               alt={`Logo de ${l.name}`}
               loading="lazy"
