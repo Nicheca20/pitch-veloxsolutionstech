@@ -210,6 +210,24 @@ function Pitch() {
               data={s}
               first={i === 0}
               afterTitle={s.id === "solucion" ? <VeleiroLogo /> : undefined}
+              extra={
+                s.id === "cta" ? (
+                  <div className="mt-10 flex items-center gap-5">
+                    <div className="rounded-2xl border border-white/15 bg-white p-3">
+                      <img
+                        loading="lazy"
+                        decoding="async"
+                        src={qr.url}
+                        alt="Código QR para agendar el diagnóstico con Velox Solutions"
+                        className="size-[9rem] object-contain md:size-[11rem]"
+                      />
+                    </div>
+                    <div className="max-w-[16rem] text-sm uppercase tracking-[0.22em] text-foreground/70">
+                      Escaneá el QR y agendá tu diagnóstico
+                    </div>
+                  </div>
+                ) : undefined
+              }
               below={
                 s.id === "problema" ? (
                   <ProblemFlow />
