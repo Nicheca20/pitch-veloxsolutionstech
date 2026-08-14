@@ -264,11 +264,11 @@ function ReflectiveFloor() {
     >
       <planeGeometry args={[420, 420]} />
       <MeshReflectorMaterial
-        resolution={1024}
-        mirror={0.95}
-        mixBlur={2.2}
-        mixStrength={3.2}
-        blur={[220, 60]}
+        resolution={256}
+        mirror={0.9}
+        mixBlur={1.4}
+        mixStrength={2.4}
+        blur={[90, 30]}
         depthScale={0.9}
         minDepthThreshold={0.2}
         maxDepthThreshold={1.2}
@@ -308,7 +308,7 @@ function HorizonGlow() {
 }
 
 /** Estrellas tenues en el cielo. */
-function Stars({ count = 1400 }: { count?: number }) {
+function Stars({ count = 600 }: { count?: number }) {
   const ref = useRef<THREE.Points>(null);
   const geometry = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -776,7 +776,7 @@ function DynamicBloom({ section, quality }: { section: Ref; quality: number }) {
       luminanceThreshold={0.42}
       luminanceSmoothing={0.5}
       mipmapBlur
-      resolutionScale={quality > 0.6 ? 0.35 : 0.25}
+      resolutionScale={quality > 0.6 ? 0.25 : 0.18}
       kernelSize={KernelSize.SMALL}
     />
   );
@@ -785,7 +785,7 @@ function DynamicBloom({ section, quality }: { section: Ref; quality: number }) {
 export function Background3D({ section }: { section: Ref }) {
   // dpr adaptativo: baja solo si los fps caen (limitado a 2 como máximo)
   const [dpr, setDpr] = useState(() =>
-    typeof window === "undefined" ? 1 : Math.min(1.1, window.devicePixelRatio || 1),
+    typeof window === "undefined" ? 0.85 : Math.min(0.9, window.devicePixelRatio || 1),
   );
   const [quality, setQuality] = useState(1);
 
@@ -811,15 +811,15 @@ export function Background3D({ section }: { section: Ref }) {
         bounds={() => [50, 60]}
         flipflops={3}
         onIncline={() => {
-          setDpr((d) => Math.min(1.25, d + 0.15));
+          setDpr((d) => Math.min(1, d + 0.1));
           setQuality(1);
         }}
         onDecline={() => {
-          setDpr((d) => Math.max(0.6, d - 0.2));
+          setDpr((d) => Math.max(0.5, d - 0.2));
           setQuality(0.5);
         }}
         onFallback={() => {
-          setDpr(0.7);
+          setDpr(0.5);
           setQuality(0.5);
         }}
       />
