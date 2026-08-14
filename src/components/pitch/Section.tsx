@@ -45,7 +45,7 @@ export function Section({
         }`}
       >
         {/* Kicker + título: SIEMPRE alineados a la izquierda */}
-        <div className={`text-veil text-left ${right ? "w-full lg:max-w-[52%]" : "w-full max-w-[46rem]"}`}>
+        <div className={`text-veil text-left ${right ? "w-full lg:max-w-[48%]" : "w-full max-w-[46rem]"}`}>
           <div className="mb-5 flex items-center gap-3">
             <span className="text-[11px] font-semibold tracking-[0.3em] text-[var(--force)]">{data.index}</span>
             <span className="h-px w-8 bg-velox-gradient" />
@@ -93,7 +93,7 @@ export function Section({
         </div>
 
         {right && (
-          <div className="flex w-full items-center justify-center lg:w-auto lg:justify-end">
+          <div className="flex flex-1 items-center justify-center">
             {right}
           </div>
         )}
