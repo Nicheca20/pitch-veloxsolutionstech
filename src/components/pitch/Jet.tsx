@@ -46,7 +46,7 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
   });
 
   return (
-    <group ref={core} position={[0, 0.15, 3.2]}>
+    <group ref={core} position={[0, -0.22, 3.2]}>
       {[
         [-0.3, 0.13, FORCE],
         [0.3, 0.13, FORCE],
