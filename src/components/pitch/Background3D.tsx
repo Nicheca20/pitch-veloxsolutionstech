@@ -537,14 +537,14 @@ function ParticleField({ section, count = 26000 }: { section: Ref; count?: numbe
     if (!o) return;
     const k = Math.min(3.2, flow(section.current));
     const p = pulse(clock.elapsedTime);
-    drift.current = (drift.current + dt * 9 * k) % 170;
-    o.rotation.y += dt * 0.02 * k;
+    drift.current = (drift.current + dt * 5 * k) % 170;
+    o.rotation.y += dt * 0.01 * k;
     o.position.z = camera.position.z - 40 + drift.current;
     o.position.y = Math.sin(clock.elapsedTime * 0.15) * 0.6;
     o.scale.setScalar(1 + p * 0.14);
     material.uniforms['uScale']!.value = size.height * 0.5;
-    material.uniforms['uSize']!.value = 0.14 * (1 + (k - 1) * 0.5 + p * 1.4);
-    material.uniforms['uOpacity']!.value = Math.min(1, 0.7 + p * 0.3);
+    material.uniforms['uSize']!.value = 0.12 * (1 + (k - 1) * 0.4 + p * 1.2);
+    material.uniforms['uOpacity']!.value = Math.min(0.6, 0.35 + p * 0.25);
   });
 
   return <points ref={ref} geometry={geometry} material={material} frustumCulled={false} />;
