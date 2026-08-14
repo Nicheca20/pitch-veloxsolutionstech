@@ -55,7 +55,7 @@ export function DataCycle() {
   return (
     <div
       ref={ref}
-      className="relative mx-auto aspect-square w-full max-w-[520px] select-none"
+      className="relative mx-auto aspect-square w-full max-w-[520px] select-none overflow-visible"
       aria-label="Ciclo de trabajo: Activo de datos único conecta Descubrir, Definir, Diseñar y Entregar"
     >
       {/* SVG: ciclo exterior + radiales */}
