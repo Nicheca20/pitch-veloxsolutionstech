@@ -38,15 +38,57 @@ export function useScrollProgress(): ScrollProgress {
       return bounds.length - 1 + 0.999;
     };
 
-    const read = () => {
+    let target = 0;
+    let targetSection = 0;
+    let idle = 0;
+    let running = false;
+
+    const sample = () => {
       const vh = window.innerHeight;
       const max = document.body.scrollHeight - vh;
-      const p = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
-      progress.current = p;
-      section.current = sectionIndex(window.scrollY);
-      // perf: sólo re-renderizamos la UI cuando el progreso cambia de forma
-      // perceptible (~0.5%). Evita cientos de renders del árbol por scroll.
-      setValue((prev) => (Math.abs(prev - p) > 0.005 || p === 0 || p === 1 ? p : prev));
+      target = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      targetSection = sectionIndex(window.scrollY);
+    };
+
+    // Loop continuo con interpolación: el valor nunca "salta" de una posición a
+    // otra, se desliza hacia el destino (misma sensación a 30 o 144 fps).
+    let lastT = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min(0.05, (now - lastT) / 1000);
+      lastT = now;
+      const k = 1 - Math.exp(-dt * 12);
+      const dp = target - progress.current;
+      const ds = targetSection - section.current;
+      progress.current += dp * k;
+      section.current += ds * k;
+      setValue((prev) =>
+        Math.abs(prev - progress.current) > 0.001 ? progress.current : prev,
+      );
+      if (Math.abs(dp) < 0.0002 && Math.abs(ds) < 0.0005) {
+        idle += dt;
+      } else {
+        idle = 0;
+      }
+      if (idle > 0.3) {
+        progress.current = target;
+        section.current = targetSection;
+        running = false;
+        return;
+      }
+      raf = requestAnimationFrame(tick);
+    };
+
+    const start = () => {
+      if (running) return;
+      running = true;
+      idle = 0;
+      lastT = performance.now();
+      raf = requestAnimationFrame(tick);
+    };
+
+    const read = () => {
+      sample();
+      start();
     };
     const onResize = () => {
       measure();
@@ -54,11 +96,14 @@ export function useScrollProgress(): ScrollProgress {
     };
 
     const onScroll = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(read);
+      sample();
+      start();
     };
     measure();
-    read();
+    sample();
+    progress.current = target;
+    section.current = targetSection;
+    setValue(target);
     // Las secciones se montan/animan tras el primer render: re-medimos poco después.
     const t1 = window.setTimeout(onResize, 300);
     const t2 = window.setTimeout(onResize, 1500);
