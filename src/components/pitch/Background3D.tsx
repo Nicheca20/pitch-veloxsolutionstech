@@ -782,10 +782,11 @@ function DynamicBloom({ section, quality }: { section: Ref; quality: number }) {
   );
 }
 
-export function Background3D({ section }: { section: Ref }) {
-  // dpr adaptativo: baja solo si los fps caen (limitado a 2 como máximo)
+export function Background3D({ section, lite = false }: { section: Ref; lite?: boolean }) {
+  // dpr adaptativo: baja solo si los fps caen. En móvil ("lite") se limita más.
+  const maxDpr = lite ? 0.9 : 1.1;
   const [dpr, setDpr] = useState(() =>
-    typeof window === "undefined" ? 1 : Math.min(1.1, window.devicePixelRatio || 1),
+    typeof window === "undefined" ? 1 : Math.min(maxDpr, window.devicePixelRatio || 1),
   );
   const [quality, setQuality] = useState(1);
 
@@ -800,7 +801,7 @@ export function Background3D({ section }: { section: Ref }) {
         stencil: false,
         depth: true,
       }}
-      camera={{ fov: 65, near: 0.1, far: 400, position: [0, 1.2, 16] }}
+      camera={{ fov: lite ? 78 : 65, near: 0.1, far: 400, position: [0, 1.2, 16] }}
       onCreated={({ gl, scene }) => {
         gl.shadowMap.enabled = false;
         gl.setClearColor(0x000000, 0);
@@ -811,20 +812,20 @@ export function Background3D({ section }: { section: Ref }) {
         bounds={() => [50, 60]}
         flipflops={3}
         onIncline={() => {
-          setDpr((d) => Math.min(1.25, d + 0.15));
+          setDpr((d) => Math.min(lite ? 1 : 1.25, d + 0.15));
           setQuality(1);
         }}
         onDecline={() => {
-          setDpr((d) => Math.max(0.6, d - 0.2));
+          setDpr((d) => Math.max(0.55, d - 0.2));
           setQuality(0.5);
         }}
         onFallback={() => {
-          setDpr(0.7);
+          setDpr(lite ? 0.6 : 0.7);
           setQuality(0.5);
         }}
       />
       <AdaptiveDpr />
-      <ambientLight intensity={0.55} />
+      <ambientLight intensity={lite ? 0.8 : 0.55} />
       <directionalLight position={[6, 8, 6]} intensity={0.7} color="#AFA9EC" />
       <directionalLight position={[-8, -4, -6]} intensity={0.4} color="#534AB7" />
       <CameraRig section={section} />
@@ -833,11 +834,14 @@ export function Background3D({ section }: { section: Ref }) {
       <LazyCar section={section} />
       <LazyJet section={section} />
       <LazyBike section={section} />
-      <EffectComposer enableNormalPass={false} multisampling={0}>
-        <DynamicBloom section={section} quality={quality} />
-      </EffectComposer>
+      {!lite && (
+        <EffectComposer enableNormalPass={false} multisampling={0}>
+          <DynamicBloom section={section} quality={quality} />
+        </EffectComposer>
+      )}
     </Canvas>
   );
 }
+
 
 
