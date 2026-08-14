@@ -308,8 +308,33 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
 
   useEffect(() => () => void model.traverse(() => {}), [model]);
 
-  const setOpacity = (v: number) => {
-    model.traverse((o) => {
+  /** Copias fantasma: simulan desenfoque acumulando siluetas desplazadas. */
+  const ghosts = useMemo(() => {
+    return [0, 1, 2, 3].map(() => {
+      const g = model.clone(true);
+      g.traverse((o) => {
+        const mesh = o as THREE.Mesh;
+        if (!mesh.isMesh) return;
+        const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+        const clone = (mm: THREE.Material) => {
+          const c = mm.clone();
+          c.transparent = true;
+          c.depthWrite = false;
+          c.opacity = 0;
+          return c;
+        };
+        mesh.material = Array.isArray(mesh.material)
+          ? mats.map((mm) => clone(mm as THREE.Material))
+          : clone(mats[0] as THREE.Material);
+      });
+      return g;
+    });
+  }, [model]);
+
+  const ghostRefs = useRef<(THREE.Group | null)[]>([]);
+
+  const setOpacity = (target: THREE.Object3D, v: number) => {
+    target.traverse((o) => {
       const mesh = o as THREE.Mesh;
       if (!mesh.isMesh) return;
       const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
@@ -341,7 +366,26 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
 
     // fundido en ambos extremos: nunca aparece ni desaparece de golpe
     const fade = smooth(clamp01(s / 0.14)) * smooth(clamp01((1 - s) / 0.12));
-    setOpacity(fade);
+
+    // desenfoque: alto al entrar (1) → nítido en el pit (0) → leve al salir
+    const blurIn = 1 - smooth(clamp01(s / 0.42));
+    const blurOut = smooth(clamp01((s - 0.72) / 0.28)) * 0.55;
+    const blur = clamp01(Math.max(blurIn, blurOut));
+
+    // el cuerpo nítido gana presencia conforme baja el blur
+    setOpacity(model, fade * (1 - 0.55 * blur));
+
+    ghostRefs.current.forEach((gh, i) => {
+      if (!gh) return;
+      const amt = fade * blur * (0.42 - i * 0.07);
+      gh.visible = amt > 0.005;
+      if (!gh.visible) return;
+      const ang = (i / 4) * Math.PI * 2 + 0.4;
+      const r = blur * (0.16 + i * 0.1);
+      gh.position.set(Math.cos(ang) * r, Math.sin(ang) * r * 0.6, blur * (0.2 + i * 0.18));
+      gh.scale.setScalar(1 + blur * 0.012 * (i + 1));
+      setOpacity(gh, amt);
+    });
 
     pit.current = stopped * fade;
     spin.current = Math.max(1 - stopped, exit) * fade;
@@ -358,6 +402,17 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
     <group ref={root} position={CAR_FOCUS.toArray()} visible={false}>
       <group ref={car}>
         <primitive object={model} />
+        {ghosts.map((gh, i) => (
+          <group
+            key={i}
+            ref={(el) => {
+              ghostRefs.current[i] = el;
+            }}
+            visible={false}
+          >
+            <primitive object={gh} />
+          </group>
+        ))}
         <SpinRings visible={spin} />
         <Sparks active={pit} />
         {/* luz de acento pegada al carro */}
@@ -368,3 +423,4 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
     </group>
   );
 }
+
