@@ -4,6 +4,7 @@ import { brand, sections } from "@/content";
 import { Section } from "@/components/pitch/Section";
 import { NavDots } from "@/components/pitch/NavDots";
 import { LogoStrip } from "@/components/pitch/LogoStrip";
+import { SolutionTimeline } from "@/components/pitch/SolutionTimeline";
 import { CencorUnits } from "@/components/pitch/CencorUnits";
 import { ClientLogo } from "@/components/pitch/ClientLogo";
 import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
@@ -180,6 +181,7 @@ function Pitch() {
               first={i === 0}
               afterTitle={s.id === "solucion" ? <VeleiroLogo /> : undefined}
             />
+            {s.id === "problema" && <SolutionTimeline />}
             {s.id === "cencor" && <CencorUnits />}
             {s.id === "cronista" && (
               <ClientLogo src={cronista.url} name="El Cronista" eyebrow="El Cronista" side="right" />
