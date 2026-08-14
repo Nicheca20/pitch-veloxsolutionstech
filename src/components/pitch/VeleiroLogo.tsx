@@ -38,7 +38,7 @@ export function VeleiroLogo() {
             }}
           />
         </div>
-        <div className="flex h-10 items-center md:h-12 lg:h-14">
+        <div className="flex h-10 items-center pt-1 md:h-12 lg:h-14">
           <img
             src={agentforce.url}
             alt="AgentForce"
