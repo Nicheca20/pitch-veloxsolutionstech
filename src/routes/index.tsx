@@ -163,19 +163,6 @@ function Pitch() {
     };
   }, [step]);
 
-  /** Avance fino: cada paso mueve solo ~1 % del viewport.
-   *  Sirve tanto para clicks del puntero láser como para la rueda del mouse,
-   *  para no saltarse frames de las animaciones ni los modelos 3D. */
-  const step = useCallback(
-    (dir: 1 | -1, ratio = 0.01) => {
-      const vh = window.innerHeight;
-      const y = window.scrollY;
-      const max = document.body.scrollHeight - vh;
-      const target = Math.max(0, Math.min(max, y + dir * vh * ratio));
-      smoothScrollTo(target);
-    },
-    [smoothScrollTo],
-  );
 
   useEffect(() => {
     const NEXT = ["ArrowRight", "ArrowDown", "PageDown", " ", "Spacebar", "Enter"];
