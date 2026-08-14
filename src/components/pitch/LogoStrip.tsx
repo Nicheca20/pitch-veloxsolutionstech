@@ -24,7 +24,7 @@ export function LogoStrip() {
     if (!el) return;
     const io = new IntersectionObserver(
       ([e]) => e && e.isIntersecting && setOn(true),
-      { threshold: 0.01, rootMargin: "0px 0px -5% 0px" },
+      { threshold: 0, rootMargin: "30% 0px 30% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
