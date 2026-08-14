@@ -35,7 +35,7 @@ export function LogoStrip() {
       ref={ref}
       id="ecosistema"
       aria-label="Construimos y trabajamos con el ecosistema"
-      className="relative flex min-h-[16vh] flex-col items-center justify-center gap-5 px-6 py-6 md:min-h-[18vh] md:px-16 md:py-8"
+      className="relative flex min-h-[12vh] flex-col items-center justify-center gap-4 px-6 py-5 md:min-h-[14vh] md:px-16 md:py-6"
     >
       <p
         className={`text-veil text-[clamp(0.95rem,1.6vw,1.4rem)] font-semibold uppercase tracking-[0.28em] text-foreground/80 transition-all duration-700 ${
