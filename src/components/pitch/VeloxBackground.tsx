@@ -63,6 +63,55 @@ export default function VeloxBackground() {
       reflectGrad = ctx.createLinearGradient(0, horizon, 0, horizon + 140);
       reflectGrad.addColorStop(0, "rgba(175,169,236,0.28)");
       reflectGrad.addColorStop(1, "rgba(83,74,183,0)");
+      staticDirty = true;
+    }
+
+    // perf: todo lo que no cambia por frame (cielo, estrellas, piso, líneas
+    // convergentes) se pinta una sola vez en un canvas offscreen.
+    let staticCv: HTMLCanvasElement | null = null;
+    let staticDirty = true;
+    function buildStatic() {
+      staticDirty = false;
+      const cv = staticCv ?? (staticCv = document.createElement("canvas"));
+      cv.width = Math.max(1, Math.round(W * DPR));
+      cv.height = Math.max(1, Math.round(H * DPR));
+      const c = cv.getContext("2d");
+      if (!c) return;
+      c.setTransform(DPR, 0, 0, DPR, 0, 0);
+      c.clearRect(0, 0, W, H);
+      c.fillStyle = skyGrad;
+      c.fillRect(0, 0, W, horizon);
+      c.fillStyle = ICE;
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i]!;
+        c.globalAlpha = s.b;
+        c.fillRect(s.x * W, s.y * horizon, s.s, s.s);
+      }
+      c.globalAlpha = 1;
+      c.fillStyle = horizonGrad;
+      c.fillRect(0, horizon - 80, W, 90);
+      c.fillStyle = floorGrad;
+      c.fillRect(0, horizon, W, H - horizon);
+      c.fillStyle = reflectGrad;
+      c.fillRect(0, horizon, W, 140);
+      const cx = W / 2;
+      c.strokeStyle = VELOX;
+      c.globalAlpha = 0.28;
+      c.lineWidth = 0.6;
+      c.beginPath();
+      for (let m = -7; m <= 7; m++) {
+        c.moveTo(cx + m * (W / 7), H);
+        c.lineTo(cx, horizon);
+      }
+      c.stroke();
+      c.strokeStyle = AURA;
+      c.globalAlpha = 0.85;
+      c.lineWidth = 2;
+      c.beginPath();
+      c.moveTo(0, horizon);
+      c.lineTo(W, horizon);
+      c.stroke();
+      c.globalAlpha = 1;
     }
 
     resize();
