@@ -185,7 +185,7 @@ function Pitch() {
       >
         {mounted && use3D ? (
           <Suspense fallback={null}>
-            <Background3D section={section} />
+            <Background3D section={section} lite={lite3D} />
           </Suspense>
         ) : null}
       </div>
