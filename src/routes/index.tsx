@@ -190,6 +190,8 @@ function Pitch() {
                   <ConsequenceFlow />
                 ) : s.id === "solucion" ? (
                   <SolutionTimeline />
+                ) : s.id === "como" ? (
+                  <DataCycle />
                 ) : undefined
               }
               className={
