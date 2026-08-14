@@ -226,7 +226,10 @@ function Pitch() {
                       ? "py-[10vh] min-h-[170vh]"
                     : s.id === "cronista"
                       ? "min-h-[230vh]"
+                    : s.id === "cta"
+                      ? "py-[12vh] min-h-[150vh]"
                       : undefined
+
               }
             />
             {s.id === "cencor" && <CencorUnits />}
