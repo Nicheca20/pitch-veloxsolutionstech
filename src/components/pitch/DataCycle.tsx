@@ -106,8 +106,8 @@ export function DataCycle() {
               x2={x2}
               y2={y2}
               stroke="url(#data-cycle-gradient)"
-              strokeWidth="1"
-              opacity={0.45}
+              strokeWidth="1.2"
+              opacity={0.55}
               filter="url(#data-cycle-glow)"
             />
           ))}
