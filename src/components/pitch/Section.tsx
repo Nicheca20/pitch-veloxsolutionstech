@@ -60,7 +60,7 @@ export function Section({
 
           <h2
             className={`text-balance font-bold leading-[1.02] tracking-[-0.03em] ${
-              first ? "text-[clamp(2.6rem,8vw,7rem)]" : "text-[clamp(2rem,5.2vw,4.4rem)]"
+              first ? "text-[clamp(2.4rem,6vw,5rem)]" : "text-[clamp(2rem,5.2vw,4.4rem)]"
             }`}
           >
             {data.title}
@@ -69,7 +69,7 @@ export function Section({
           {afterTitle}
 
           {data.body && (
-            <p className="mt-6 max-w-[62ch] text-[clamp(1rem,1.5vw,1.25rem)] leading-relaxed text-foreground/70">
+            <p className={`max-w-[62ch] text-[clamp(1rem,1.5vw,1.25rem)] leading-relaxed text-foreground/70 ${first ? "mt-4" : "mt-6"}`}>
               {data.body}
             </p>
           )}
