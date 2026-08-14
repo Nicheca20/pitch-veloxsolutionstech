@@ -774,16 +774,8 @@ export function Background3D({ section }: { section: Ref }) {
       <ambientLight intensity={0.55} />
       <directionalLight position={[6, 8, 6]} intensity={0.7} color="#AFA9EC" />
       <directionalLight position={[-8, -4, -6]} intensity={0.4} color="#534AB7" />
-      <GradientSky />
-      <Stars />
       <CameraRig section={section} />
-      <ReflectiveFloor />
-      <SpeedGrid section={section} />
-      <HorizonGlow />
-      <ParticleField section={section} count={5000} />
-      <AccentStreaks section={section} count={420} />
-      <RadialStreaks section={section} count={220} />
-      <Streaks section={section} count={120} ground color="#7F77DD" />
+
       <LazyCar section={section} />
       <LazyJet section={section} />
       <LazyBike section={section} />
