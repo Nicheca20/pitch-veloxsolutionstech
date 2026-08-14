@@ -54,8 +54,6 @@ function Pitch() {
   const [active, setActive] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [use3D, setUse3D] = useState(false);
-  const [lite3D, setLite3D] = useState(false);
-
   const [loading, setLoading] = useState(100);
   const [ready, setReady] = useState(false);
   const tween = useRef<number | null>(null);
@@ -65,18 +63,8 @@ function Pitch() {
     setMounted(true);
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     reducedRef.current = reduce;
-    // En móvil también mostramos los modelos 3D, pero en modo "lite"
-    // (menor resolución y sin post-proceso) si el dispositivo soporta WebGL.
-    let webgl = false;
-    try {
-      const c = document.createElement("canvas");
-      webgl = !!(c.getContext("webgl2") || c.getContext("webgl"));
-    } catch {
-      webgl = false;
-    }
-    setUse3D(webgl && !reduce);
-    setLite3D(window.innerWidth < 768);
-
+    // Fallback móvil: por debajo de 768px no intentamos WebGL completo
+    setUse3D(window.innerWidth >= 768);
     // El scroll animado lo controlamos nosotros (rAF + easing)
     document.documentElement.style.scrollBehavior = "auto";
 
@@ -185,7 +173,7 @@ function Pitch() {
       >
         {mounted && use3D ? (
           <Suspense fallback={null}>
-            <Background3D section={section} lite={lite3D} />
+            <Background3D section={section} />
           </Suspense>
         ) : null}
       </div>
