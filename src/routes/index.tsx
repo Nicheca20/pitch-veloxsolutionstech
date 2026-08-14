@@ -21,6 +21,7 @@ import VeloxBackground from "@/components/pitch/VeloxBackground";
 import cronista from "@/assets/cronista.png.asset.json";
 import adium from "@/assets/adium.png.asset.json";
 import veloxLogo from "@/assets/velox-logo.png.asset.json";
+import qr from "@/assets/qr-diagnostico.png.asset.json";
 
 
 import { ProgressBar } from "@/components/pitch/ProgressBar";
