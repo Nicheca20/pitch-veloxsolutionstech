@@ -53,7 +53,7 @@ export function DataCycle() {
   return (
     <div
       ref={ref}
-      className="relative mx-auto aspect-square w-[74%] max-w-[640px] select-none sm:w-[86%] md:w-full"
+      className="relative mx-auto aspect-square w-[68%] max-w-[640px] select-none sm:w-[62%] lg:w-[82%] xl:w-full"
       style={{ overflow: "visible" }}
       aria-label="Ciclo de trabajo: Activo de datos único conecta Descubrir, Definir, Diseñar y Entregar"
     >
