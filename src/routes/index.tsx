@@ -141,7 +141,8 @@ function Pitch() {
     [smoothScrollTo],
   );
 
-  // Si el usuario usa la rueda/gesto del mouse, cancelamos el tween en curso
+  // La rueda del mouse avanza/retrocede en pasos de ~1 % del viewport
+  // en lugar del scroll nativo, para no saltarse frames.
   useEffect(() => {
     const cancel = () => {
       if (tween.current !== null) {
@@ -149,13 +150,18 @@ function Pitch() {
         tween.current = null;
       }
     };
-    window.addEventListener("wheel", cancel, { passive: true });
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      step(e.deltaY > 0 ? 1 : -1, 0.01);
+    };
+    window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", cancel, { passive: true });
     return () => {
-      window.removeEventListener("wheel", cancel);
+      window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", cancel);
     };
-  }, []);
+  }, [step]);
 
   /** Avance fino: cada paso mueve solo ~1 % del viewport.
    *  Sirve tanto para clicks del puntero láser como para la rueda del mouse,
