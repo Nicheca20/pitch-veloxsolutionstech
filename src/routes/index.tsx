@@ -201,13 +201,14 @@ function Pitch() {
                 ) : s.id === "diferencial" ? (
                   <GrowthEngine />
                 ) : s.id === "cronista" ? (
-                  <div className="mt-[10vh]">
+                  <div className="mt-[6vh] md:mt-[10vh]">
                     <CronistaFronts />
                   </div>
                 ) : s.id === "adium" ? (
-                  <div className="mt-[10vh]">
+                  <div className="mt-[6vh] md:mt-[10vh]">
                     <AdiumAssistants />
                   </div>
+
                 ) : s.id === "cta" ? (
                   <CapabilityWheel />
                 ) : undefined
@@ -218,15 +219,15 @@ function Pitch() {
                   <img
                     src={veloxLogo.url}
                     alt="Velox Solutions"
-                    className="h-auto w-[min(38vw,19rem)] object-contain opacity-90 drop-shadow-[0_0_40px_rgba(255,255,255,0.18)]"
+                    className="h-auto w-[min(58vw,14rem)] object-contain opacity-90 drop-shadow-[0_0_40px_rgba(255,255,255,0.18)] md:w-[min(38vw,19rem)]"
                   />
                 ) : undefined
               }
-              /* Ritmo vertical ajustado: hero más compacto para acercar la
-                 franja de ecosistema y mantener el hilo conductor. */
+              /* Ritmo vertical ajustado: en móvil/tablet las secciones se
+                 compactan para evitar huecos enormes al scrollear. */
               className={
                 s.id === "hook"
-                  ? "!min-h-[72vh] !justify-start !pt-[12vh]"
+                  ? "!min-h-[70vh] !justify-start !pt-[10vh] md:!min-h-[72vh] md:!pt-[12vh]"
                   : s.id === "problema" ||
                       s.id === "consecuencia" ||
                       s.id === "solucion" ||
@@ -234,9 +235,10 @@ function Pitch() {
                       s.id === "cronista" ||
                       s.id === "adium" ||
                       s.id === "cta"
-                    ? "py-[10vh] min-h-[170vh]"
+                    ? "py-[6vh] min-h-[100vh] md:py-[10vh] md:min-h-[170vh]"
                     : undefined
               }
+
 
             />
             {s.id === "cencor" && <CencorUnits />}
