@@ -11,6 +11,7 @@ import { DataCycle } from "@/components/pitch/DataCycle";
 import { CencorUnits } from "@/components/pitch/CencorUnits";
 import { ClientLogo } from "@/components/pitch/ClientLogo";
 import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
+import { DiferencialOverlay } from "@/components/pitch/DiferencialOverlay";
 import VeloxBackground from "@/components/pitch/VeloxBackground";
 
 import cronista from "@/assets/cronista.png.asset.json";
@@ -214,6 +215,7 @@ function Pitch() {
                       : undefined
               }
             />
+            {s.id === "diferencial" && <DiferencialOverlay section={section} />}
             {s.id === "cencor" && <CencorUnits />}
             {s.id === "cronista" && (
               <ClientLogo src={cronista.url} name="El Cronista" eyebrow="El Cronista" side="right" />
