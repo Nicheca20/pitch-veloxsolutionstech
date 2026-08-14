@@ -782,7 +782,7 @@ export function Background3D({ section }: { section: Ref }) {
       <HorizonGlow />
       <ParticleField section={section} count={5000} />
       <AccentStreaks section={section} count={420} />
-      <Streaks section={section} count={260} color="#AFA9EC" />
+      <RadialStreaks section={section} count={220} />
       <Streaks section={section} count={120} ground color="#7F77DD" />
       <LazyCar section={section} />
       <LazyJet section={section} />
