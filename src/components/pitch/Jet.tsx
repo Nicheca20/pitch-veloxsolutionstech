@@ -13,7 +13,7 @@ const ICE = "#EEEDFE";
 /** Punto de focus de la sección 6 (idéntico al del cubo verde). */
 export const JET_FOCUS = new THREE.Vector3(0, 0, -95);
 /** Ventana de scroll (índice de sección) de la sección 6. */
-export const JET_WINDOW: [number, number] = [4.45, 6.0];
+export const JET_WINDOW: [number, number] = [4.55, 5.5];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -33,23 +33,23 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
     g.visible = p > 0.02;
     if (!g.visible) return;
     const flicker = 0.85 + Math.sin(clock.elapsedTime * 40) * 0.15;
-    g.scale.set(1, 1, (0.5 + p * 2.6) * flicker);
+    g.scale.set(1, 1, (0.5 + p * 1.6) * flicker);
     g.children.forEach((c) => {
       const m = (c as THREE.Mesh).material as THREE.MeshBasicMaterial;
-      m.opacity = p * 0.85 * flicker;
+      m.opacity = p * 0.55 * flicker;
     });
   });
 
   return (
-    <group ref={core} position={[0, 0.05, 2.1]}>
+    <group ref={core} position={[0, 0.15, 3.2]}>
       {[
-        [-0.45, 0.42, FORCE],
-        [0.45, 0.42, FORCE],
-        [-0.45, 0.22, ICE],
-        [0.45, 0.22, ICE],
+        [-0.3, 0.13, FORCE],
+        [0.3, 0.13, FORCE],
+        [-0.3, 0.07, ICE],
+        [0.3, 0.07, ICE],
       ].map(([x, r, color], i) => (
-        <mesh key={i} position={[x as number, 0, 0.7]} rotation={[Math.PI / 2, 0, 0]}>
-          <coneGeometry args={[r as number, 2.6, 14, 1, true]} />
+        <mesh key={i} position={[x as number, 0, 0.4]} rotation={[Math.PI / 2, 0, 0]}>
+          <coneGeometry args={[r as number, 1.5, 14, 1, true]} />
           <meshBasicMaterial
             color={color as string}
             transparent
@@ -66,8 +66,8 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
 /* ------------------------------------------------------------------- Estela */
 /** Toberas: mismas posiciones que los conos del postquemador. */
 const NOZZLES: [number, number, number][] = [
-  [-0.45, 0.05, 2.8],
-  [0.45, 0.05, 2.8],
+  [-0.28, 0.15, 3.6],
+  [0.28, 0.15, 3.6],
 ];
 
 function Trail({ power }: { power: MutableRefObject<number> }) {
@@ -143,11 +143,21 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
   /** Copia centrada, escalada y orientada con la nariz hacia -Z. */
   const model = useMemo(() => {
     const m = scene.clone(true);
-    // orientar: el eje horizontal más largo es el fuselaje → alinearlo con Z
-    const raw = new THREE.Box3().setFromObject(m);
-    const rs = new THREE.Vector3();
-    raw.getSize(rs);
-    if (rs.x > rs.z) m.rotation.y = Math.PI / 2;
+
+    // orientar: el eje más largo es el fuselaje → alinearlo con Z
+    const measure = () => {
+      m.updateWorldMatrix(true, true);
+      return new THREE.Box3().setFromObject(m, true).getSize(new THREE.Vector3());
+    };
+    let rs = measure();
+    if (rs.y > rs.x && rs.y > rs.z) {
+      m.rotation.x = -Math.PI / 2; // modelo Z-up: lo acostamos
+      rs = measure();
+    }
+    if (rs.x > rs.z) {
+      m.rotation.y += Math.PI / 2;
+      rs = measure();
+    }
 
     const wrap = new THREE.Group();
     wrap.add(m);
@@ -157,7 +167,7 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     const center = new THREE.Vector3();
     box.getSize(size);
     box.getCenter(center);
-    const scale = 13 / Math.max(size.z, 0.001);
+    const scale = 6 / Math.max(size.z, 0.001);
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
     wrap.rotation.y = Math.PI; // la nariz del modelo mira a +Z: la giramos hacia -Z
@@ -172,13 +182,12 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
         mats.forEach((mm) => {
           const mat = mm as THREE.MeshStandardMaterial;
           if (!mat || !("isMeshStandardMaterial" in mat)) return;
-          mat.envMapIntensity = 2.2;
-          // la librea original es gris muy oscura: la aclaramos y le damos tinte de marca
-          mat.color.lerp(new THREE.Color(FORCE), 0.35);
+          mat.envMapIntensity = 1.6;
+          // este modelo SÍ trae PBR: conservamos sus texturas, sólo un leve realce
           mat.emissive = new THREE.Color(VELOX);
-          mat.emissiveIntensity = 0.35;
-          mat.roughness = Math.min(mat.roughness, 0.45);
-          mat.metalness = Math.max(mat.metalness, 0.55);
+          mat.emissiveIntensity = 0.12;
+          mat.roughness = Math.min(mat.roughness, 0.7);
+          mat.toneMapped = true;
           mat.needsUpdate = true;
         });
       }
@@ -191,7 +200,7 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     if (!g) return;
     const s = jetPhase(section.current);
     // nunca coincide con el carro: sólo vive dentro de su ventana
-    const live = section.current > JET_WINDOW[0] && section.current < JET_WINDOW[1] + 0.4;
+    const live = section.current >= JET_WINDOW[0] && section.current <= JET_WINDOW[1];
     g.visible = live;
     if (!live) {
       power.current = 0;
@@ -204,9 +213,9 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     power.current = clamp01(s / 0.2) * (0.35 + roll * 0.65);
 
     if (craft.current) {
-      craft.current.position.z = THREE.MathUtils.lerp(26, 10, roll) - lift * lift * 85;
+      craft.current.position.z = THREE.MathUtils.lerp(30, 16, roll) - lift * lift * 70;
       // arranca por debajo del encuadre y emerge subiendo
-      craft.current.position.y = THREE.MathUtils.lerp(-6, -1, roll) + lift * lift * 16;
+      craft.current.position.y = THREE.MathUtils.lerp(-5, -0.6, roll) + lift * lift * 12;
       craft.current.rotation.x = -lift * 0.42;
       craft.current.rotation.z = Math.sin(clock.elapsedTime * 0.8) * 0.05 * lift;
     }

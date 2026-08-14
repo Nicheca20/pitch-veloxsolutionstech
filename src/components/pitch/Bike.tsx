@@ -13,7 +13,7 @@ const ICE = "#EEEDFE";
 /** Punto de focus de la sección 7 (idéntico al del cubo amarillo). */
 export const BIKE_FOCUS = new THREE.Vector3(0, 0, -140);
 /** Ventana de scroll (índice de sección) de la sección 7. */
-export const BIKE_WINDOW: [number, number] = [5.9, 7.15];
+export const BIKE_WINDOW: [number, number] = [5.55, 6.6];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -156,12 +156,11 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
       mats.forEach((mm) => {
         const mat = mm as THREE.MeshStandardMaterial;
         if (!mat || !("isMeshStandardMaterial" in mat)) return;
-        mat.envMapIntensity = 1.8;
-        mat.color.lerp(new THREE.Color(FORCE), 0.45);
+        mat.envMapIntensity = 1.6;
+        // conservamos la librea original del modelo; sólo un realce sutil
         mat.emissive = new THREE.Color(VELOX);
-        mat.emissiveIntensity = 0.45;
-        mat.roughness = Math.min(mat.roughness, 0.5);
-        mat.metalness = Math.max(mat.metalness, 0.5);
+        mat.emissiveIntensity = 0.12;
+        mat.roughness = Math.min(mat.roughness, 0.7);
         mat.needsUpdate = true;
       });
     });
@@ -172,8 +171,8 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const g = root.current;
     if (!g) return;
     const s = bikePhase(section.current);
-    // la banda de nubes ya existe un poco antes: es la estela que dejó el avión
-    const live = section.current > BIKE_WINDOW[0] - 0.55 && section.current < BIKE_WINDOW[1] + 0.4;
+    // estrictamente dentro de la sección 7: nubes y moto no invaden la 6 ni la 8
+    const live = section.current >= BIKE_WINDOW[0] && section.current <= BIKE_WINDOW[1];
     g.visible = live;
     if (!live) {
       power.current = 0;
@@ -185,12 +184,12 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const cruise = smooth(clamp01((s - 0.22) / 0.36)); // pasada lateral
     const exit = smooth(clamp01((s - 0.58) / 0.42)); // se va a toda velocidad
     power.current = entry * (1 - exit * 0.4);
-    cloud.current = clamp01((section.current - (BIKE_WINDOW[0] - 0.55)) / 0.5) * (1 - exit * 0.8);
+    cloud.current = smooth(clamp01(s / 0.12)) * (1 - exit * 0.9);
     spin.current = (0.35 + cruise * 0.5) * dt * 60 * 0.06;
 
 
     const r = rider.current;
-    if (r) r.visible = section.current > BIKE_WINDOW[0] - 0.15;
+    if (r) r.visible = true;
     if (r) {
 
       // nace lejos en la estela y se acerca a la cámara, luego se aleja a fondo
