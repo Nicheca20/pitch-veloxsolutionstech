@@ -7,6 +7,7 @@ import { LogoStrip } from "@/components/pitch/LogoStrip";
 import { SolutionTimeline } from "@/components/pitch/SolutionTimeline";
 import { ProblemFlow } from "@/components/pitch/ProblemFlow";
 import { ConsequenceFlow } from "@/components/pitch/ConsequenceFlow";
+import { DataCycle } from "@/components/pitch/DataCycle";
 import { CencorUnits } from "@/components/pitch/CencorUnits";
 import { ClientLogo } from "@/components/pitch/ClientLogo";
 import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
