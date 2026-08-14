@@ -52,7 +52,7 @@ export function AdiumAssistants() {
 
   return (
     <div ref={ref} className="relative mx-auto w-full max-w-5xl px-6 md:px-0 lg:pr-40">
-      <div className="mb-8 text-center text-[1.22rem] uppercase tracking-[0.32em] text-foreground">
+      <div className="mb-8 text-center text-[1rem] uppercase tracking-[0.32em] text-foreground">
         Dos asistentes, una base de confianza
       </div>
 
@@ -74,14 +74,14 @@ export function AdiumAssistants() {
                 <div className="flex size-14 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
                   <img src={c.logo} alt={c.logoAlt} className="size-8 object-contain" loading="lazy" />
                 </div>
-                <div className="text-[1.12rem] uppercase tracking-[0.28em] text-foreground">
+                <div className="text-[0.85rem] uppercase tracking-[0.28em] text-foreground">
                   {c.eyebrow}
                 </div>
               </div>
-              <div className="mt-5 text-[2rem] font-semibold tracking-tight text-foreground">
+              <div className="mt-5 text-[1.35rem] font-semibold tracking-tight text-foreground">
                 {c.title}
               </div>
-              <p className="mt-2 text-[1.58rem] leading-relaxed text-foreground">{c.tag}</p>
+              <p className="mt-2 text-[1rem] leading-relaxed text-foreground">{c.tag}</p>
             </div>
           );
         })}
@@ -106,14 +106,14 @@ export function AdiumAssistants() {
       >
         <div className="flex items-center justify-center gap-3">
           <ShieldCheck className="size-8 text-ice" strokeWidth={1.4} />
-          <div className="text-[1.12rem] uppercase tracking-[0.28em] text-foreground">
+          <div className="text-[0.85rem] uppercase tracking-[0.28em] text-foreground">
             Validación legal, médica y compliance
           </div>
         </div>
-        <div className="mt-4 text-[2rem] font-semibold tracking-tight text-foreground">
+        <div className="mt-4 text-[1.35rem] font-semibold tracking-tight text-foreground">
           Todo validado antes de llegar al paciente o al equipo
         </div>
-        <p className="mt-2 text-[1.58rem] leading-relaxed text-foreground">
+        <p className="mt-2 text-[1rem] leading-relaxed text-foreground">
           Cada respuesta y sugerencia pasa por controles de seguridad y cumplimiento antes de publicarse.
         </p>
       </div>
