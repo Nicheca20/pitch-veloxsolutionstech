@@ -415,6 +415,95 @@ function Streaks({
   );
 }
 
+/**
+ * Estelas radiales: nacen en el punto de fuga (centro del horizonte) y se abren
+ * hacia la cámara, alargándose y ganando brillo (Force → Aura → Ice).
+ */
+function RadialStreaks({ section, count = 220 }: { section: Ref; count?: number }) {
+  const ref = useRef<THREE.LineSegments>(null);
+  const depth = 210;
+  const C_FORCE = useMemo(() => new THREE.Color("#7F77DD"), []);
+  const C_AURA = useMemo(() => new THREE.Color("#AFA9EC"), []);
+  const C_ICE = useMemo(() => new THREE.Color("#EEEDFE"), []);
+
+  const { geometry, angles, speeds, us, jitter } = useMemo(() => {
+    const pos = new Float32Array(count * 6);
+    const col = new Float32Array(count * 6);
+    const angles = new Float32Array(count);
+    const speeds = new Float32Array(count);
+    const us = new Float32Array(count);
+    const jitter = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      angles[i] = Math.random() * Math.PI * 2;
+      speeds[i] = 0.055 + Math.random() * 0.075;
+      us[i] = Math.random();
+      jitter[i] = 0.6 + Math.random() * 0.8;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    g.setAttribute("color", new THREE.BufferAttribute(col, 3));
+    return { geometry: g, angles, speeds, us, jitter };
+  }, [count]);
+
+  useFrame(({ camera }, dt) => {
+    const o = ref.current;
+    if (!o) return;
+    // ancla en el punto de fuga: centrado en la cámara, extendido hacia -Z
+    o.position.set(0, camera.position.y * 0.6, camera.position.z);
+    const k = Math.min(3.2, flow(section.current));
+    const pa = geometry.getAttribute("position") as THREE.BufferAttribute;
+    const ca = geometry.getAttribute("color") as THREE.BufferAttribute;
+    const p = pa.array as Float32Array;
+    const c = ca.array as Float32Array;
+    const tmp = new THREE.Color();
+    for (let i = 0; i < count; i++) {
+      us[i] = us[i]! + speeds[i]! * k * dt;
+      if (us[i]! > 1) us[i] = us[i]! - 1;
+      const u = us[i]!;
+      const e = u * u; // apertura acelerada cerca de la cámara
+      const a = angles[i]!;
+      const r = (0.4 + e * 46) * jitter[i]!;
+      const z = -depth * (1 - u);
+      const len = 3 + e * 34;
+      const zTail = z - len * 0.55;
+      const rTail = r * (1 - 0.32 * u);
+      const i0 = i * 6;
+      p[i0] = Math.cos(a) * r;
+      p[i0 + 1] = Math.sin(a) * r * 0.6;
+      p[i0 + 2] = z;
+      p[i0 + 3] = Math.cos(a) * rTail;
+      p[i0 + 4] = Math.sin(a) * rTail * 0.6;
+      p[i0 + 5] = zTail;
+      // color: Force → Aura → Ice a medida que se acerca
+      if (u < 0.55) tmp.copy(C_FORCE).lerp(C_AURA, u / 0.55);
+      else tmp.copy(C_AURA).lerp(C_ICE, (u - 0.55) / 0.45);
+      const fade = Math.min(1, u * 3.2) * (0.25 + e * 1.15);
+      c[i0] = tmp.r * fade;
+      c[i0 + 1] = tmp.g * fade;
+      c[i0 + 2] = tmp.b * fade;
+      c[i0 + 3] = tmp.r * fade * 0.15;
+      c[i0 + 4] = tmp.g * fade * 0.15;
+      c[i0 + 5] = tmp.b * fade * 0.15;
+    }
+    pa.needsUpdate = true;
+    ca.needsUpdate = true;
+  });
+
+  return (
+    <lineSegments ref={ref} geometry={geometry} frustumCulled={false}>
+      <lineBasicMaterial
+        vertexColors
+        transparent
+        opacity={0.75}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+      />
+    </lineSegments>
+  );
+}
+
+
+
 /** Cielo con degradé: galaxy oscuro arriba → velox/force hacia el horizonte. */
 function GradientSky() {
   const ref = useRef<THREE.Mesh>(null);
@@ -693,7 +782,7 @@ export function Background3D({ section }: { section: Ref }) {
       <HorizonGlow />
       <ParticleField section={section} count={5000} />
       <AccentStreaks section={section} count={420} />
-      <Streaks section={section} count={260} color="#AFA9EC" />
+      <RadialStreaks section={section} count={220} />
       <Streaks section={section} count={120} ground color="#7F77DD" />
       <LazyCar section={section} />
       <LazyJet section={section} />
