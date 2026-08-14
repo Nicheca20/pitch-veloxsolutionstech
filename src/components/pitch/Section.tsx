@@ -51,9 +51,9 @@ export function Section({
 
     >
       <div
-        className={`relative z-10 flex w-full items-center gap-8 ${
-          right ? "flex-col lg:flex-row lg:justify-between" : ""
-        }`}
+        className={`relative z-10 flex w-full gap-8 ${
+          align === "start" ? "items-start" : "items-center"
+        } ${right ? "flex-col lg:flex-row lg:justify-between" : ""}`}
       >
         {/* Kicker + título: SIEMPRE alineados a la izquierda */}
         <div className={`text-veil text-left ${right ? "w-full lg:max-w-[42%]" : "w-full max-w-[46rem]"}`}>
