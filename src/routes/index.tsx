@@ -183,7 +183,7 @@ function Pitch() {
               afterTitle={
                 s.id === "solucion" ? <VeleiroLogo /> : s.id === "problema" ? <ProblemFlow /> : undefined
               }
-              className={s.id === "problema" ? "items-start py-[12vh] min-h-[145vh]" : undefined}
+              className={s.id === "problema" ? "items-start py-[10vh] min-h-[170vh]" : undefined}
             />
             {s.id === "problema" && <SolutionTimeline />}
             {s.id === "cencor" && <CencorUnits />}
