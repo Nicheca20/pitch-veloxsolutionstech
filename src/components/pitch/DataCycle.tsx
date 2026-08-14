@@ -169,7 +169,7 @@ export function DataCycle() {
             </div>
           </div>
         );
-      })
+      })}
 
       <style>{`
         @keyframes pulse-halo {
