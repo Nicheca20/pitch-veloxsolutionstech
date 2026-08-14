@@ -105,7 +105,7 @@ export function Section({
         </div>
 
         {right && (
-          <div className="flex w-full items-center justify-center lg:w-[58%] lg:justify-start lg:pl-8">
+          <div className={`flex w-full justify-center lg:w-[58%] lg:justify-start lg:pl-8 ${align === "start" ? "items-start" : "items-center"}`}>
             {right}
           </div>
         )}
