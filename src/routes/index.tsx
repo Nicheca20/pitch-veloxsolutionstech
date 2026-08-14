@@ -201,7 +201,10 @@ function Pitch() {
                   <div className="mt-[95vh]">
                     <CronistaFronts />
                   </div>
+                ) : s.id === "cta" ? (
+                  <CapabilityWheel />
                 ) : undefined
+
               }
               right={
                 s.id === "hook" ? (
