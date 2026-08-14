@@ -12,6 +12,7 @@ import { CencorUnits } from "@/components/pitch/CencorUnits";
 import { ClientLogo } from "@/components/pitch/ClientLogo";
 import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
 import { GrowthEngine } from "@/components/pitch/GrowthEngine";
+import { CronistaFronts } from "@/components/pitch/CronistaFronts";
 import VeloxBackground from "@/components/pitch/VeloxBackground";
 
 import cronista from "@/assets/cronista.png.asset.json";
@@ -196,6 +197,10 @@ function Pitch() {
                   <DataCycle />
                 ) : s.id === "diferencial" ? (
                   <GrowthEngine />
+                ) : s.id === "cronista" ? (
+                  <div className="mt-[95vh]">
+                    <CronistaFronts />
+                  </div>
                 ) : undefined
               }
               right={
