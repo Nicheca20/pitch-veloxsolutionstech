@@ -5,7 +5,6 @@ import { useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
 
 const MODEL = "/models/moto.glb";
-useGLTF.preload(MODEL, true);
 
 const VELOX = "#534AB7";
 const FORCE = "#7F77DD";
