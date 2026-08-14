@@ -86,8 +86,8 @@ function WheelRings({ spin, radius }: { spin: MutableRefObject<number>; radius: 
     });
   });
   const spots: [number, number, number][] = [
-    [0, -1.05, -3.2],
-    [0, -1.05, 3.2],
+    [-3.2, -1.05, 0],
+    [3.2, -1.05, 0],
   ];
   return (
     <>
@@ -98,8 +98,8 @@ function WheelRings({ spin, radius }: { spin: MutableRefObject<number>; radius: 
             refs.current[i] = el;
           }}
           position={p}
-          rotation={[0, Math.PI / 2, 0]}
         >
+
           <torusGeometry args={[radius, 0.035, 8, 40]} />
           <meshBasicMaterial
             color={FORCE}
