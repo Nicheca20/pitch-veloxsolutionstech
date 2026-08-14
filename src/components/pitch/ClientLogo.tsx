@@ -49,7 +49,7 @@ export function ClientLogo({
         style={{
           opacity: on ? 0.75 : 0,
           transform: on ? "translateY(0)" : "translateY(8px)",
-          transitionDelay: "260ms",
+          transitionDelay: "120ms",
         }}
       />
     </div>

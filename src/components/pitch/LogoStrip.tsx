@@ -51,7 +51,7 @@ export function LogoStrip() {
             key={l.name}
             className="flex flex-col items-center transition-all duration-[900ms] ease-out"
             style={{
-              transitionDelay: `${250 + i * 260}ms`,
+              transitionDelay: `${120 + i * 90}ms`,
               opacity: on ? 1 : 0.5,
               filter: on
                 ? "grayscale(0) brightness(1) drop-shadow(0 0 18px rgba(175,169,236,0.35))"

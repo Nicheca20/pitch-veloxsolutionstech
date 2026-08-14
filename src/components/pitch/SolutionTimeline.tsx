@@ -103,7 +103,7 @@ export function SolutionTimeline() {
                   className={`relative pl-16 md:grid md:grid-cols-2 md:items-center md:gap-16 md:pl-0 ${
                     on ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                   } transition-all duration-700 ease-out`}
-                  style={{ transitionDelay: `${i * 120}ms` }}
+                  style={{ transitionDelay: `${i * 70}ms` }}
                 >
                   {/* Nodo */}
                   <span

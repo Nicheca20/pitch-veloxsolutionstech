@@ -45,7 +45,7 @@ export function CencorUnits() {
             key={u.name}
             className="transition-all duration-[900ms] ease-out"
             style={{
-              transitionDelay: `${300 + i * 180}ms`,
+              transitionDelay: `${120 + i * 80}ms`,
               opacity: on ? 1 : 0,
               transform: on ? "translateY(0)" : "translateY(8px)",
               filter: on
