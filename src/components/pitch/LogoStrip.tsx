@@ -37,12 +37,13 @@ export function LogoStrip() {
       className="relative flex min-h-[46vh] flex-col items-center justify-center gap-12 px-6 py-16 md:px-16"
     >
       <p
-        className={`text-veil text-[11px] uppercase tracking-[0.34em] text-foreground/55 transition-all duration-700 ${
+        className={`text-veil text-[clamp(0.95rem,1.6vw,1.4rem)] font-semibold uppercase tracking-[0.28em] text-foreground/80 transition-all duration-700 ${
           on ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"
         }`}
       >
         Construimos y trabajamos con el ecosistema
       </p>
+
 
       <ul className="flex flex-wrap items-center justify-center gap-x-16 gap-y-10 md:gap-x-24">
         {logos.map((l, i) => (
