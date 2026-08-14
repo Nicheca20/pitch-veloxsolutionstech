@@ -81,22 +81,48 @@ function Sparks({ active }: { active: MutableRefObject<number> }) {
 
 /* --------------------------------------------------------------- Semáforo */
 function StartLights({ phase }: { phase: MutableRefObject<number> }) {
+  const group = useRef<THREE.Group>(null);
   const lamps = useRef<(THREE.Mesh | null)[]>([]);
   const RED = useMemo(() => new THREE.Color("#ff2f2f"), []);
+  const AMBER = useMemo(() => new THREE.Color("#ff9a1f"), []);
   const GREEN = useMemo(() => new THREE.Color("#28ff92"), []);
   const OFF = useMemo(() => new THREE.Color("#141130"), []);
   const pairs = 5;
 
   useFrame(() => {
     const p = phase.current;
-    // rojas encendiéndose una a una durante el pit; verdes al acelerar
-    const lit = p < 0.68 ? Math.min(pairs, Math.floor(((p - 0.2) / 0.48) * pairs) + 1) : pairs;
-    const green = p >= 0.68;
+
+    // se acerca a la cámara junto con el carro (mismo easing) y luego se va
+    const g = group.current;
+    if (g) {
+      const approach = smooth(clamp01(p / 0.42));
+      const exit = smooth(clamp01((p - 0.7) / 0.3));
+      g.position.z = THREE.MathUtils.lerp(-118, 7, approach) + exit * exit * 160;
+      const s = THREE.MathUtils.lerp(0.55, 1, approach);
+      g.scale.setScalar(s);
+    }
+
+    // secuencia: rojas una a una → ámbar → verde
+    const RED_END = 0.5;
+    const AMBER_END = 0.64;
+    let stage: "red" | "amber" | "green";
+    let lit: number;
+    if (p < RED_END) {
+      stage = "red";
+      lit = Math.min(pairs, Math.max(0, Math.floor(((p - 0.14) / (RED_END - 0.14)) * pairs) + 1));
+    } else if (p < AMBER_END) {
+      stage = "amber";
+      lit = pairs;
+    } else {
+      stage = "green";
+      lit = pairs;
+    }
+    const c = stage === "green" ? GREEN : stage === "amber" ? AMBER : RED;
+
     lamps.current.forEach((m, i) => {
       if (!m) return;
       const col = Math.floor(i / 2);
-      const on = green || (col < lit && p > 0.2);
-      const c = green ? GREEN : RED;
+      const on = p > 0.14 && col < lit;
       const mat = m.material as THREE.MeshStandardMaterial;
       mat.color.copy(on ? c : OFF);
       mat.emissive.copy(on ? c : OFF);
@@ -104,9 +130,10 @@ function StartLights({ phase }: { phase: MutableRefObject<number> }) {
     });
   });
 
+
   const span = 9;
   return (
-    <group position={[0, 0, 7]}>
+    <group ref={group} position={[0, 0, -118]}>
       {/* postes */}
       {[-1, 1].map((s) => (
         <mesh key={s} position={[(s * span) / 2, 1.4, 0]}>
