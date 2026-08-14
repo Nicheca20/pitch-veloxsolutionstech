@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { brand, sections } from "@/content";
 import { Section } from "@/components/pitch/Section";
 import { NavDots } from "@/components/pitch/NavDots";
