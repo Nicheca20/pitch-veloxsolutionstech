@@ -50,7 +50,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Pitch() {
-  const { section, value: barProgress } = useScrollProgress();
+  const { section, progress } = useScrollProgress();
   const [active, setActive] = useState(0);
   const [mounted, setMounted] = useState(false);
   const [use3D, setUse3D] = useState(false);
