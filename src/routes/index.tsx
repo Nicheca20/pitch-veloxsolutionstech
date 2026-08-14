@@ -80,9 +80,30 @@ function Pitch() {
     return () => clearInterval(iv);
   }, []);
 
+  // El índice activo y el hint de scroll se leen desde el ref en un rAF propio:
+  // así el scroll no re-renderiza toda la página cuadro a cuadro.
+  const hintRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
-    setActive(Math.min(sections.length - 1, Math.round(barProgress * (sections.length - 1))));
-  }, [barProgress]);
+    let raf = 0;
+    let lastIdx = -1;
+    let lastHint = -1;
+    const tick = () => {
+      raf = requestAnimationFrame(tick);
+      const p = progress.current;
+      const idx = Math.min(sections.length - 1, Math.round(p * (sections.length - 1)));
+      if (idx !== lastIdx) {
+        lastIdx = idx;
+        setActive(idx);
+      }
+      const hint = p > 0.01 ? 0 : 1;
+      if (hint !== lastHint) {
+        lastHint = hint;
+        if (hintRef.current) hintRef.current.style.opacity = String(hint);
+      }
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [progress]);
 
   /** Scroll animado con easing (~1.2s), cancelable por el scroll del mouse. */
   const smoothScrollTo = useCallback((to: number) => {
