@@ -218,15 +218,15 @@ function Pitch() {
                   <img
                     src={veloxLogo.url}
                     alt="Velox Solutions"
-                    className="h-auto w-[min(52.5vw,27.5rem)] object-contain opacity-90 drop-shadow-[0_0_40px_rgba(255,255,255,0.18)]"
+                    className="h-auto w-[min(38vw,19rem)] object-contain opacity-90 drop-shadow-[0_0_40px_rgba(255,255,255,0.18)]"
                   />
                 ) : undefined
               }
-              /* Ritmo vertical uniforme: todas las secciones con contenido
-                 extendido miden lo mismo, para no romper el hilo conductor. */
+              /* Ritmo vertical ajustado: hero más compacto para acercar la
+                 franja de ecosistema y mantener el hilo conductor. */
               className={
                 s.id === "hook"
-                  ? "min-h-[78vh] justify-start pt-[18vh]"
+                  ? "!min-h-[38vh] !justify-start !pt-[6vh]"
                   : s.id === "problema" ||
                       s.id === "consecuencia" ||
                       s.id === "solucion" ||
