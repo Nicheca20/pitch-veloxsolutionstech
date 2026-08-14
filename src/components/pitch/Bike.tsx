@@ -184,12 +184,12 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const cruise = smooth(clamp01((s - 0.22) / 0.36)); // pasada lateral
     const exit = smooth(clamp01((s - 0.58) / 0.42)); // se va a toda velocidad
     power.current = entry * (1 - exit * 0.4);
-    cloud.current = clamp01((section.current - (BIKE_WINDOW[0] - 0.55)) / 0.5) * (1 - exit * 0.8);
+    cloud.current = smooth(clamp01(s / 0.12)) * (1 - exit * 0.9);
     spin.current = (0.35 + cruise * 0.5) * dt * 60 * 0.06;
 
 
     const r = rider.current;
-    if (r) r.visible = section.current > BIKE_WINDOW[0] - 0.15;
+    if (r) r.visible = true;
     if (r) {
 
       // nace lejos en la estela y se acerca a la cámara, luego se aleja a fondo
