@@ -710,11 +710,12 @@ function LazyCar({ section }: { section: Ref }) {
   );
 }
 
-/** Monta el avión sólo cuando la sección 6 está cerca del viewport. */
+/** Monta el avión sólo cerca de su sección y lo libera al salir. */
 function LazyJet({ section }: { section: Ref }) {
   const [show, setShow] = useState(false);
   useFrame(() => {
-    if (!show && section.current > JET_WINDOW[0] - 2) setShow(true);
+    const near = section.current > JET_WINDOW[0] - 1.2 && section.current < JET_WINDOW[1] + 1.2;
+    if (near !== show) setShow(near);
   });
   if (!show) return null;
   return (
@@ -723,6 +724,7 @@ function LazyJet({ section }: { section: Ref }) {
     </Suspense>
   );
 }
+
 
 
 /** Monta la moto sólo cuando la sección 7 está cerca del viewport. */
