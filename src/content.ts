@@ -39,7 +39,7 @@ export const sections: Section[] = [
     id: "consecuencia",
     index: "03",
     kicker: "La consecuencia",
-    title: "Deals que mueren antes del go-live.",
+    title: "Deals que mueren desde el inicio.",
     body: "Trimestres perdidos, consumo de Agentforce que nunca arranca.",
   },
   {
