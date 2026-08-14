@@ -126,7 +126,7 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
 
   const model = useMemo(() => {
     const m = scene.clone(true);
-    // el eje largo del modelo es X: lo alineamos con Z (avance hacia -Z)
+    // el eje largo del modelo es X: lo alineamos con Z (eje de avance)
     const raw = new THREE.Box3().setFromObject(m);
     const rs = new THREE.Vector3();
     raw.getSize(rs);
@@ -143,8 +143,8 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const scale = 13 / Math.max(size.z, 0.001);
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
-    // avanza hacia la cámara (+Z) en un 3/4 para lucir el frente
-    wrap.rotation.y = Math.PI;
+    // la trompa mira hacia +Z (dirección de avance, hacia la cámara)
+    wrap.rotation.set(0, 0, 0);
 
     wrap.traverse((o) => {
       const mesh = o as THREE.Mesh;
@@ -180,26 +180,27 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
       return;
     }
 
-    const entry = smooth(clamp01(s / 0.16)); // nace de la estela del avión
-    const cruise = smooth(clamp01((s - 0.22) / 0.36)); // pasada lateral
-    const exit = smooth(clamp01((s - 0.58) / 0.42)); // se va a toda velocidad
-    power.current = entry * (1 - exit * 0.4);
-    cloud.current = smooth(clamp01(s / 0.12)) * (1 - exit * 0.9);
-    spin.current = (0.35 + cruise * 0.5) * dt * 60 * 0.06;
-
+    const entry = smooth(clamp01(s / 0.14)); // nace de la estela del avión
+    const out = smooth(clamp01((s - 0.82) / 0.18)); // disolvencia final
+    power.current = entry;
+    cloud.current = entry * (1 - out * 0.9);
+    spin.current = (0.5 + s * 0.7) * dt * 60 * 0.06;
 
     const r = rider.current;
-    if (r) r.visible = true;
     if (r) {
-
-      // nace lejos en la estela y se acerca a la cámara, luego se aleja a fondo
-      r.position.z = THREE.MathUtils.lerp(-34, -9, entry) - exit * 95;
-      r.position.y = -0.2 + (1 - entry) * 2.4;
-      r.position.x = -3.4 + cruise * 2.6 + Math.sin(clock.elapsedTime * 0.6) * 0.5 * cruise;
-      r.rotation.z = 0.16 * cruise + Math.sin(clock.elapsedTime * 1.3) * 0.06 * cruise;
-      r.rotation.y = 0.55 - cruise * 0.35;
-      const fade = 1 - exit;
-      r.scale.setScalar((0.85 + entry * 0.15) * fade + 0.001);
+      r.visible = true;
+      // un solo paso continuo: del fondo hasta pasar junto a la cámara
+      const travel = s * s * (3 - 2 * s); // aceleración suave, siempre creciente
+      r.position.z = THREE.MathUtils.lerp(-70, 30, travel);
+      r.position.x = THREE.MathUtils.lerp(0.4, -4.2, travel);
+      r.position.y = -0.2 + (1 - entry) * 1.6;
+      // derecha: sólo una leve inclinación al acelerar
+      r.rotation.set(
+        -0.03 * entry,
+        THREE.MathUtils.lerp(0.06, -0.14, travel),
+        Math.sin(clock.elapsedTime * 1.2) * 0.035 * entry,
+      );
+      r.scale.setScalar(0.9 + entry * 0.1);
     }
     // disolvencia general para dar paso al wordmark del CTA
     g.traverse((o) => {
@@ -210,10 +211,11 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
         const mat = mm as THREE.Material & { opacity: number; transparent: boolean };
         if (!mat) return;
         mat.transparent = true;
-        mat.opacity = 1 - exit;
+        mat.opacity = 1 - out;
       });
     });
   });
+
 
   return (
     <group ref={root} position={BIKE_FOCUS.toArray()} visible={false}>
