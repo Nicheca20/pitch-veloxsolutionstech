@@ -1,6 +1,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
+import { KernelSize } from "postprocessing";
 import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 import { CAR_WINDOW, F1Car, carPhase } from "./F1Car";
@@ -534,8 +535,8 @@ function DynamicBloom({ section }: { section: Ref }) {
       ref={ref as never}
       intensity={0.62}
       luminanceThreshold={0.42}
-      luminanceSmoothing={0.4}
-      mipmapBlur
+      luminanceSmoothing={0.5}
+      kernelSize={KernelSize.LARGE}
     />
   );
 }
