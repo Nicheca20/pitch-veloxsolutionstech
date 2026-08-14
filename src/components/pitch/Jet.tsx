@@ -197,12 +197,27 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
           mat.emissiveIntensity = 0.12;
           mat.roughness = Math.min(mat.roughness, 0.7);
           mat.toneMapped = true;
+          mat.transparent = true; // permite el fundido de entrada/salida
+          mat.depthWrite = true;
           mat.needsUpdate = true;
         });
       }
     });
     return wrap;
   }, [scene]);
+
+  /** Materiales cacheados para el fundido (sin traverse por frame). */
+  const fadeMats = useMemo(() => {
+    const list: THREE.Material[] = [];
+    model.traverse((o) => {
+      const mesh = o as THREE.Mesh;
+      if (!mesh.isMesh) return;
+      const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+      mats.forEach((m) => m && list.push(m));
+    });
+    return list;
+  }, [model]);
+  const opacity = useRef(0);
 
   /** Fase suavizada: seguimiento sin overshoot ni vibración en umbrales. */
   const phase = useRef<number | null>(null);
