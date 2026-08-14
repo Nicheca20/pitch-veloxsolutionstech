@@ -62,9 +62,10 @@ export function ProblemFlow() {
 
   useEffect(() => {
     // Encender nodos conforme la línea los alcanza.
-    // Nodos 1-3 se encienden en secuencia; el nodo 4 queda apagado.
+    // Nodos 1-3 se encienden en secuencia; el nodo 4 (Producción bloqueada)
+    // aparece al final para que el quiebre sea visible, pero con estilo apagado.
     const next = STEPS.map((_, i) => {
-      if (i === 3) return false; // Producción bloqueada
+      if (i === 3) return fill > 0.70;
       return fill > 0.12 + i * 0.20;
     });
     setVisible((prev) => (prev.every((v, i) => v === next[i]) ? prev : next));
