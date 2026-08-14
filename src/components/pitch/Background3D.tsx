@@ -342,18 +342,19 @@ function DynamicBloom({ section }: { section: Ref }) {
   useFrame(({ clock }) => {
     const k = tunnelIntensity(section.current);
     const p = pulse(clock.elapsedTime);
-    if (ref.current) ref.current.intensity = 0.45 + (k - 1) * 0.35 + p * 1.1;
+    if (ref.current) ref.current.intensity = 0.85 + (k - 1) * 0.5 + p * 1.4;
   });
   return (
     <Bloom
       ref={ref as never}
-      intensity={0.45}
-      luminanceThreshold={0.5}
-      luminanceSmoothing={0.3}
+      intensity={0.85}
+      luminanceThreshold={0.32}
+      luminanceSmoothing={0.4}
       mipmapBlur
     />
   );
 }
+
 
 export function Background3D({ section }: { section: Ref }) {
   return (
