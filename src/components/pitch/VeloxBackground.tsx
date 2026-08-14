@@ -29,7 +29,7 @@ export default function VeloxBackground() {
     const ICE = "#EEEDFE";
 
     // perf: el fondo es un degradé suave; 1.25x basta y ahorra ~60% de fill-rate
-    const DPR = 1; // perf: el fondo es sólo degradés y líneas suaves
+    const DPR = 0.75; // perf: el fondo es sólo degradés y líneas suaves; se escala vía CSS
     let W = 0;
     let H = 0;
     let horizon = 0;
