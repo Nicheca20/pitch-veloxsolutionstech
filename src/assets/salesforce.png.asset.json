@@ -1,11 +1,11 @@
 {
-  "asset_id": "3c04ee4c-cd3c-41dd-bebd-79e6d1e5288f",
-  "content_type": "image/png",
-  "created_at": "2026-08-14T02:23:10Z",
-  "original_filename": "salesforce.png",
+  "version": 1,
+  "asset_id": "97ab0aef-7ed8-462d-bb20-8f12399caf3e",
   "project_id": "41fc6c9f-fb20-4e08-89b9-4cd949c62fe9",
-  "r2_key": "a/v1/41fc6c9f-fb20-4e08-89b9-4cd949c62fe9/3c04ee4c-cd3c-41dd-bebd-79e6d1e5288f/salesforce.png",
-  "size": 17360,
-  "url": "/__l5e/assets-v1/3c04ee4c-cd3c-41dd-bebd-79e6d1e5288f/salesforce.png",
-  "version": 1
+  "url": "/__l5e/assets-v1/97ab0aef-7ed8-462d-bb20-8f12399caf3e/salesforce.png",
+  "r2_key": "a/v1/41fc6c9f-fb20-4e08-89b9-4cd949c62fe9/97ab0aef-7ed8-462d-bb20-8f12399caf3e/salesforce.png",
+  "original_filename": "salesforce.png",
+  "size": 1140193,
+  "content_type": "image/png",
+  "created_at": "2026-08-14T18:28:57Z"
 }
