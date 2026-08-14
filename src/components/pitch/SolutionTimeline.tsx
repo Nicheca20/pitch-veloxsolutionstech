@@ -107,7 +107,7 @@ export function SolutionTimeline() {
                 >
                   {/* Nodo */}
                   <span
-                    className={`absolute left-6 top-6 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-[var(--force)]/60 bg-[color-mix(in_oklab,var(--galaxy)_75%,black)] backdrop-blur-sm transition-transform duration-700 md:left-1/2 ${
+                    className={`absolute left-6 top-6 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-[var(--force)]/60 bg-[color-mix(in_oklab,var(--galaxy)_75%,black)] transition-transform duration-700 md:left-1/2 ${
                       on
                         ? "scale-100 shadow-[0_0_26px_var(--force)]"
                         : "scale-75 shadow-none"

@@ -91,7 +91,7 @@ export function CapabilityWheel() {
             return (
               <article
                 key={it.n}
-                className="absolute left-1/2 top-1/2 w-[min(88vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-6 text-left backdrop-blur-sm transition-all duration-[900ms] ease-out"
+                className="absolute left-1/2 top-1/2 w-[min(88vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-6 text-left transition-all duration-[900ms] ease-out"
                 style={{
                   transform: `rotateY(${i * STEP}deg) translateZ(23rem)`,
                   filter: front ? "none" : `blur(${1.5 + dist * 1.6}px)`,

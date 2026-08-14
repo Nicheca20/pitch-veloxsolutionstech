@@ -84,7 +84,7 @@ export function ConsequenceFlow() {
               style={{ transitionDelay: `${i * 60}ms` }}
             >
               <span
-                className={`absolute left-7 top-1/2 z-10 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-sm transition-all duration-700 md:left-1/2 ${
+                className={`absolute left-7 top-1/2 z-10 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border transition-all duration-700 md:left-1/2 ${
                   last
                     ? "border-[var(--force)]/70 bg-[var(--galaxy)]/85 animate-pulse-error"
                     : "border-[var(--force)]/45 bg-[color-mix(in_oklab,var(--galaxy)_80%,black)]"
