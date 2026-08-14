@@ -157,7 +157,7 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     const center = new THREE.Vector3();
     box.getSize(size);
     box.getCenter(center);
-    const scale = 13 / Math.max(size.z, 0.001);
+    const scale = 8 / Math.max(size.z, 0.001);
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
     wrap.rotation.y = Math.PI; // la nariz del modelo mira a +Z: la giramos hacia -Z
@@ -203,9 +203,9 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     power.current = clamp01(s / 0.2) * (0.35 + roll * 0.65);
 
     if (craft.current) {
-      craft.current.position.z = THREE.MathUtils.lerp(26, 10, roll) - lift * lift * 85;
+      craft.current.position.z = THREE.MathUtils.lerp(30, 16, roll) - lift * lift * 70;
       // arranca por debajo del encuadre y emerge subiendo
-      craft.current.position.y = THREE.MathUtils.lerp(-6, -1, roll) + lift * lift * 16;
+      craft.current.position.y = THREE.MathUtils.lerp(-5, -0.6, roll) + lift * lift * 12;
       craft.current.rotation.x = -lift * 0.42;
       craft.current.rotation.z = Math.sin(clock.elapsedTime * 0.8) * 0.05 * lift;
     }
