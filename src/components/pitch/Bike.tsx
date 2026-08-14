@@ -194,6 +194,10 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     power.current = entry;
     cloud.current = entry * (1 - out * 0.9);
     spin.current = (0.5 + s * 0.7) * dt * 60 * 0.06;
+    wheels.current.forEach((w) => {
+      w.rotation.z -= spin.current * 2.2;
+    });
+
 
     const r = rider.current;
     if (r) {
