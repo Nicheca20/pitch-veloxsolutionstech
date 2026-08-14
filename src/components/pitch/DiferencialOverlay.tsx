@@ -11,10 +11,10 @@ export function DiferencialOverlay({ section }: { section: MutableRefObject<numb
 
     const tick = () => {
       const s = section.current;
-      const fadeInStart = 5.60;
-      const fadeInEnd = 5.68;
-      const fadeOutStart = 5.88;
-      const fadeOutEnd = 5.97;
+      const fadeInStart = 5.72;
+      const fadeInEnd = 5.80;
+      const fadeOutStart = 5.90;
+      const fadeOutEnd = 5.98;
 
       let v = 0;
       if (s >= fadeInStart && s < fadeInEnd) {
