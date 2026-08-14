@@ -1,4 +1,5 @@
 import { useFrame } from "@react-three/fiber";
+import { softPointTexture } from "./soft-point";
 import { useGLTF } from "@react-three/drei";
 import { useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
@@ -123,6 +124,8 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
       <pointsMaterial
         size={0.09}
         color={ICE}
+        map={softPointTexture()}
+        alphaMap={softPointTexture()}
         transparent
         depthWrite={false}
         blending={THREE.AdditiveBlending}
