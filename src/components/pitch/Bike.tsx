@@ -77,43 +77,6 @@ function CloudTrack({ power }: { power: MutableRefObject<number> }) {
   );
 }
 
-/** Anillos que giran a la altura de las ruedas (el GLB no trae ruedas separadas). */
-function WheelRings({ spin, radius }: { spin: MutableRefObject<number>; radius: number }) {
-  const refs = useRef<(THREE.Mesh | null)[]>([]);
-  useFrame(() => {
-    refs.current.forEach((m) => {
-      if (m) m.rotation.z -= spin.current;
-    });
-  });
-  const spots: [number, number, number][] = [
-    [-3.2, -1.05, 0],
-    [3.2, -1.05, 0],
-  ];
-  return (
-    <>
-      {spots.map((p, i) => (
-        <mesh
-          key={i}
-          ref={(el) => {
-            refs.current[i] = el;
-          }}
-          position={p}
-        >
-
-          <torusGeometry args={[radius, 0.035, 8, 40]} />
-          <meshBasicMaterial
-            color={FORCE}
-            transparent
-            opacity={0.55}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </mesh>
-      ))}
-    </>
-  );
-}
-
 /* -------------------------------------------------------------------- Moto */
 export function Bike({ section }: { section: MutableRefObject<number> }) {
   const { scene } = useGLTF(MODEL, true);
@@ -233,7 +196,6 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
       <CloudTrack power={cloud} />
       <group ref={rider}>
         <primitive object={model} />
-        <WheelRings spin={spin} radius={1.05} />
         <pointLight position={[0, 2, 3]} intensity={140} distance={45} color={VELOX} />
         <pointLight position={[6, 4, -6]} intensity={220} distance={55} color={FORCE} />
         <pointLight position={[-6, 2, 5]} intensity={180} distance={55} color={ICE} />
