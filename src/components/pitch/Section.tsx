@@ -23,9 +23,13 @@ export function Section({
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
+    // Se revela apenas asoma en pantalla y no se vuelve a ocultar:
+    // evita el efecto "pop" al hacer scroll rápido.
     const io = new IntersectionObserver(
-      ([entry]) => entry && setActive(entry.isIntersecting && entry.intersectionRatio > 0.35),
-      { threshold: [0, 0.35, 0.6] },
+      ([entry]) => {
+        if (entry?.isIntersecting) setActive(true);
+      },
+      { threshold: 0.01, rootMargin: "0px 0px -8% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -36,8 +40,8 @@ export function Section({
       ref={ref}
       id={data.id}
       className={`pitch-section relative flex min-h-screen flex-col justify-center px-6 md:px-16 lg:px-24 ${
-        active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      } transition-all duration-700 ease-out ${className ?? ""}`}
+        active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+      } [transition:opacity_600ms_cubic-bezier(0.22,1,0.36,1),transform_600ms_cubic-bezier(0.22,1,0.36,1)] [will-change:opacity,transform] [backface-visibility:hidden] ${className ?? ""}`}
     >
       <div
         className={`relative z-10 flex w-full items-center gap-8 ${

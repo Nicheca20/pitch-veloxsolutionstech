@@ -29,7 +29,7 @@ export default function VeloxBackground() {
     const ICE = "#EEEDFE";
 
     // perf: el fondo es un degradé suave; 1.25x basta y ahorra ~60% de fill-rate
-    const DPR = Math.min(window.devicePixelRatio || 1, 1.25);
+    const DPR = 1; // perf: el fondo es sólo degradés y líneas suaves
     let W = 0;
     let H = 0;
     let horizon = 0;
@@ -43,12 +43,38 @@ export default function VeloxBackground() {
       canvas.style.height = H + "px";
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
       horizon = H * 0.5;
+      buildGradients();
     }
+    // perf: los degradés no cambian por frame; se cachean por tamaño
+    let skyGrad: CanvasGradient;
+    let horizonGrad: CanvasGradient;
+    let floorGrad: CanvasGradient;
+    let reflectGrad: CanvasGradient;
+    function buildGradients() {
+      skyGrad = ctx.createLinearGradient(0, 0, 0, horizon);
+      skyGrad.addColorStop(0, GALAXY);
+      skyGrad.addColorStop(1, MID);
+      horizonGrad = ctx.createLinearGradient(0, horizon - 80, 0, horizon + 10);
+      horizonGrad.addColorStop(0, "rgba(127,119,221,0)");
+      horizonGrad.addColorStop(1, "rgba(175,169,236,0.55)");
+      floorGrad = ctx.createLinearGradient(0, horizon, 0, H);
+      floorGrad.addColorStop(0, "#140f38");
+      floorGrad.addColorStop(1, "#0a0820");
+      reflectGrad = ctx.createLinearGradient(0, horizon, 0, horizon + 140);
+      reflectGrad.addColorStop(0, "rgba(175,169,236,0.28)");
+      reflectGrad.addColorStop(1, "rgba(83,74,183,0)");
+    }
+
     resize();
-    window.addEventListener("resize", resize);
+    let onResizeRaf = 0;
+    const onResize = () => {
+      cancelAnimationFrame(onResizeRaf);
+      onResizeRaf = requestAnimationFrame(resize);
+    };
+    window.addEventListener("resize", onResize);
 
     // Estrellas
-    const stars = Array.from({ length: 110 }, () => ({
+    const stars = Array.from({ length: 70 }, () => ({
       x: Math.random(),
       y: Math.random(),
       s: Math.random() * 1.6 + 0.3,
@@ -56,7 +82,7 @@ export default function VeloxBackground() {
     }));
 
     // Estelas radiales (cielo) — nacen del punto de fuga
-    const streaks = Array.from({ length: 80 }, () => ({
+    const streaks = Array.from({ length: 44 }, () => ({
       a: Math.random() * Math.PI * 2,
       r: Math.random(),
       sp: Math.random() * 0.007 + 0.004,
@@ -64,7 +90,7 @@ export default function VeloxBackground() {
     }));
 
     // Estelas sobre el piso — corren hacia la cámara
-    const fstreaks = Array.from({ length: 60 }, () => ({
+    const fstreaks = Array.from({ length: 34 }, () => ({
       x: (Math.random() - 0.5) * 2,
       z: Math.random(),
       sp: Math.random() * 0.014 + 0.008,
@@ -87,15 +113,19 @@ export default function VeloxBackground() {
       ctx.globalAlpha = 1;
     }
 
-    function draw() {
-      t += 1;
+    let last = 0;
+    const FRAME = 1000 / 30; // perf: 30fps es suficiente para el fondo
+
+    function draw(now?: number) {
+      raf = requestAnimationFrame(draw);
+      const ts = now ?? 0;
+      if (ts - last < FRAME) return;
+      last = ts;
+      t += 2;
       const cx = W / 2;
 
       // Cielo
-      const sky = ctx.createLinearGradient(0, 0, 0, horizon);
-      sky.addColorStop(0, GALAXY);
-      sky.addColorStop(1, MID);
-      ctx.fillStyle = sky;
+      ctx.fillStyle = skyGrad;
       ctx.fillRect(0, 0, W, horizon);
 
       // Estrellas
@@ -123,43 +153,33 @@ export default function VeloxBackground() {
       }
 
       // Glow del horizonte
-      const hg = ctx.createLinearGradient(0, horizon - 80, 0, horizon + 10);
-      hg.addColorStop(0, "rgba(127,119,221,0)");
-      hg.addColorStop(1, "rgba(175,169,236,0.55)");
-      ctx.fillStyle = hg;
+      ctx.fillStyle = horizonGrad;
       ctx.fillRect(0, horizon - 80, W, 90);
       line(0, horizon, W, horizon, AURA, 2, 0.85);
       const pulse = 0.5 + 0.5 * Math.sin(t * 0.04);
       line(0, horizon, W, horizon, ICE, 4, 0.22 * pulse);
 
       // Piso base
-      const fl = ctx.createLinearGradient(0, horizon, 0, H);
-      fl.addColorStop(0, "#140f38");
-      fl.addColorStop(1, "#0a0820");
-      ctx.fillStyle = fl;
+      ctx.fillStyle = floorGrad;
       ctx.fillRect(0, horizon, W, H - horizon);
 
       // Reflejo del horizonte sobre el piso (efecto espejo)
-      const rf = ctx.createLinearGradient(0, horizon, 0, horizon + 140);
-      rf.addColorStop(0, "rgba(175,169,236,0.28)");
-      rf.addColorStop(1, "rgba(83,74,183,0)");
-      ctx.fillStyle = rf;
+      ctx.fillStyle = reflectGrad;
       ctx.fillRect(0, horizon, W, 140);
 
       // Brillos verticales que caen (reflejo)
-      for (let r = 0; r < 7; r++) {
-        const rx = cx + ((r - 3) / 3) * W * 0.42;
-        const rg = ctx.createLinearGradient(rx, horizon, rx, horizon + 100);
-        rg.addColorStop(0, "rgba(238,237,254," + (0.12 + 0.06 * Math.sin(t * 0.05 + r)) + ")");
-        rg.addColorStop(1, "rgba(238,237,254,0)");
-        ctx.fillStyle = rg;
+      for (let r = 0; r < 5; r++) {
+        const rx = cx + ((r - 2) / 2) * W * 0.42;
+        ctx.globalAlpha = 0.1 + 0.05 * Math.sin(t * 0.05 + r);
+        ctx.fillStyle = reflectGrad;
         ctx.fillRect(rx - 16, horizon, 32, 100);
       }
+      ctx.globalAlpha = 1;
 
       // Líneas de perspectiva horizontales que se acercan
       const off = (t * 0.009) % 1;
-      for (let n = 0; n < 20; n++) {
-        const tt = (n + off) / 20;
+      for (let n = 0; n < 14; n++) {
+        const tt = (n + off) / 14;
         const persp = tt * tt;
         const y = horizon + persp * (H - horizon);
         const glow = 1 - tt;
@@ -167,8 +187,8 @@ export default function VeloxBackground() {
       }
 
       // Líneas verticales convergentes al punto de fuga
-      for (let m = -10; m <= 10; m++) {
-        const bx = cx + m * (W / 10);
+      for (let m = -7; m <= 7; m++) {
+        const bx = cx + m * (W / 7);
         line(bx, H, cx, horizon, VELOX, 0.6, 0.28);
       }
 
@@ -191,7 +211,6 @@ export default function VeloxBackground() {
         line(x, y, x2, y2, c, 0.8 + p1 * 2.6, 0.22 + p1 * 0.65);
       }
 
-      raf = requestAnimationFrame(draw);
     }
     draw();
 
@@ -205,7 +224,8 @@ export default function VeloxBackground() {
     return () => {
       cancelAnimationFrame(raf);
       document.removeEventListener("visibilitychange", onVis);
-      window.removeEventListener("resize", resize);
+      cancelAnimationFrame(onResizeRaf);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 

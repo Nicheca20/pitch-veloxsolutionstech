@@ -87,7 +87,7 @@ export function GrowthEngine() {
                   style={{ opacity: 0.25 + t * 0.75, transform: `translateY(${(1 - t) * 14}px)` }}
                 >
                   <div
-                    className="relative z-10 flex size-[5.2rem] items-center justify-center rounded-2xl border border-white/10 bg-galaxy/80 backdrop-blur-sm md:size-24"
+                    className="relative z-10 flex size-[5.2rem] items-center justify-center rounded-2xl border border-white/10 bg-galaxy/80 md:size-24"
                     style={{
                       boxShadow: `0 0 ${18 + t * 34}px rgba(83,74,183,${0.15 + t * 0.45})`,
                       borderColor: `rgba(255,255,255,${0.08 + t * 0.16})`,
@@ -113,7 +113,7 @@ export function GrowthEngine() {
         </div>
 
         <div
-          className="relative overflow-hidden rounded-2xl border border-white/10 bg-galaxy/60 p-5 backdrop-blur-sm transition-all duration-500 md:p-7"
+          className="relative overflow-hidden rounded-2xl border border-white/10 bg-galaxy/60 p-5 transition-all duration-500 md:p-7"
           style={{
             opacity: 0.3 + Math.min(1, Math.max(0, (fill - 0.35) / 0.3)) * 0.7,
             boxShadow: `0 0 ${20 + fill * 40}px rgba(83,74,183,0.25)`,

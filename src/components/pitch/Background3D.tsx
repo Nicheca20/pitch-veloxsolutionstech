@@ -776,15 +776,17 @@ function DynamicBloom({ section, quality }: { section: Ref; quality: number }) {
       luminanceThreshold={0.42}
       luminanceSmoothing={0.5}
       mipmapBlur
-      resolutionScale={quality > 0.6 ? 0.5 : 0.35}
-      kernelSize={quality > 0.6 ? KernelSize.MEDIUM : KernelSize.SMALL}
+      resolutionScale={quality > 0.6 ? 0.35 : 0.25}
+      kernelSize={KernelSize.SMALL}
     />
   );
 }
 
 export function Background3D({ section }: { section: Ref }) {
   // dpr adaptativo: baja solo si los fps caen (limitado a 2 como máximo)
-  const [dpr, setDpr] = useState(1.5);
+  const [dpr, setDpr] = useState(() =>
+    typeof window === "undefined" ? 1 : Math.min(1.1, window.devicePixelRatio || 1),
+  );
   const [quality, setQuality] = useState(1);
 
   return (
@@ -809,15 +811,15 @@ export function Background3D({ section }: { section: Ref }) {
         bounds={() => [50, 60]}
         flipflops={3}
         onIncline={() => {
-          setDpr((d) => Math.min(2, d + 0.25));
+          setDpr((d) => Math.min(1.25, d + 0.15));
           setQuality(1);
         }}
         onDecline={() => {
-          setDpr((d) => Math.max(0.75, d - 0.25));
+          setDpr((d) => Math.max(0.6, d - 0.2));
           setQuality(0.5);
         }}
         onFallback={() => {
-          setDpr(1);
+          setDpr(0.7);
           setQuality(0.5);
         }}
       />

@@ -119,7 +119,7 @@ export function ProblemFlow() {
             >
               {/* Nodo */}
               <span
-                className={`absolute left-6 top-1/2 z-10 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border backdrop-blur-sm transition-all duration-600 md:left-1/2 ${
+                className={`absolute left-6 top-1/2 z-10 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border transition-all duration-600 md:left-1/2 ${
                   isLast
                     ? "border-[var(--force)]/40 bg-[var(--galaxy)]/80"
                     : on

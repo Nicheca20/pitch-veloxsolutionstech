@@ -22,8 +22,8 @@ export function LogoStrip() {
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(
-      ([e]) => e && e.isIntersecting && e.intersectionRatio > 0.3 && setOn(true),
-      { threshold: [0, 0.3, 0.6] },
+      ([e]) => e && e.isIntersecting && setOn(true),
+      { threshold: 0.01, rootMargin: "0px 0px -5% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
@@ -51,7 +51,7 @@ export function LogoStrip() {
             key={l.name}
             className="flex flex-col items-center transition-all duration-[900ms] ease-out"
             style={{
-              transitionDelay: `${250 + i * 260}ms`,
+              transitionDelay: `${120 + i * 90}ms`,
               opacity: on ? 1 : 0.5,
               filter: on
                 ? "grayscale(0) brightness(1) drop-shadow(0 0 18px rgba(175,169,236,0.35))"

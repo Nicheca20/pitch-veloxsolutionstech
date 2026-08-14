@@ -59,7 +59,7 @@ export function CronistaFronts() {
           return (
             <div
               key={c.title}
-              className="rounded-2xl border border-white/10 bg-galaxy/70 p-6 backdrop-blur-sm transition-all duration-500 md:p-7"
+              className="rounded-2xl border border-white/10 bg-galaxy/70 p-6 transition-all duration-500 md:p-7"
               style={{
                 opacity: 0.25 + t * 0.75,
                 transform: `translateY(${(1 - t) * 16}px)`,
@@ -93,7 +93,7 @@ export function CronistaFronts() {
       </div>
 
       <div
-        className="mx-auto max-w-2xl rounded-2xl border border-white/10 bg-galaxy/60 p-6 text-center backdrop-blur-sm transition-all duration-500"
+        className="mx-auto max-w-2xl rounded-2xl border border-white/10 bg-galaxy/60 p-6 text-center transition-all duration-500"
         style={{
           opacity: 0.25 + base * 0.75,
           transform: `translateY(${(1 - base) * 14}px)`,

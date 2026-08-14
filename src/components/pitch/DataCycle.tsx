@@ -122,7 +122,7 @@ export function DataCycle() {
           transition: "opacity 700ms ease-out",
         }}
       >
-        <div className="relative flex h-[clamp(6.5rem,22vw,10rem)] w-[clamp(6.5rem,22vw,10rem)] items-center justify-center rounded-full border border-[var(--force)]/40 bg-[var(--galaxy)]/60 p-4 text-center shadow-[0_0_50px_-10px_var(--velox)] backdrop-blur-sm">
+        <div className="relative flex h-[clamp(6.5rem,22vw,10rem)] w-[clamp(6.5rem,22vw,10rem)] items-center justify-center rounded-full border border-[var(--force)]/40 bg-[var(--galaxy)]/60 p-4 text-center shadow-[0_0_50px_-10px_var(--velox)]">
           <span className="text-[clamp(0.7rem,1.4vw,0.9rem)] font-bold uppercase leading-tight tracking-[0.1em] text-[var(--ice)]">
             Activo de datos único
           </span>
@@ -152,7 +152,7 @@ export function DataCycle() {
           >
             <span className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--force)] shadow-[0_0_14px_var(--aura)]" />
             <div
-              className={`absolute whitespace-nowrap rounded-lg border border-[var(--force)]/40 bg-[var(--galaxy)]/80 px-5 py-3 text-center shadow-[0_0_26px_-4px_var(--velox)] backdrop-blur-md ${stage.card}`}
+              className={`absolute whitespace-nowrap rounded-lg border border-[var(--force)]/40 bg-[var(--galaxy)]/80 px-5 py-3 text-center shadow-[0_0_26px_-4px_var(--velox)] ${stage.card}`}
               style={{
                 transform: `${stage.card.includes("-translate-x-1/2") ? "translateX(-50%) " : ""}${stage.card.includes("-translate-y-1/2") ? "translateY(-50%) " : ""}scale(${0.85 + local * 0.15})`,
                 transition: "transform 600ms ease-out",

@@ -103,11 +103,11 @@ export function SolutionTimeline() {
                   className={`relative pl-16 md:grid md:grid-cols-2 md:items-center md:gap-16 md:pl-0 ${
                     on ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
                   } transition-all duration-700 ease-out`}
-                  style={{ transitionDelay: `${i * 120}ms` }}
+                  style={{ transitionDelay: `${i * 70}ms` }}
                 >
                   {/* Nodo */}
                   <span
-                    className={`absolute left-6 top-6 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-[var(--force)]/60 bg-[color-mix(in_oklab,var(--galaxy)_75%,black)] backdrop-blur-sm transition-transform duration-700 md:left-1/2 ${
+                    className={`absolute left-6 top-6 z-10 flex h-11 w-11 -translate-x-1/2 items-center justify-center rounded-full border border-[var(--force)]/60 bg-[color-mix(in_oklab,var(--galaxy)_75%,black)] transition-transform duration-700 md:left-1/2 ${
                       on
                         ? "scale-100 shadow-[0_0_26px_var(--force)]"
                         : "scale-75 shadow-none"
