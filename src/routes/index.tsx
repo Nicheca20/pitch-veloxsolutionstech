@@ -213,7 +213,7 @@ function Pitch() {
               afterTitle={s.id === "solucion" ? <VeleiroLogo /> : undefined}
               extra={
                 s.id === "cta" ? (
-                  <div className="mt-10 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
+                  <div className="mt-10">
                     <div className="rounded-2xl border border-white/15 bg-white p-3">
                       <img
                         loading="lazy"
@@ -222,9 +222,6 @@ function Pitch() {
                         alt="Código QR para agendar el diagnóstico con Velox Solutions"
                         className="size-[15rem] object-contain sm:size-[17rem] md:size-[19rem] lg:size-[22rem]"
                       />
-                    </div>
-                    <div className="max-w-[18rem] text-base uppercase leading-snug tracking-[0.22em] text-foreground/80 sm:text-lg">
-                      Escaneá el QR y agendá tu diagnóstico
                     </div>
                   </div>
                 ) : undefined
@@ -248,11 +245,20 @@ function Pitch() {
                   <div className="mt-[6vh] md:mt-[10vh]">
                     <AdiumAssistants />
                   </div>
-
+                ) : undefined
+              }
+              right={
+                s.id === "hook" ? (
+                  <img
+                    loading="lazy"
+                    decoding="async"
+                    src={veloxLogo.url}
+                    alt="Velox Solutions"
+                    className="h-auto w-[min(58vw,14rem)] object-contain opacity-90 md:w-[min(38vw,19rem)]"
+                  />
                 ) : s.id === "cta" ? (
                   <CapabilityWheel />
                 ) : undefined
-
               }
               right={
                 s.id === "hook" ? (
