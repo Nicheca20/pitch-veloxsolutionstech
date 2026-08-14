@@ -133,7 +133,7 @@ function StartLights({ phase }: { phase: MutableRefObject<number> }) {
 
   const span = 9;
   return (
-    <group position={[0, 0, 7]}>
+    <group ref={group} position={[0, 0, -118]}>
       {/* postes */}
       {[-1, 1].map((s) => (
         <mesh key={s} position={[(s * span) / 2, 1.4, 0]}>
