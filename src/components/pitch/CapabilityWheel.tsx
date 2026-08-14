@@ -74,7 +74,7 @@ export function CapabilityWheel() {
       </div>
 
       <div
-        className="relative mx-auto h-[22rem] w-full"
+        className="relative mx-auto h-[26rem] w-full overflow-hidden sm:h-[22rem]"
         style={{ perspective: "1400px" }}
       >
         <div
@@ -91,9 +91,10 @@ export function CapabilityWheel() {
             return (
               <article
                 key={it.n}
-                className="absolute left-1/2 top-1/2 w-[min(88vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-6 text-left transition-all duration-[900ms] ease-out"
+                className="absolute left-1/2 top-1/2 w-[min(84vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-5 text-left transition-all duration-[900ms] ease-out sm:p-6"
                 style={{
-                  transform: `rotateY(${i * STEP}deg) translateZ(23rem)`,
+                  transform: `rotateY(${i * STEP}deg) translateZ(min(50vw, 23rem))`,
+
                   filter: front ? "none" : `blur(${1.5 + dist * 1.6}px)`,
                   opacity: front ? 1 : Math.max(0.12, 0.5 - dist * 0.14),
                   borderColor: front

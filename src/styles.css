@@ -183,6 +183,14 @@ html {
   background-color: var(--background);
 }
 
+/* Móvil/tablet: nunca permitir scroll horizontal por elementos posicionados */
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+
 @media print {
   #pitch-canvas,
   .print\:hidden {
