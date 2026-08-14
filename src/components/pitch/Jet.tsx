@@ -88,13 +88,14 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
         ox: n[0],
         oy: n[1],
         oz: n[2],
-        jx: (Math.random() - 0.5) * 0.22,
-        jy: (Math.random() - 0.5) * 0.22,
-        spread: 0.25 + Math.random() * 0.9,
+        jx: (Math.random() - 0.5) * 0.1,
+        jy: (Math.random() - 0.5) * 0.1,
+        spread: 0.3 + Math.random() * 0.5,
         speed: 0.35 + Math.random() * 0.9,
         offset: Math.random(),
       };
     });
+
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
     return { geometry: g, seeds };
