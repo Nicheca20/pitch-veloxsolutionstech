@@ -691,10 +691,10 @@ export function Background3D({ section }: { section: Ref }) {
       <ReflectiveFloor />
       <SpeedGrid section={section} />
       <HorizonGlow />
-      <ParticleField section={section} />
-      <AccentStreaks section={section} />
-      <Streaks section={section} count={800} color="#AFA9EC" />
-      <Streaks section={section} count={420} ground color="#7F77DD" />
+      <ParticleField section={section} count={5000} />
+      <AccentStreaks section={section} count={420} />
+      <Streaks section={section} count={260} color="#AFA9EC" />
+      <Streaks section={section} count={120} ground color="#7F77DD" />
       <LazyCar section={section} />
       <LazyJet section={section} />
       <LazyBike section={section} />
