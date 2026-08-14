@@ -45,8 +45,8 @@ export function DataCycle() {
   }, []);
 
   const cycleProgress = Math.min(1, progress * 1.35);
-  const radialProgress = Math.min(1, Math.max(0, (progress - 0.25) * 1.7));
-  const nodeProgress = Math.min(1, Math.max(0, (progress - 0.45) * 2));
+  const radialProgress = Math.min(1, Math.max(0, (progress - 0.15) * 1.7));
+  const nodeProgress = Math.min(1, Math.max(0, (progress - 0.25) * 2.5));
 
   const cycleOffset = pathLen * (1 - cycleProgress);
 
