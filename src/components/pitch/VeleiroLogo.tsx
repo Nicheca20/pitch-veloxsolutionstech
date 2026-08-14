@@ -28,22 +28,26 @@ export function VeleiroLogo() {
           transition: "opacity 700ms ease-out, transform 700ms ease-out",
         }}
       >
-        <img
-          src={veleiro.url}
-          alt="Veleiro AI"
-          className="h-10 w-auto object-contain md:h-12 lg:h-14"
-          style={{
-            filter: "drop-shadow(0 0 20px rgba(127,119,221,0.4))",
-          }}
-        />
-        <img
-          src={agentforce.url}
-          alt="AgentForce"
-          className="h-10 w-auto object-contain md:h-12 lg:h-14"
-          style={{
-            filter: "drop-shadow(0 0 20px rgba(83,74,183,0.4))",
-          }}
-        />
+        <div className="flex h-10 items-center md:h-12 lg:h-14">
+          <img
+            src={veleiro.url}
+            alt="Veleiro AI"
+            className="h-full w-auto object-contain"
+            style={{
+              filter: "drop-shadow(0 0 20px rgba(127,119,221,0.4))",
+            }}
+          />
+        </div>
+        <div className="flex h-10 items-center md:h-12 lg:h-14">
+          <img
+            src={agentforce.url}
+            alt="AgentForce"
+            className="h-full w-auto object-contain"
+            style={{
+              filter: "drop-shadow(0 0 20px rgba(83,74,183,0.4))",
+            }}
+          />
+        </div>
       </div>
     </div>
   );
