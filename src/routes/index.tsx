@@ -257,7 +257,9 @@ function Pitch() {
                     className="h-auto w-[min(58vw,14rem)] object-contain opacity-90 md:w-[min(38vw,19rem)]"
                   />
                 ) : s.id === "cta" ? (
-                  <CapabilityWheel />
+                  <div className="w-full pt-[18vh] lg:pt-[22vh]">
+                    <CapabilityWheel />
+                  </div>
                 ) : undefined
               }
               align={s.id === "cta" ? "start" : undefined}
