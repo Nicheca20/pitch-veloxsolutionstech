@@ -157,14 +157,14 @@ function Pitch() {
     };
   }, []);
 
-  /** Avance fino por click: cada avance baja solo ~25 % del viewport.
+  /** Avance fino por click: cada avance baja solo ~15 % del viewport.
    *  Así no se saltan las animaciones ni los modelos 3D al usar un puntero láser/clicker. */
   const step = useCallback(
     (dir: 1 | -1) => {
       const vh = window.innerHeight;
       const y = window.scrollY;
       const max = document.body.scrollHeight - vh;
-      const target = Math.max(0, Math.min(max, y + dir * vh * 0.25));
+      const target = Math.max(0, Math.min(max, y + dir * vh * 0.15));
       smoothScrollTo(target);
     },
     [smoothScrollTo],
