@@ -222,11 +222,11 @@ function Pitch() {
                   />
                 ) : undefined
               }
-              /* Ritmo vertical uniforme: todas las secciones con contenido
-                 extendido miden lo mismo, para no romper el hilo conductor. */
+              /* Ritmo vertical ajustado: hero más compacto para acercar la
+                 franja de ecosistema y mantener el hilo conductor. */
               className={
                 s.id === "hook"
-                  ? "min-h-[78vh] justify-start pt-[18vh]"
+                  ? "min-h-[62vh] justify-start pt-[14vh]"
                   : s.id === "problema" ||
                       s.id === "consecuencia" ||
                       s.id === "solucion" ||
