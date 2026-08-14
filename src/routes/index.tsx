@@ -214,7 +214,7 @@ function Pitch() {
               extra={
                 s.id === "cta" ? (
                   <div className="mt-10">
-                    <div className="rounded-2xl border border-white/15 bg-white p-3">
+                    <div className="w-fit rounded-2xl border border-white/15 bg-white p-2">
                       <img
                         loading="lazy"
                         decoding="async"
