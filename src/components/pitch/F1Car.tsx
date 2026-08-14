@@ -315,13 +315,12 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
     // fundido en ambos extremos: nunca aparece ni desaparece de golpe
     const fade = smooth(clamp01(s / 0.14)) * smooth(clamp01((1 - s) / 0.12));
     setOpacity(fade);
-    const scale = THREE.MathUtils.lerp(0.55, 1, approach);
-    g.scale.setScalar(scale);
 
     pit.current = stopped * fade;
     spin.current = Math.max(1 - stopped, exit) * fade;
 
     if (car.current) {
+      car.current.scale.setScalar(THREE.MathUtils.lerp(0.6, 1, approach));
       car.current.position.z = z;
       car.current.position.y = Math.sin(s * 40) * 0.015 * (1 - stopped);
     }
