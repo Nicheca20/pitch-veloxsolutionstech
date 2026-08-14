@@ -33,7 +33,9 @@ export function CencorUnits() {
       className="pointer-events-none absolute bottom-8 left-4 z-10 md:bottom-12 md:left-16 lg:left-24"
     >
       <p
-        className={`text-[10px] uppercase tracking-[0.34em] text-foreground/60 transition-all duration-700 ${on ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"}`}
+        className={`text-[10px] uppercase tracking-[0.34em] text-foreground/60 transition-all duration-700 ${
+          on ? "translate-y-0 opacity-100" : "translate-y-2 opacity-0"
+        }`}
       >
         Grupo Cencor
       </p>

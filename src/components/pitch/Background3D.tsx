@@ -204,19 +204,19 @@ function SpeedGrid({ section }: { section: Ref }) {
             float side = clamp(abs(vLocal.x) / 120.0, 0.0, 1.0);
 
             // carriles de fuga (líneas finas a lo largo de la profundidad)
-            float lanes = line(vLocal.x / 6.0, 0.55);
+            float lanes = line(vLocal.x / 6.0, 0.7);
             // barridos que se acercan a la cámara (líneas transversales rápidas)
-            float sweeps = line((vLocal.y + uRun) / 9.0, 0.45);
-            float g = max(lanes * 0.85, sweeps * 0.8);
+            float sweeps = line((vLocal.y + uRun) / 9.0, 0.55);
+            float g = max(lanes * 0.9, sweeps);
             if (g < 0.01) discard;
 
             // más brillante cerca del horizonte, se apaga a los lados
-            float far = 1.0 - smoothstep(0.55, 0.98, depth);
-            float glow = (0.28 + far * 0.75) * (1.0 - side * side * 0.85);
-            vec3 col = mix(uNear, uFar, smoothstep(0.1, 0.7, depth));
-            float nearFade = smoothstep(3.0, 26.0, length(vLocal.xy));
-            float a = g * glow * nearFade * 0.42 * uIntensity;
-            gl_FragColor = vec4(col * (0.55 + glow * 0.7), a);
+            float horizon = smoothstep(0.05, 0.62, depth) * (1.0 - smoothstep(0.72, 1.0, depth));
+            float glow = (0.35 + horizon * 1.25) * (1.0 - side * side);
+            vec3 col = mix(uNear, uFar, smoothstep(0.15, 0.75, depth));
+            float nearFade = smoothstep(4.0, 22.0, length(vLocal.xy));
+            float a = g * glow * nearFade * 0.5 * uIntensity;
+            gl_FragColor = vec4(col * (0.7 + glow * 0.8), a);
           }
         `,
       }),
@@ -259,17 +259,17 @@ function ReflectiveFloor() {
     >
       <planeGeometry args={[420, 420]} />
       <MeshReflectorMaterial
-        resolution={1024}
-        mirror={0.9}
-        mixBlur={2.2}
-        mixStrength={3.2}
-        blur={[300, 90]}
-        depthScale={1.25}
-        minDepthThreshold={0.2}
-        maxDepthThreshold={1.2}
-        color="#07061a"
-        metalness={0.95}
-        roughness={0.25}
+        resolution={512}
+        mirror={0.72}
+        mixBlur={7}
+        mixStrength={2.2}
+        blur={[400, 120]}
+        depthScale={1.1}
+        minDepthThreshold={0.3}
+        maxDepthThreshold={1.4}
+        color="#0b0920"
+        metalness={0.75}
+        roughness={0.85}
       />
     </mesh>
   );
@@ -282,13 +282,13 @@ function HorizonGlow() {
   useFrame(({ camera, clock }) => {
     const m = mesh.current;
     if (!m) return;
-    m.position.set(camera.position.x * 0.2, FLOOR_Y + 1.2, camera.position.z - 185);
-    if (mat.current) mat.current.opacity = 0.3 + Math.sin(clock.elapsedTime * 1.1) * 0.08;
+    m.position.set(camera.position.x * 0.2, FLOOR_Y + 1.6, camera.position.z - 185);
+    if (mat.current) mat.current.opacity = 0.42 + Math.sin(clock.elapsedTime * 1.1) * 0.12;
   });
   return (
     <group>
       <mesh ref={mesh} frustumCulled={false}>
-        <planeGeometry args={[560, 3]} />
+        <planeGeometry args={[520, 5]} />
         <meshBasicMaterial
           ref={mat}
           color="#AFA9EC"
@@ -694,6 +694,7 @@ export function Background3D({ section }: { section: Ref }) {
       <ParticleField section={section} />
       <AccentStreaks section={section} />
       <Streaks section={section} count={800} color="#AFA9EC" />
+      <Streaks section={section} count={420} ground color="#7F77DD" />
       <LazyCar section={section} />
       <LazyJet section={section} />
       <LazyBike section={section} />

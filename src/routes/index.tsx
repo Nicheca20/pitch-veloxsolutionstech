@@ -189,7 +189,7 @@ function Pitch() {
 
 
 
-        <footer className="relative z-10 flex h-screen min-h-[560px] flex-col justify-center px-6 md:px-16 lg:px-24">
+        <footer className="relative z-10 px-6 pb-24 md:px-16 lg:px-24">
           <div className="text-veil relative grid gap-6 sm:grid-cols-2">
             {brand.contacts.map((c) => (
               <a
