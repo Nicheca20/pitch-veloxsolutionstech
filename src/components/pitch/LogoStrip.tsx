@@ -6,7 +6,7 @@ import github from "@/assets/github.png.asset.json";
 type Logo = { name: string; src: string; className: string; caption?: string };
 
 const logos: Logo[] = [
-  { name: "Salesforce", src: salesforce.url, className: "h-16 md:h-24", caption: "Data Cloud 360" },
+  { name: "Salesforce", src: salesforce.url, className: "h-20 md:h-28", caption: "Data Cloud 360" },
   { name: "Slack", src: slack.url, className: "h-16 md:h-22" },
   { name: "GitHub", src: github.url, className: "h-20 md:h-28" },
 ];
