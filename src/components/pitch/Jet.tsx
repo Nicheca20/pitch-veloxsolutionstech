@@ -116,13 +116,14 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
       const s = seeds[i]!;
       const life = (t * s.speed + s.offset) % 1;
       const d = life * 20;
-      // nace exactamente en la tobera y se abre hacia atrás (+Z) cayendo un poco
+      // nace exactamente en la tobera y se aleja recto por el eje del motor (+Z)
       attr.setXYZ(
         i,
-        s.ox + (s.jx + s.ox * 0.35) * life * s.spread,
-        s.oy + s.jy * life * s.spread - life * 1.1,
+        s.ox + s.jx * life * s.spread,
+        s.oy + s.jy * life * s.spread,
         s.oz + d,
       );
+
     }
     attr.needsUpdate = true;
   });
