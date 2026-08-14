@@ -33,7 +33,7 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
     g.visible = p > 0.02;
     if (!g.visible) return;
     const flicker = 0.85 + Math.sin(clock.elapsedTime * 40) * 0.15;
-    g.scale.set(1, 1, (0.5 + p * 2.6) * flicker);
+    g.scale.set(1, 1, (0.5 + p * 1.6) * flicker);
     g.children.forEach((c) => {
       const m = (c as THREE.Mesh).material as THREE.MeshBasicMaterial;
       m.opacity = p * 0.85 * flicker;
@@ -41,15 +41,15 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
   });
 
   return (
-    <group ref={core} position={[0, 0.05, 2.1]}>
+    <group ref={core} position={[0, 0.15, 3.2]}>
       {[
-        [-0.45, 0.42, FORCE],
-        [0.45, 0.42, FORCE],
-        [-0.45, 0.22, ICE],
-        [0.45, 0.22, ICE],
+        [-0.28, 0.2, FORCE],
+        [0.28, 0.2, FORCE],
+        [-0.28, 0.1, ICE],
+        [0.28, 0.1, ICE],
       ].map(([x, r, color], i) => (
-        <mesh key={i} position={[x as number, 0, 0.7]} rotation={[Math.PI / 2, 0, 0]}>
-          <coneGeometry args={[r as number, 2.6, 14, 1, true]} />
+        <mesh key={i} position={[x as number, 0, 0.4]} rotation={[Math.PI / 2, 0, 0]}>
+          <coneGeometry args={[r as number, 1.5, 14, 1, true]} />
           <meshBasicMaterial
             color={color as string}
             transparent
@@ -66,8 +66,8 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
 /* ------------------------------------------------------------------- Estela */
 /** Toberas: mismas posiciones que los conos del postquemador. */
 const NOZZLES: [number, number, number][] = [
-  [-0.45, 0.05, 2.8],
-  [0.45, 0.05, 2.8],
+  [-0.28, 0.15, 3.6],
+  [0.28, 0.15, 3.6],
 ];
 
 function Trail({ power }: { power: MutableRefObject<number> }) {
@@ -168,6 +168,15 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
         mesh.castShadow = false;
         mesh.receiveShadow = false;
         mesh.frustumCulled = false;
+        // el GLB trae un disco plano de estudio: lo ocultamos
+        mesh.geometry.computeBoundingBox();
+        const bb = mesh.geometry.boundingBox;
+        if (bb) {
+          const dx = bb.max.x - bb.min.x;
+          const dy = bb.max.y - bb.min.y;
+          const dz = bb.max.z - bb.min.z;
+          if (dy < 0.05 * Math.max(dx, dz)) mesh.visible = false;
+        }
         const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
         mats.forEach((mm) => {
           const mat = mm as THREE.MeshStandardMaterial;
