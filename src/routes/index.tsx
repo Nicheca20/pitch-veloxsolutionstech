@@ -201,7 +201,7 @@ function Pitch() {
                 ) : s.id === "diferencial" ? (
                   <GrowthEngine />
                 ) : s.id === "cronista" ? (
-                  <div className="mt-[48vh]">
+                  <div className="mt-[10vh]">
                     <CronistaFronts />
                   </div>
                 ) : s.id === "adium" ? (
@@ -222,20 +222,20 @@ function Pitch() {
                   />
                 ) : undefined
               }
+              /* Ritmo vertical uniforme: todas las secciones con contenido
+                 extendido miden lo mismo, para no romper el hilo conductor. */
               className={
-                s.id === "problema" || s.id === "consecuencia"
+                s.id === "problema" ||
+                s.id === "consecuencia" ||
+                s.id === "solucion" ||
+                s.id === "diferencial" ||
+                s.id === "cronista" ||
+                s.id === "adium" ||
+                s.id === "cta"
                   ? "py-[10vh] min-h-[170vh]"
-                  : s.id === "solucion"
-                    ? "py-[10vh] min-h-[170vh]"
-                    : s.id === "diferencial"
-                      ? "py-[10vh] min-h-[170vh]"
-                    : s.id === "cronista" || s.id === "adium"
-                      ? "min-h-[230vh]"
-                    : s.id === "cta"
-                      ? "py-[12vh] min-h-[150vh]"
-                      : undefined
-
+                  : undefined
               }
+
             />
             {s.id === "cencor" && <CencorUnits />}
             {s.id === "cronista" && (
