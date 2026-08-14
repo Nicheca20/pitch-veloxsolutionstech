@@ -13,6 +13,8 @@ import { ClientLogo } from "@/components/pitch/ClientLogo";
 import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
 import { GrowthEngine } from "@/components/pitch/GrowthEngine";
 import { CronistaFronts } from "@/components/pitch/CronistaFronts";
+import { CapabilityWheel } from "@/components/pitch/CapabilityWheel";
+
 import VeloxBackground from "@/components/pitch/VeloxBackground";
 
 import cronista from "@/assets/cronista.png.asset.json";
@@ -201,7 +203,10 @@ function Pitch() {
                   <div className="mt-[95vh]">
                     <CronistaFronts />
                   </div>
+                ) : s.id === "cta" ? (
+                  <CapabilityWheel />
                 ) : undefined
+
               }
               right={
                 s.id === "hook" ? (
@@ -221,7 +226,10 @@ function Pitch() {
                       ? "py-[10vh] min-h-[170vh]"
                     : s.id === "cronista"
                       ? "min-h-[230vh]"
+                    : s.id === "cta"
+                      ? "py-[12vh] min-h-[150vh]"
                       : undefined
+
               }
             />
             {s.id === "cencor" && <CencorUnits />}
