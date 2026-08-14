@@ -695,17 +695,17 @@ function AccentStreaks({ section, count = 1800 }: { section: Ref; count?: number
 
 
 /** Bloom dinámico: golpe de brillo en el hook + build-up hacia la sección 5. */
-/** Monta el carro sólo cuando la sección 5 está cerca del viewport. */
+/** Monta el carro sólo cuando la sección 5 está cerca y lo libera al salir. */
 function LazyCar({ section }: { section: Ref }) {
   const [show, setShow] = useState(false);
   useFrame(() => {
-    if (!show && section.current > CAR_WINDOW[0] - 2) setShow(true);
+    const near = section.current > CAR_WINDOW[0] - 1.2 && section.current < CAR_WINDOW[1] + 1.2;
+    if (near !== show) setShow(near);
   });
   if (!show) return null;
   return (
     <Suspense fallback={null}>
       <F1Car section={section} />
-      <Environment preset="night" />
     </Suspense>
   );
 }
@@ -725,13 +725,12 @@ function LazyJet({ section }: { section: Ref }) {
   );
 }
 
-
-
-/** Monta la moto sólo cuando la sección 7 está cerca del viewport. */
+/** Monta la moto sólo cerca de su sección y la libera al salir. */
 function LazyBike({ section }: { section: Ref }) {
   const [show, setShow] = useState(false);
   useFrame(() => {
-    if (!show && section.current > BIKE_WINDOW[0] - 2) setShow(true);
+    const near = section.current > BIKE_WINDOW[0] - 1.2 && section.current < BIKE_WINDOW[1] + 1.2;
+    if (near !== show) setShow(near);
   });
   if (!show) return null;
   return (
@@ -741,7 +740,23 @@ function LazyBike({ section }: { section: Ref }) {
   );
 }
 
-function DynamicBloom({ section }: { section: Ref }) {
+/** Environment (HDR) compartido: sólo montado mientras hay un modelo en pantalla. */
+function LazyEnvironment({ section }: { section: Ref }) {
+  const [show, setShow] = useState(false);
+  useFrame(() => {
+    const t = section.current;
+    const near = t > CAR_WINDOW[0] - 1.4 && t < BIKE_WINDOW[1] + 1.2;
+    if (near !== show) setShow(near);
+  });
+  if (!show) return null;
+  return (
+    <Suspense fallback={null}>
+      <Environment preset="night" />
+    </Suspense>
+  );
+}
+
+function DynamicBloom({ section, quality }: { section: Ref; quality: number }) {
   const ref = useRef<{ intensity: number } | null>(null);
   const pulse = usePulse(section);
   useFrame(({ clock }) => {
@@ -755,17 +770,29 @@ function DynamicBloom({ section }: { section: Ref }) {
       intensity={0.62}
       luminanceThreshold={0.42}
       luminanceSmoothing={0.5}
-      kernelSize={KernelSize.LARGE}
+      mipmapBlur
+      resolutionScale={quality > 0.6 ? 0.5 : 0.35}
+      kernelSize={quality > 0.6 ? KernelSize.MEDIUM : KernelSize.SMALL}
     />
   );
 }
 
-
 export function Background3D({ section }: { section: Ref }) {
+  // dpr adaptativo: baja solo si los fps caen (limitado a 2 como máximo)
+  const [dpr, setDpr] = useState(1.5);
+  const [quality, setQuality] = useState(1);
+
   return (
     <Canvas
-      dpr={[1, 2]}
-      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+      dpr={dpr}
+      frameloop="always"
+      gl={{
+        antialias: false,
+        alpha: true,
+        powerPreference: "high-performance",
+        stencil: false,
+        depth: true,
+      }}
       camera={{ fov: 65, near: 0.1, far: 400, position: [0, 1.2, 16] }}
       onCreated={({ gl, scene }) => {
         gl.shadowMap.enabled = false;
@@ -773,18 +800,37 @@ export function Background3D({ section }: { section: Ref }) {
         scene.fog = new THREE.Fog(FOG, 18, 120);
       }}
     >
+      <PerformanceMonitor
+        bounds={() => [50, 60]}
+        flipflops={3}
+        onIncline={() => {
+          setDpr((d) => Math.min(2, d + 0.25));
+          setQuality(1);
+        }}
+        onDecline={() => {
+          setDpr((d) => Math.max(0.75, d - 0.25));
+          setQuality(0.5);
+        }}
+        onFallback={() => {
+          setDpr(1);
+          setQuality(0.5);
+        }}
+      />
+      <AdaptiveDpr />
       <ambientLight intensity={0.55} />
       <directionalLight position={[6, 8, 6]} intensity={0.7} color="#AFA9EC" />
       <directionalLight position={[-8, -4, -6]} intensity={0.4} color="#534AB7" />
       <CameraRig section={section} />
 
+      <LazyEnvironment section={section} />
       <LazyCar section={section} />
       <LazyJet section={section} />
       <LazyBike section={section} />
-      <EffectComposer enableNormalPass={false}>
-        <DynamicBloom section={section} />
+      <EffectComposer enableNormalPass={false} multisampling={0}>
+        <DynamicBloom section={section} quality={quality} />
       </EffectComposer>
     </Canvas>
   );
 }
+
 
