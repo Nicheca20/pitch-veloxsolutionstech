@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import salesforce from "@/assets/salesforce.png.asset.json";
-import agentforce from "@/assets/agentforce.png.asset.json";
+import salesforce from "@/assets/salesforce-cloud.png.asset.json";
 import slack from "@/assets/slack.png.asset.json";
 import github from "@/assets/github.png.asset.json";
 
@@ -8,7 +7,6 @@ type Logo = { name: string; src: string; className: string; caption?: string };
 
 const logos: Logo[] = [
   { name: "Salesforce", src: salesforce.url, className: "h-20 md:h-28", caption: "Data Cloud 360" },
-  { name: "Agentforce", src: agentforce.url, className: "h-14 md:h-20" },
   { name: "Slack", src: slack.url, className: "h-16 md:h-22" },
   { name: "GitHub", src: github.url, className: "h-20 md:h-28" },
 ];
