@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "458f7e20-9676-4e6a-b490-fc598bd3a346",
-  "project_id": "80a2ef15-d929-4a32-8b96-7309858dca1d",
-  "url": "/__l5e/assets-v1/458f7e20-9676-4e6a-b490-fc598bd3a346/slack.png",
-  "r2_key": "a/v1/80a2ef15-d929-4a32-8b96-7309858dca1d/458f7e20-9676-4e6a-b490-fc598bd3a346/slack.png",
-  "original_filename": "slack.png",
-  "size": 76591,
   "content_type": "image/png",
-  "created_at": "2026-08-14T02:23:04Z"
+  "created_at": "2026-08-14T02:23:04Z",
+  "original_filename": "slack.png",
+  "project_id": "41fc6c9f-fb20-4e08-89b9-4cd949c62fe9",
+  "r2_key": "a/v1/41fc6c9f-fb20-4e08-89b9-4cd949c62fe9/458f7e20-9676-4e6a-b490-fc598bd3a346/slack.png",
+  "size": 76591,
+  "url": "/__l5e/assets-v1/458f7e20-9676-4e6a-b490-fc598bd3a346/slack.png",
+  "version": 1
 }
