@@ -76,10 +76,10 @@ export function DataCycle() {
           </filter>
         </defs>
 
-        {/* Ciclo exterior: rombo que toca los bordes del viewBox */}
+        {/* Ciclo exterior: rombo con vértices alineados a los labels (8% del borde) */}
         <path
           ref={pathRef}
-          d="M200 16 L384 200 L200 384 L16 200 Z"
+          d="M200 32 L368 200 L200 368 L32 200 Z"
           fill="none"
           stroke="url(#data-cycle-gradient)"
           strokeWidth="1.5"
@@ -94,10 +94,10 @@ export function DataCycle() {
         {/* Líneas radiales al centro */}
         <g opacity={radialProgress}>
           {[
-            [200, 16, 200, 200],
-            [384, 200, 200, 200],
-            [200, 384, 200, 200],
-            [16, 200, 200, 200],
+            [200, 32, 200, 200],
+            [368, 200, 200, 200],
+            [200, 368, 200, 200],
+            [32, 200, 200, 200],
           ].map(([x1, y1, x2, y2], i) => (
             <line
               key={i}
