@@ -135,7 +135,6 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
 
 /* --------------------------------------------------------------------- Jet */
 export function Jet({ section }: { section: MutableRefObject<number> }) {
-  console.log("JETDBG mount");
   const { scene } = useGLTF(MODEL, true);
   const root = useRef<THREE.Group>(null);
   const craft = useRef<THREE.Group>(null);
@@ -168,8 +167,7 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     const center = new THREE.Vector3();
     box.getSize(size);
     box.getCenter(center);
-    const scale = 8 / Math.max(size.z, 0.001);
-    console.log('JETDBG', size.toArray(), scale);
+    const scale = 6 / Math.max(size.z, 0.001);
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
     wrap.rotation.y = Math.PI; // la nariz del modelo mira a +Z: la giramos hacia -Z
