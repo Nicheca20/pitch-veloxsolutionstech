@@ -50,8 +50,8 @@ export function CapabilityWheel() {
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(
-      ([e]) => setVisible(!!e && e.isIntersecting),
-      { threshold: 0.25 },
+      ([e]) => e?.isIntersecting && setVisible(true),
+      { threshold: 0.01, rootMargin: "0px 0px -5% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();

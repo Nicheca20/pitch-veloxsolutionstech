@@ -19,8 +19,8 @@ export function ClientLogo({
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(
-      ([e]) => e && e.isIntersecting && e.intersectionRatio > 0.2 && setOn(true),
-      { threshold: [0, 0.2, 0.5] },
+      ([e]) => e && e.isIntersecting && setOn(true),
+      { threshold: 0.01, rootMargin: "0px 0px -5% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
