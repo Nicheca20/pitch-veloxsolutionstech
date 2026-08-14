@@ -101,14 +101,14 @@ function StartLights({ phase }: { phase: MutableRefObject<number> }) {
       g.scale.setScalar(s);
     }
 
-    // secuencia: rojas una a una → ámbar → verde
-    const RED_END = 0.5;
-    const AMBER_END = 0.64;
+    // secuencia: rojas una a una → ámbar → VERDE cuando el carro llega a la meta
+    const RED_END = 0.28;
+    const AMBER_END = 0.38;
     let stage: "red" | "amber" | "green";
     let lit: number;
     if (p < RED_END) {
       stage = "red";
-      lit = Math.min(pairs, Math.max(0, Math.floor(((p - 0.14) / (RED_END - 0.14)) * pairs) + 1));
+      lit = Math.min(pairs, Math.max(0, Math.floor(((p - 0.1) / (RED_END - 0.1)) * pairs) + 1));
     } else if (p < AMBER_END) {
       stage = "amber";
       lit = pairs;
@@ -117,16 +117,19 @@ function StartLights({ phase }: { phase: MutableRefObject<number> }) {
       lit = pairs;
     }
     const c = stage === "green" ? GREEN : stage === "amber" ? AMBER : RED;
+    // pulso suave en verde para que se note el "vía libre"
+    const pulse = stage === "green" ? 1 + 0.35 * Math.sin(p * 90) : 1;
 
     lamps.current.forEach((m, i) => {
       if (!m) return;
       const col = Math.floor(i / 2);
-      const on = p > 0.14 && col < lit;
+      const on = p > 0.1 && col < lit;
       const mat = m.material as THREE.MeshStandardMaterial;
       mat.color.copy(on ? c : OFF);
       mat.emissive.copy(on ? c : OFF);
-      mat.emissiveIntensity = on ? 3.2 : 0;
+      mat.emissiveIntensity = on ? (stage === "green" ? 4.2 * pulse : 3.2) : 0;
     });
+
   });
 
 
