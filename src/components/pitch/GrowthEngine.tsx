@@ -145,7 +145,7 @@ export function GrowthEngine() {
             })}
           </div>
 
-          <p className="mt-6 border-t border-white/10 pt-5 text-center text-[1.25rem] leading-relaxed text-foreground md:text-[1.45rem]">
+          <p className="mt-6 border-t border-white/10 pt-5 text-center text-[1rem] leading-relaxed text-foreground md:text-[1.1rem]">
             Replicamos nuestros agentes en distintas industrias sobre una misma capa base:
             <span className="text-foreground"> avanzamos en semanas, no en trimestres.</span>
           </p>

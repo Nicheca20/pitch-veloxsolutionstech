@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import veleiro from "@/assets/veleiro.png.asset.json";
+import agentforce from "@/assets/agentforce-logo.png.asset.json";
 
-/** Logo Veleiro AI, grande y protagónico, bajo el título de la sección solución. */
+/** Logo Veleiro AI junto al logo de AgentForce, bajo el título de la sección solución. */
 export function VeleiroLogo() {
   const ref = useRef<HTMLDivElement>(null);
   const [on, setOn] = useState(false);
@@ -19,16 +20,31 @@ export function VeleiroLogo() {
 
   return (
     <div ref={ref} className="mt-8">
-      <img
-        src={veleiro.url}
-        alt="Veleiro AI"
-        className="h-20 w-auto object-contain transition-all duration-1000 ease-out md:h-28 lg:h-32"
+      <div
+        className="flex items-center justify-center gap-4 md:gap-6"
         style={{
           opacity: on ? 1 : 0,
-          transform: on ? "scale(1)" : "scale(0.94)",
-          filter: "drop-shadow(0 0 28px rgba(127,119,221,0.45))",
+          transform: on ? "translateY(0)" : "translateY(8px)",
+          transition: "opacity 700ms ease-out, transform 700ms ease-out",
         }}
-      />
+      >
+        <img
+          src={veleiro.url}
+          alt="Veleiro AI"
+          className="h-10 w-auto object-contain md:h-12 lg:h-14"
+          style={{
+            filter: "drop-shadow(0 0 20px rgba(127,119,221,0.4))",
+          }}
+        />
+        <img
+          src={agentforce.url}
+          alt="AgentForce"
+          className="h-10 w-auto object-contain md:h-12 lg:h-14"
+          style={{
+            filter: "drop-shadow(0 0 20px rgba(83,74,183,0.4))",
+          }}
+        />
+      </div>
     </div>
   );
 }
