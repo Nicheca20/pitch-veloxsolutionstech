@@ -143,8 +143,9 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     const scale = 13 / Math.max(size.z, 0.001);
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
-    // la trompa mira hacia +Z (dirección de avance, hacia la cámara)
-    wrap.rotation.set(0, Math.PI / 2, 0);
+    // la trompa mira hacia -X: la moto avanza de derecha a izquierda ante la cámara
+    wrap.rotation.set(0, Math.PI, 0);
+
 
     wrap.traverse((o) => {
       const mesh = o as THREE.Mesh;
