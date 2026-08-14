@@ -324,8 +324,10 @@ function Stars({ count = 1400 }: { count?: number }) {
   return (
     <points ref={ref} geometry={geometry} frustumCulled={false}>
       <pointsMaterial
-        size={0.5}
+        size={0.9}
         sizeAttenuation
+        map={softPointTexture()}
+        alphaMap={softPointTexture()}
         color="#EEEDFE"
         transparent
         opacity={0.5}
