@@ -36,7 +36,7 @@ export function LogoStrip() {
       className="relative flex h-screen min-h-[560px] flex-col items-center justify-center gap-12 px-6 py-16 md:px-16"
     >
       <p
-        className={`text-veil text-[11px] uppercase tracking-[0.34em] text-foreground/55 transition-opacity duration-700 ${on ? "opacity-100" : "opacity-0"}`}
+        className={`text-veil text-[11px] uppercase tracking-[0.34em] text-foreground/55 transition-all duration-700 ${on ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0"}`}
       >
         Construimos y trabajamos con el ecosistema
       </p>
@@ -49,6 +49,7 @@ export function LogoStrip() {
             style={{
               transitionDelay: `${250 + i * 260}ms`,
               opacity: on ? 1 : 0.5,
+              transform: on ? "translateY(0)" : "translateY(8px)",
               filter: on
                 ? "grayscale(0) brightness(1) drop-shadow(0 0 18px rgba(175,169,236,0.35))"
                 : "grayscale(1) brightness(0.9)",

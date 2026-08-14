@@ -25,21 +25,16 @@ export function Section({
     return () => io.disconnect();
   }, []);
 
-  // Entrada "desde el fondo": escala + desenfoque que se aclara, sin subir desde abajo.
-  const depth = (delay: number): React.CSSProperties => ({
-    opacity: active ? 1 : 0,
-    transform: active ? "scale(1)" : "scale(0.8)",
-    filter: active ? "blur(0px)" : "blur(10px)",
-    transition: `opacity 900ms ease-out ${delay}ms, transform 1100ms cubic-bezier(0.16,1,0.3,1) ${delay}ms, filter 900ms ease-out ${delay}ms`,
-    transformOrigin: "left center",
-    willChange: "transform, opacity, filter",
-  });
+  // Entrada simple (como antes): fade + leve desplazamiento del bloque completo.
+  const depth = (_delay: number): React.CSSProperties => ({});
 
   return (
     <section
       ref={ref}
       id={data.id}
-      className="pitch-section relative flex h-screen min-h-[640px] items-center overflow-hidden px-6 md:px-16 lg:px-24"
+      className={`pitch-section relative flex h-screen min-h-[640px] items-center overflow-hidden px-6 transition-all duration-700 ease-out md:px-16 lg:px-24 ${
+        active ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
+      }`}
     >
       <div className="text-veil relative z-10 max-w-[46rem]">
         <div className="mb-5 flex items-center gap-3" style={depth(0)}>

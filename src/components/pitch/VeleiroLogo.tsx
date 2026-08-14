@@ -22,9 +22,10 @@ export function VeleiroLogo() {
       <img
         src={veleiro.url}
         alt="Veleiro AI"
-        className="h-20 w-auto object-contain transition-opacity duration-1000 ease-out md:h-28 lg:h-32"
+        className="h-20 w-auto object-contain transition-all duration-1000 ease-out md:h-28 lg:h-32"
         style={{
           opacity: on ? 1 : 0,
+          transform: on ? "scale(1)" : "scale(0.94)",
           filter: "drop-shadow(0 0 28px rgba(127,119,221,0.45))",
         }}
       />
