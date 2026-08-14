@@ -201,7 +201,7 @@ function Pitch() {
                 ) : s.id === "diferencial" ? (
                   <GrowthEngine />
                 ) : s.id === "cronista" ? (
-                  <div className="mt-[95vh]">
+                  <div className="mt-[48vh]">
                     <CronistaFronts />
                   </div>
                 ) : s.id === "adium" ? (
