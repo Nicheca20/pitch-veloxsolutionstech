@@ -41,9 +41,10 @@ export function Section({
     <section
       ref={ref}
       id={data.id}
-      className={`pitch-section relative flex min-h-screen flex-col justify-center px-6 md:px-16 lg:px-24 ${
+      className={`pitch-section relative flex min-h-[85vh] flex-col justify-center px-5 py-16 sm:px-6 md:min-h-screen md:px-16 md:py-0 lg:px-24 ${
         active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
       } [transition:opacity_500ms_linear,transform_500ms_cubic-bezier(0.22,1,0.36,1)] [backface-visibility:hidden] ${className ?? ""}`}
+
     >
       <div
         className={`relative z-10 flex w-full items-center gap-8 ${
@@ -107,10 +108,11 @@ export function Section({
 
       {/* Todo lo demás (flujos, timelines, diagramas) va centrado */}
       {below && (
-        <div className="relative z-10 mt-14 flex w-full justify-center">
+        <div className="relative z-10 mt-10 flex w-full justify-center md:mt-14">
           <div className="w-full max-w-5xl">{below}</div>
         </div>
       )}
+
     </section>
   );
 }

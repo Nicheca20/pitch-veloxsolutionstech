@@ -6,12 +6,15 @@ import github from "@/assets/github.png.asset.json";
 
 type Logo = { name: string; src: string; className: string; caption?: string };
 
+const LOGO_SIZE = "h-12 sm:h-20 md:h-28";
+
 const logos: Logo[] = [
-  { name: "Salesforce", src: salesforce.url, className: "h-20 md:h-28", caption: "Data Cloud 360" },
-  { name: "Agentforce", src: agentforce.url, className: "h-20 md:h-28" },
-  { name: "Slack", src: slack.url, className: "h-20 md:h-28" },
-  { name: "GitHub", src: github.url, className: "h-20 md:h-28" },
+  { name: "Salesforce", src: salesforce.url, className: LOGO_SIZE, caption: "Data Cloud 360" },
+  { name: "Agentforce", src: agentforce.url, className: LOGO_SIZE },
+  { name: "Slack", src: slack.url, className: LOGO_SIZE },
+  { name: "GitHub", src: github.url, className: LOGO_SIZE },
 ];
+
 
 
 
