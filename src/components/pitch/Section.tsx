@@ -61,13 +61,16 @@ export function Section({
         {afterTitle}
 
         {data.body && (
-          <p className="mt-6 max-w-[62ch] text-[clamp(1rem,1.5vw,1.25rem)] leading-relaxed text-foreground/70">
+          <p
+            style={depth(180)}
+            className="mt-6 max-w-[62ch] text-[clamp(1rem,1.5vw,1.25rem)] leading-relaxed text-foreground/70"
+          >
             {data.body}
           </p>
         )}
 
         {data.bullets && (
-          <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+          <ul style={depth(240)} className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
             {data.bullets.map((b) => (
               <li key={b} className="flex items-center gap-2 text-sm text-foreground/80">
                 <span className="h-1.5 w-1.5 rounded-full bg-[var(--force)]" />
@@ -78,7 +81,7 @@ export function Section({
         )}
 
         {data.metrics && (
-          <div className="mt-10 flex flex-wrap gap-x-12 gap-y-8">
+          <div style={depth(300)} className="mt-10 flex flex-wrap gap-x-12 gap-y-8">
             {data.metrics.map((m) => (
               <MetricValue key={m.label} {...m} active={active} />
             ))}
@@ -86,8 +89,14 @@ export function Section({
         )}
 
         {data.note && (
-          <p className="mt-8 border-l-2 border-[var(--velox)] pl-4 text-sm italic text-foreground/55">{data.note}</p>
+          <p
+            style={depth(360)}
+            className="mt-8 border-l-2 border-[var(--velox)] pl-4 text-sm italic text-foreground/55"
+          >
+            {data.note}
+          </p>
         )}
+
       </div>
     </section>
   );
