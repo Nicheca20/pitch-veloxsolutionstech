@@ -205,14 +205,13 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     return wrap;
   }, [scene]);
 
-  /** Fase suavizada: amortigua los cambios bruscos de velocidad de scroll. */
+  /** Fase suavizada: seguimiento sin overshoot ni vibración en umbrales. */
   const phase = useRef<number | null>(null);
 
-  useFrame(({ clock }, delta) => {
+  useFrame((_, delta) => {
     const g = root.current;
     if (!g) return;
     const target = jetPhase(section.current);
-    // nunca coincide con el carro: sólo vive dentro de su ventana
     const live = section.current >= JET_WINDOW[0] && section.current <= JET_WINDOW[1];
     g.visible = live;
     if (!live) {
@@ -221,27 +220,46 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
       return;
     }
 
-    // damping exponencial independiente del framerate (sin micro-saltos)
+    // seguimiento exponencial con delta capado y factor alto para evitar rebote
     const dt = Math.min(delta, 1 / 30);
+    const k = 12;
+    const follow = 1 - Math.exp(-k * dt);
     if (phase.current === null) phase.current = target;
-    phase.current += (target - phase.current) * (1 - Math.exp(-8 * dt));
+    phase.current += (target - phase.current) * follow;
     const s = clamp01(phase.current);
 
-    // surge desde abajo por la misma pista → rotación de nariz → despegue
-    const roll = smooth(clamp01(s / 0.35)); // acelera y asoma sobre la pista
-    const liftRaw = clamp01((s - 0.38) / 0.62);
-    const lift = smooth(liftRaw) * smooth(liftRaw); // easing consistente y continuo
-    const targetPower = clamp01(s / 0.2) * (0.35 + roll * 0.65);
-    power.current += (targetPower - power.current) * (1 - Math.exp(-10 * dt));
+    // curvas compuestas C1: inicio suave, transición continua, salida suave
+    // 0..0.35: asoma desde el fondo y sube a la pista
+    // 0.35..0.70: transición al despegue
+    // 0.70..1.00: asciende y sale de plano
+    const t0 = smoother(s / 0.35);
+    const t1 = smoother(clamp01((s - 0.30) / 0.40));
+    const t2 = smoother(clamp01((s - 0.65) / 0.35));
+
+    // posición Z: acercamiento suave desde lejos → paso → salida acelerada
+    const zApproach = THREE.MathUtils.lerp(34, 16, t0);
+    const zExit = t2 * t2 * -70;
+
+    // posición Y: empieza bajo el encuadre, asoma, luego despega ascendente
+    const yApproach = THREE.MathUtils.lerp(-5.2, -0.6, t0);
+    const yLift = t1 * t1 * 13.5;
+
+    // rotación X: nariz se levanta progresivamente durante el despegue
+    const pitch = -t1 * 0.42;
+
+    // postquemador: enciende suavemente y se mantiene durante el despegue
+    const targetPower = clamp01(s / 0.22) * (0.35 + t0 * 0.65);
+    power.current += (targetPower - power.current) * (1 - Math.exp(-14 * dt));
 
     if (craft.current) {
-      craft.current.position.z = THREE.MathUtils.lerp(30, 16, roll) - lift * 70;
-      // arranca por debajo del encuadre y emerge subiendo
-      craft.current.position.y = THREE.MathUtils.lerp(-5, -0.6, roll) + lift * 12;
-      craft.current.rotation.x = -smooth(liftRaw) * 0.42;
-      craft.current.rotation.z = Math.sin(clock.elapsedTime * 0.8) * 0.05 * smooth(liftRaw);
+      craft.current.position.z = zApproach + zExit;
+      craft.current.position.y = yApproach + yLift;
+      craft.current.rotation.x = pitch;
+      // leve balanceo natural, muy sutil y sin saltos de frecuencia
+      craft.current.rotation.z = Math.sin(s * Math.PI * 2.2) * 0.02 * t1;
     }
   });
+
 
 
   return (
