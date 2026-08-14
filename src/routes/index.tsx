@@ -205,7 +205,7 @@ function Pitch() {
                     <CronistaFronts />
                   </div>
                 ) : s.id === "adium" ? (
-                  <div className="mt-[105vh]">
+                  <div className="mt-[10vh]">
                     <AdiumAssistants />
                   </div>
                 ) : s.id === "cta" ? (
