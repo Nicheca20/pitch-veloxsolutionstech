@@ -6,6 +6,7 @@ import { NavDots } from "@/components/pitch/NavDots";
 import { LogoStrip } from "@/components/pitch/LogoStrip";
 import { SolutionTimeline } from "@/components/pitch/SolutionTimeline";
 import { ProblemFlow } from "@/components/pitch/ProblemFlow";
+import { ConsequenceFlow } from "@/components/pitch/ConsequenceFlow";
 import { CencorUnits } from "@/components/pitch/CencorUnits";
 import { ClientLogo } from "@/components/pitch/ClientLogo";
 import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
@@ -184,12 +185,14 @@ function Pitch() {
               below={
                 s.id === "problema" ? (
                   <ProblemFlow />
+                ) : s.id === "consecuencia" ? (
+                  <ConsequenceFlow />
                 ) : s.id === "solucion" ? (
                   <SolutionTimeline />
                 ) : undefined
               }
               className={
-                s.id === "problema"
+                s.id === "problema" || s.id === "consecuencia"
                   ? "py-[10vh] min-h-[170vh]"
                   : s.id === "solucion"
                     ? "py-[10vh] min-h-[170vh]"
