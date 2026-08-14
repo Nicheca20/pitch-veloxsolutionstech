@@ -66,7 +66,8 @@ const FOCUS: Key[] = [
   { at: 6, v: [0, 0, -70] },
   { at: 6.5, v: [0, 0, -95] }, // sección 07 (Cencor) → carro
   { at: 7, v: [0, 0.6, -115] },
-  { at: 7.5, v: [0, 1.2, -140] }, // sección 08 (Cronista) → avión
+  { at: 7.4, v: [0, 1.2, -140] }, // sección 08 (Cronista) → avión
+  { at: 8.0, v: [0, 1.8, -142] },
   { at: 9, v: [0, 1.2, -190] },
 ];
 
