@@ -59,7 +59,7 @@ export function GrowthEngine() {
     <div ref={ref} className="relative mx-auto w-full max-w-5xl">
       {/* ---------- Riel: motor de upsell ---------- */}
       <div className="relative">
-        <div className="mb-8 text-center text-[0.8rem] uppercase tracking-[0.22em] text-foreground sm:text-[1.05rem] sm:tracking-[0.32em]">
+        <div className="mb-8 text-center text-[0.8rem] uppercase tracking-[0.22em] text-foreground sm:text-[1.15rem] sm:tracking-[0.32em]">
           Motor de upsell continuo
         </div>
 
@@ -96,10 +96,10 @@ export function GrowthEngine() {
                   >
                     <Icon className="size-7 text-ice" strokeWidth={1.4} />
                   </div>
-                  <div className="mt-5 text-[1.15rem] font-semibold tracking-tight text-foreground sm:text-[1.45rem] md:text-[1.55rem]">
+                  <div className="mt-5 text-[1.25rem] font-semibold tracking-tight text-foreground sm:text-[1.6rem]">
                     {s.title}
                   </div>
-                  <div className="mt-1 text-[0.95rem] leading-snug text-foreground sm:text-[1.15rem]">{s.tag}</div>
+                  <div className="mt-1 text-[1.05rem] leading-snug text-foreground sm:text-[1.25rem]">{s.tag}</div>
 
                 </div>
               );
@@ -110,7 +110,7 @@ export function GrowthEngine() {
 
       {/* ---------- Capa base replicable ---------- */}
       <div className="relative mt-16">
-        <div className="mb-6 text-center text-[0.8rem] uppercase tracking-[0.22em] text-foreground sm:text-[1.05rem] sm:tracking-[0.32em]">
+        <div className="mb-6 text-center text-[0.8rem] uppercase tracking-[0.22em] text-foreground sm:text-[1.15rem] sm:tracking-[0.32em]">
           Capa base replicable
         </div>
 
@@ -127,7 +127,7 @@ export function GrowthEngine() {
               const t = Math.min(1, Math.max(0, (fill - 0.42 - l.delay) / 0.26));
               return (
                 <div key={l.label} className="flex items-center gap-2 sm:gap-4">
-                  <div className="w-24 shrink-0 text-[0.72rem] uppercase leading-tight tracking-[0.1em] text-foreground sm:w-44 sm:text-[1.05rem] sm:tracking-[0.16em] md:w-52">
+                  <div className="w-24 shrink-0 text-[0.8rem] uppercase leading-tight tracking-[0.1em] text-foreground sm:w-44 sm:text-[1.15rem] sm:tracking-[0.16em] md:w-52">
                     {l.label}
                   </div>
                   <div className="relative h-[3px] flex-1 overflow-hidden rounded-full bg-white/8">
@@ -137,7 +137,7 @@ export function GrowthEngine() {
                     />
                   </div>
                   <div
-                    className="w-16 shrink-0 text-right text-[0.72rem] font-semibold text-foreground transition-opacity duration-500 sm:w-32 sm:text-[1.05rem] md:w-36"
+                    className="w-16 shrink-0 text-right text-[0.8rem] font-semibold text-foreground transition-opacity duration-500 sm:w-32 sm:text-[1.15rem] md:w-36"
                     style={{ opacity: t > 0.9 ? 1 : 0 }}
                   >
                     semanas
@@ -149,7 +149,7 @@ export function GrowthEngine() {
             })}
           </div>
 
-          <p className="mt-6 border-t border-white/10 pt-5 text-center text-[0.9rem] leading-relaxed text-foreground sm:text-[1rem] md:text-[1.1rem]">
+          <p className="mt-6 border-t border-white/10 pt-5 text-center text-[1.05rem] leading-relaxed text-foreground sm:text-[1.25rem]">
             Replicamos nuestros agentes en distintas industrias sobre una misma capa base:
             <span className="text-foreground"> avanzamos en semanas, no en trimestres.</span>
           </p>

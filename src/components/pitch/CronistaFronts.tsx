@@ -48,7 +48,7 @@ export function CronistaFronts() {
 
   return (
     <div ref={ref} className="relative mx-auto w-full max-w-5xl">
-      <div className="mb-8 text-center text-[0.68rem] uppercase tracking-[0.32em] text-muted-foreground">
+      <div className="mb-8 text-center text-[0.8rem] uppercase tracking-[0.22em] text-foreground sm:text-[1.15rem] sm:tracking-[0.32em]">
         Dos frentes en paralelo
       </div>
 
@@ -70,14 +70,14 @@ export function CronistaFronts() {
                 <div className="flex size-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04]">
                   <Icon className="size-5 text-ice" strokeWidth={1.4} />
                 </div>
-                <div className="text-[0.62rem] uppercase tracking-[0.28em] text-muted-foreground">
+                <div className="text-[0.8rem] uppercase tracking-[0.28em] text-foreground sm:text-[1.15rem]">
                   {c.eyebrow}
                 </div>
               </div>
-              <div className="mt-5 text-lg font-semibold tracking-tight text-foreground">
+              <div className="mt-5 text-[1.25rem] font-semibold tracking-tight text-foreground sm:text-[1.6rem]">
                 {c.title}
               </div>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.tag}</p>
+              <p className="mt-2 text-[1.05rem] leading-relaxed text-foreground sm:text-[1.25rem]">{c.tag}</p>
             </div>
           );
         })}
@@ -102,14 +102,14 @@ export function CronistaFronts() {
       >
         <div className="flex items-center justify-center gap-3">
           <Globe2 className="size-5 text-ice" strokeWidth={1.4} />
-          <div className="text-[0.62rem] uppercase tracking-[0.28em] text-muted-foreground">
+          <div className="text-[0.8rem] uppercase tracking-[0.28em] text-foreground sm:text-[1.15rem]">
             Escala regional
           </div>
         </div>
-        <div className="mt-4 text-lg font-semibold tracking-tight text-foreground">
+        <div className="mt-4 text-[1.25rem] font-semibold tracking-tight text-foreground sm:text-[1.6rem]">
           Portal GAM y expansión
         </div>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-2 text-[1.05rem] leading-relaxed text-foreground sm:text-[1.25rem]">
           Una misma base operativa lista para replicarse en nuevos mercados.
         </p>
       </div>
