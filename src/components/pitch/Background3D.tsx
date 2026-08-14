@@ -1,15 +1,18 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
-import { Suspense, useMemo, useRef, useState, type MutableRefObject } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
 import * as THREE from "three";
 import { CAR_WINDOW, F1Car, carPhase } from "./F1Car";
 import { JET_WINDOW, Jet } from "./Jet";
 import { BIKE_WINDOW, Bike } from "./Bike";
+import { softDotTexture, streakTexture } from "./sprites";
 
 const FOG = "#0a0820";
-const GRID = "#534AB7";
-const PARTICLE_COLORS = ["#534AB7", "#7F77DD", "#AFA9EC", "#EEEDFE"];
+const GRID = "#7F77DD";
+const PARTICLE_COLORS = ["#26215C", "#534AB7", "#7F77DD", "#AFA9EC", "#EEEDFE"];
+const ACCENT_COLORS = ["#AFA9EC", "#EEEDFE", "#7F77DD"];
+
 
 type Ref = MutableRefObject<number>;
 
