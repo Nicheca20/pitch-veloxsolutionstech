@@ -13,7 +13,7 @@ const ICE = "#EEEDFE";
 /** Punto de focus de la sección 5 (idéntico al del cubo rojo). */
 export const CAR_FOCUS = new THREE.Vector3(0, 0, -55);
 /** Ventana de scroll (índice de sección) de la sección 5. */
-export const CAR_WINDOW: [number, number] = [3.55, 4.85];
+export const CAR_WINDOW: [number, number] = [3.6, 4.5];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -209,7 +209,8 @@ export function F1Car({ section }: { section: MutableRefObject<number> }) {
     phase.current = s;
     // sigue vivo un poco antes de la ventana (entra desde el fondo) pero se apaga
     // en cuanto termina, para no coincidir nunca con el avión
-    const live = section.current > CAR_WINDOW[0] - 0.6 && section.current < CAR_WINDOW[1] - 0.05;
+    // estrictamente dentro de su propia sección: nunca invade la 6 ni la 4
+    const live = section.current >= CAR_WINDOW[0] && section.current <= CAR_WINDOW[1];
     g.visible = live;
     if (!live) {
       pit.current = 0;
