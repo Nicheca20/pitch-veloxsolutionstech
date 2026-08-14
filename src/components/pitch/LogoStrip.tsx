@@ -7,11 +7,12 @@ import github from "@/assets/github.png.asset.json";
 type Logo = { name: string; src: string; className: string };
 
 const logos: Logo[] = [
-  { name: "Salesforce", src: salesforce.url, className: "h-12 md:h-16" },
-  { name: "Agentforce", src: agentforce.url, className: "h-8 md:h-11" },
-  { name: "Slack", src: slack.url, className: "h-9 md:h-12" },
-  { name: "GitHub", src: github.url, className: "h-12 md:h-16" },
+  { name: "Salesforce", src: salesforce.url, className: "h-20 md:h-28" },
+  { name: "Agentforce", src: agentforce.url, className: "h-14 md:h-20" },
+  { name: "Slack", src: slack.url, className: "h-16 md:h-22" },
+  { name: "GitHub", src: github.url, className: "h-20 md:h-28" },
 ];
+
 
 export function LogoStrip() {
   const ref = useRef<HTMLElement>(null);
