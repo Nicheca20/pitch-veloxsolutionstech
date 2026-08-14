@@ -136,10 +136,10 @@ export function DataCycle() {
         const delay = i * 0.12;
         const local = Math.min(1, Math.max(0, (nodeProgress - delay) / (1 - delay * 0.5)));
         const baseClasses: Record<string, string> = {
-          top: "left-1/2 top-[clamp(3.25rem,15%,5rem)] -translate-x-1/2 -translate-y-1/2",
-          right: "right-[clamp(3.25rem,15%,5rem)] top-1/2 translate-x-1/2 -translate-y-1/2",
-          bottom: "left-1/2 bottom-[clamp(3.25rem,15%,5rem)] -translate-x-1/2 translate-y-1/2",
-          left: "left-[clamp(3.25rem,15%,5rem)] top-1/2 -translate-x-1/2 -translate-y-1/2",
+          top: "left-1/2 top-[clamp(2rem,10%,3.25rem)] -translate-x-1/2 -translate-y-1/2",
+          right: "right-[clamp(2rem,10%,3.25rem)] top-1/2 translate-x-1/2 -translate-y-1/2",
+          bottom: "left-1/2 bottom-[clamp(2rem,10%,3.25rem)] -translate-x-1/2 translate-y-1/2",
+          left: "left-[clamp(2rem,10%,3.25rem)] top-1/2 -translate-x-1/2 -translate-y-1/2",
         };
         const dotClasses: Record<string, string> = {
           top: "-bottom-1.5 left-1/2 -translate-x-1/2",
@@ -158,18 +158,18 @@ export function DataCycle() {
               transition: "opacity 600ms ease-out, transform 600ms ease-out",
             }}
           >
-            <div className="relative rounded-lg border border-white/10 bg-[color-mix(in_oklab,var(--galaxy)_80%,black)] px-4 py-2 text-center shadow-[0_0_18px_-6px_var(--velox)] backdrop-blur-sm">
-              <span className="text-[clamp(0.6rem,1.4vw,0.75rem)] font-semibold uppercase tracking-[0.18em] text-[var(--aura)]">
+            <div className="relative rounded-lg border border-[var(--force)]/25 bg-[color-mix(in_oklab,var(--galaxy)_82%,black)] px-5 py-2.5 text-center shadow-[0_0_22px_-6px_var(--velox)] backdrop-blur-sm">
+              <span className="text-[clamp(0.7rem,1.6vw,0.85rem)] font-semibold uppercase tracking-[0.16em] text-[var(--ice)]">
                 {stage.label}
               </span>
               {/* Punto luminoso */}
               <span
-                className={`absolute h-2 w-2 rounded-full bg-[var(--force)] shadow-[0_0_10px_var(--aura)] ${dotClasses[stage.side]}`}
+                className={`absolute h-2 w-2 rounded-full bg-[var(--force)] shadow-[0_0_12px_var(--aura)] ${dotClasses[stage.side]}`}
               />
             </div>
           </div>
         );
-      })}
+      })
 
       <style>{`
         @keyframes pulse-halo {
