@@ -18,10 +18,15 @@ export const JET_WINDOW: [number, number] = [4.55, 5.5];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
+const smoother = (x: number) => {
+  const t = clamp01(x);
+  return t * t * t * (t * (t * 6 - 15) + 10);
+};
 
 /** Progreso 0..1 dentro de la sección 6. */
 export const jetPhase = (section: number) =>
   clamp01((section - JET_WINDOW[0]) / (JET_WINDOW[1] - JET_WINDOW[0]));
+
 
 /* ------------------------------------------------------------ Postquemador */
 function Afterburner({ power }: { power: MutableRefObject<number> }) {
