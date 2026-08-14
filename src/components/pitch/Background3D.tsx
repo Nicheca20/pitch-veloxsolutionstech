@@ -308,7 +308,7 @@ function LazyCar({ section }: { section: Ref }) {
 function LazyJet({ section }: { section: Ref }) {
   const [show, setShow] = useState(false);
   useFrame(() => {
-    if (!show && section.current > JET_WINDOW[0] - 2) setShow(true);
+    if (!show && section.current > JET_WINDOW[0] - 2) { console.log("JETDBG lazy on"); setShow(true); }
   });
   if (!show) return null;
   return (

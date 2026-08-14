@@ -135,6 +135,7 @@ function Trail({ power }: { power: MutableRefObject<number> }) {
 
 /* --------------------------------------------------------------------- Jet */
 export function Jet({ section }: { section: MutableRefObject<number> }) {
+  console.log("JETDBG mount");
   const { scene } = useGLTF(MODEL, true);
   const root = useRef<THREE.Group>(null);
   const craft = useRef<THREE.Group>(null);
