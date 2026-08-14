@@ -6,11 +6,13 @@ export function Section({
   data,
   first,
   afterTitle,
+  below,
   className,
 }: {
   data: SectionData;
   first?: boolean;
   afterTitle?: React.ReactNode;
+  below?: React.ReactNode;
   className?: string | undefined;
 }) {
   const ref = useRef<HTMLElement>(null);
@@ -31,11 +33,12 @@ export function Section({
     <section
       ref={ref}
       id={data.id}
-      className={`pitch-section relative flex min-h-screen items-center px-6 md:px-16 lg:px-24 ${
+      className={`pitch-section relative flex min-h-screen flex-col justify-center px-6 md:px-16 lg:px-24 ${
         active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
       } transition-all duration-700 ease-out ${className ?? ""}`}
     >
-      <div className="text-veil relative z-10 max-w-[46rem]">
+      {/* Kicker + título: SIEMPRE alineados a la izquierda */}
+      <div className="text-veil relative z-10 w-full max-w-[46rem] text-left">
         <div className="mb-5 flex items-center gap-3">
           <span className="text-[11px] font-semibold tracking-[0.3em] text-[var(--force)]">{data.index}</span>
           <span className="h-px w-8 bg-velox-gradient" />
@@ -81,6 +84,13 @@ export function Section({
           <p className="mt-8 border-l-2 border-[var(--velox)] pl-4 text-sm italic text-foreground/55">{data.note}</p>
         )}
       </div>
+
+      {/* Todo lo demás (flujos, timelines, diagramas) va centrado */}
+      {below && (
+        <div className="relative z-10 mt-14 flex w-full justify-center">
+          <div className="w-full max-w-5xl">{below}</div>
+        </div>
+      )}
     </section>
   );
 }

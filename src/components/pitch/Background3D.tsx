@@ -29,7 +29,7 @@ const smoothstep = (x: number) => x * x * (3 - 2 * x);
  */
 function tunnelIntensity(t: number) {
   const buildUp = smoothstep(clamp01((t - 1.2) / 2.2)); // 0 en sec 1 → 1 en sec ~3.4
-  const settle = 1 - smoothstep(clamp01((t - 3.6) / 0.8)); // se calma al entrar al carro
+  const settle = 1 - smoothstep(clamp01((t - 5.0) / 0.8)); // se calma al entrar al carro
   return 1 + buildUp * settle * 1.6;
 }
 
@@ -58,27 +58,30 @@ const flow = (t: number) => tunnelIntensity(t) * speedFactor(t);
 const FOCUS: Key[] = [
   { at: 0, v: [0, 0, 0] },
   { at: 1, v: [0, 0, -7] },
-  { at: 2, v: [0, 0, -18] },
-  { at: 3, v: [0, 0, -34] },
-  { at: 4, v: [0, 0, -55] }, // sección 5 → carro
-  { at: 4.5, v: [0, 0.6, -75] }, // puente: la cámara sigue la pista
-  { at: 5, v: [0, 1.2, -95] }, // sección 6 → avión (mirando algo hacia arriba)
-  { at: 5.5, v: [0, 0.8, -118] }, // puente: la estela baja hasta la banda de nubes
-  { at: 6, v: [0, 0, -140] }, // sección 7 → moto
-  { at: 9, v: [0, 0, -210] },
+  { at: 2, v: [0, 0, -16] },
+  { at: 3, v: [0, 0, -26] },
+  { at: 4, v: [0, 0, -38] },
+  { at: 5, v: [0, 0, -48] },
+  { at: 5.5, v: [0, 0, -55] }, // sección 06 → moto
+  { at: 6, v: [0, 0, -70] },
+  { at: 6.5, v: [0, 0, -95] }, // sección 07 (Cencor) → carro
+  { at: 7, v: [0, 0.6, -115] },
+  { at: 7.5, v: [0, 1.2, -140] }, // sección 08 (Cronista) → avión
+  { at: 9, v: [0, 1.2, -190] },
 ];
 
-/** Posición relativa de la cámara respecto del focus. */
 const OFFSET: Key[] = [
   { at: 0, v: [0, 1.2, 16] },
   { at: 1, v: [0.8, 1.0, 13] },
   { at: 2, v: [-0.9, 1.4, 12] },
   { at: 3, v: [0.6, 0.9, 13] },
-  { at: 4, v: [0, 0.8, 14] },
-  { at: 4.5, v: [0, 0.2, 15] }, // se agacha a ras de pista tras el carro
-  { at: 5, v: [0, -0.6, 14] }, // por debajo del avión que despega
-  { at: 5.5, v: [0, 0.4, 14.5] },
-  { at: 6, v: [0, 0.8, 14] },
+  { at: 4, v: [0, 1.0, 14] },
+  { at: 5, v: [0, 0.9, 14.5] },
+  { at: 5.5, v: [0, 0.8, 14] }, // moto
+  { at: 6, v: [0, 0.6, 14] },
+  { at: 6.5, v: [0, 0.8, 14] }, // carro
+  { at: 7, v: [0, 0.2, 15] },
+  { at: 7.5, v: [0, -0.6, 14] }, // avión
   { at: 9, v: [0, 1.4, 16] },
 ];
 
@@ -131,7 +134,7 @@ function CameraRig({ section }: { section: Ref }) {
     }
 
     // deriva sutil en el túnel (secciones 0-4) para que nunca se sienta estático
-    if (!inCar && t < CAR_WINDOW[0]) {
+    if (!inCar && t < BIKE_WINDOW[0]) {
       const e = clock.elapsedTime;
       offset.current.x += Math.sin(e * 0.35) * 0.5;
       offset.current.y += Math.cos(e * 0.27) * 0.28;
@@ -745,7 +748,7 @@ function LazyEnvironment({ section }: { section: Ref }) {
   const [show, setShow] = useState(false);
   useFrame(() => {
     const t = section.current;
-    const near = t > CAR_WINDOW[0] - 1.4 && t < BIKE_WINDOW[1] + 1.2;
+    const near = t > BIKE_WINDOW[0] - 1.4 && t < JET_WINDOW[1] + 1.2;
     if (near !== show) setShow(near);
   });
   if (!show) return null;

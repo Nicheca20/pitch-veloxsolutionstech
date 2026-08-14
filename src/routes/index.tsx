@@ -180,12 +180,22 @@ function Pitch() {
             <Section
               data={s}
               first={i === 0}
-              afterTitle={
-                s.id === "solucion" ? <VeleiroLogo /> : s.id === "problema" ? <ProblemFlow /> : undefined
+              afterTitle={s.id === "solucion" ? <VeleiroLogo /> : undefined}
+              below={
+                s.id === "problema" ? (
+                  <ProblemFlow />
+                ) : s.id === "solucion" ? (
+                  <SolutionTimeline />
+                ) : undefined
               }
-              className={s.id === "problema" ? "items-start py-[10vh] min-h-[170vh]" : undefined}
+              className={
+                s.id === "problema"
+                  ? "py-[10vh] min-h-[170vh]"
+                  : s.id === "solucion"
+                    ? "py-[10vh] min-h-[170vh]"
+                    : undefined
+              }
             />
-            {s.id === "problema" && <SolutionTimeline />}
             {s.id === "cencor" && <CencorUnits />}
             {s.id === "cronista" && (
               <ClientLogo src={cronista.url} name="El Cronista" eyebrow="El Cronista" side="right" />
