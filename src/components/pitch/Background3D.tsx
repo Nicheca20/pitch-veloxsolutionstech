@@ -361,14 +361,14 @@ function Streaks({
     const pos = new Float32Array(count * 6);
     const speeds = new Float32Array(count);
     for (let i = 0; i < count; i++) {
-      const r = 6 + Math.random() * 42;
+      const r = 8 + Math.random() * 44;
       const a = Math.random() * Math.PI * 2;
       const x = ground ? (Math.random() - 0.5) * 90 : Math.cos(a) * r;
       const y = ground ? FLOOR_Y + 0.12 + Math.random() * 0.5 : Math.sin(a) * r * 0.45;
       const z = -Math.random() * depth;
-      const len = 2 + Math.random() * 6;
+      const len = 9 + Math.random() * 20;
       pos.set([x, y, z, x, y, z - len], i * 6);
-      speeds[i] = 28 + Math.random() * 55;
+      speeds[i] = 16 + Math.random() * 30;
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
