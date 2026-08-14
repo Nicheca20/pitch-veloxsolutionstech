@@ -1,11 +1,11 @@
 {
-  "asset_id": "2c556032-7eff-4b82-a564-fe2da9f80b7f",
-  "content_type": "image/png",
-  "created_at": "2026-08-14T02:23:00Z",
-  "original_filename": "github.png",
+  "version": 1,
+  "asset_id": "999d23ff-2351-4b0b-967f-1cea8393d098",
   "project_id": "41fc6c9f-fb20-4e08-89b9-4cd949c62fe9",
-  "r2_key": "a/v1/41fc6c9f-fb20-4e08-89b9-4cd949c62fe9/2c556032-7eff-4b82-a564-fe2da9f80b7f/github.png",
-  "size": 18059,
-  "url": "/__l5e/assets-v1/2c556032-7eff-4b82-a564-fe2da9f80b7f/github.png",
-  "version": 1
+  "url": "/__l5e/assets-v1/999d23ff-2351-4b0b-967f-1cea8393d098/github.png",
+  "r2_key": "a/v1/41fc6c9f-fb20-4e08-89b9-4cd949c62fe9/999d23ff-2351-4b0b-967f-1cea8393d098/github.png",
+  "original_filename": "github.png",
+  "size": 13777,
+  "content_type": "image/png",
+  "created_at": "2026-08-14T19:53:32Z"
 }

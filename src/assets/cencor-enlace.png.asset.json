@@ -1,11 +1,11 @@
 {
-  "asset_id": "28182a48-3432-4b63-b6c3-6d17a20ae0d9",
-  "content_type": "image/png",
-  "created_at": "2026-08-14T02:27:02Z",
-  "original_filename": "cencor-enlace.png",
+  "version": 1,
+  "asset_id": "8c247b33-be55-44c2-a944-2337f9107961",
   "project_id": "41fc6c9f-fb20-4e08-89b9-4cd949c62fe9",
-  "r2_key": "a/v1/41fc6c9f-fb20-4e08-89b9-4cd949c62fe9/28182a48-3432-4b63-b6c3-6d17a20ae0d9/cencor-enlace.png",
-  "size": 6677,
-  "url": "/__l5e/assets-v1/28182a48-3432-4b63-b6c3-6d17a20ae0d9/cencor-enlace.png",
-  "version": 1
+  "url": "/__l5e/assets-v1/8c247b33-be55-44c2-a944-2337f9107961/cencor-enlace.png",
+  "r2_key": "a/v1/41fc6c9f-fb20-4e08-89b9-4cd949c62fe9/8c247b33-be55-44c2-a944-2337f9107961/cencor-enlace.png",
+  "original_filename": "cencor-enlace.png",
+  "size": 6231,
+  "content_type": "image/png",
+  "created_at": "2026-08-14T19:53:20Z"
 }

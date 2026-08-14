@@ -1,11 +1,11 @@
 {
-  "asset_id": "3e4298f1-a311-40be-923a-9f9053013d84",
-  "content_type": "image/png",
-  "created_at": "2026-08-14T02:38:53Z",
-  "original_filename": "cronista.png",
+  "version": 1,
+  "asset_id": "e7f991b0-c5d1-467e-8cd0-0519133e94ff",
   "project_id": "41fc6c9f-fb20-4e08-89b9-4cd949c62fe9",
-  "r2_key": "a/v1/41fc6c9f-fb20-4e08-89b9-4cd949c62fe9/3e4298f1-a311-40be-923a-9f9053013d84/cronista.png",
-  "size": 8232,
-  "url": "/__l5e/assets-v1/3e4298f1-a311-40be-923a-9f9053013d84/cronista.png",
-  "version": 1
+  "url": "/__l5e/assets-v1/e7f991b0-c5d1-467e-8cd0-0519133e94ff/cronista.png",
+  "r2_key": "a/v1/41fc6c9f-fb20-4e08-89b9-4cd949c62fe9/e7f991b0-c5d1-467e-8cd0-0519133e94ff/cronista.png",
+  "original_filename": "cronista.png",
+  "size": 8724,
+  "content_type": "image/png",
+  "created_at": "2026-08-14T19:53:28Z"
 }
