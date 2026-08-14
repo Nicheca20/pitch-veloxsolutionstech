@@ -32,6 +32,8 @@ export default function VeloxBackground() {
     const DPR = 0.75; // perf: el fondo es sólo degradés y líneas suaves; se escala vía CSS
     let W = 0;
     let H = 0;
+    let staticCv: HTMLCanvasElement | null = null;
+    let staticDirty = true;
     let horizon = 0;
 
     function resize() {
@@ -68,8 +70,6 @@ export default function VeloxBackground() {
 
     // perf: todo lo que no cambia por frame (cielo, estrellas, piso, líneas
     // convergentes) se pinta una sola vez en un canvas offscreen.
-    let staticCv: HTMLCanvasElement | null = null;
-    let staticDirty = true;
     function buildStatic() {
       staticDirty = false;
       const cv = staticCv ?? (staticCv = document.createElement("canvas"));
