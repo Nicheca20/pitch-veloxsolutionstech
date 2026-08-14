@@ -144,7 +144,7 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
     m.position.set(-center.x, -center.y, -center.z);
     wrap.scale.setScalar(scale);
     // la trompa mira hacia +Z (dirección de avance, hacia la cámara)
-    wrap.rotation.set(0, Math.PI / 2, 0);
+    wrap.rotation.set(0, Math.PI, 0);
 
     wrap.traverse((o) => {
       const mesh = o as THREE.Mesh;
@@ -164,7 +164,6 @@ export function Bike({ section }: { section: MutableRefObject<number> }) {
         mat.needsUpdate = true;
       });
     });
-    console.log('BIKE_BUILD', rs.toArray(), wrap.rotation.y);
     return wrap;
   }, [scene]);
 
