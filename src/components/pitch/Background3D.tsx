@@ -139,32 +139,86 @@ function usePulse(section: Ref) {
 }
 
 /**
- * Grilla synthwave infinita: una sola malla enorme que acompaña a la cámara y
- * se desplaza en pasos exactos de celda, así el patrón nunca "corta" ni se reinicia.
+ * "Carretera" synthwave: plano con grilla procedural de líneas finas y luminosas,
+ * con degradé de brillo hacia el horizonte y color entre velox y aura.
  */
 function SpeedGrid({ section }: { section: Ref }) {
-  const group = useRef<THREE.Group>(null);
-  const grid = useRef<THREE.GridHelper>(null);
-  const run = useRef(0);
-  const size = 400;
-  const divisions = 200;
-  const cell = size / divisions;
+  const mesh = useRef<THREE.Mesh>(null);
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide,
+        blending: THREE.AdditiveBlending,
+        uniforms: {
+          uRun: { value: 0 },
+          uIntensity: { value: 1 },
+          uNear: { value: new THREE.Color("#AFA9EC") },
+          uFar: { value: new THREE.Color("#534AB7") },
+        },
+        vertexShader: `
+          varying vec2 vUv;
+          varying vec3 vLocal;
+          void main() {
+            vUv = uv;
+            vLocal = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform float uRun; uniform float uIntensity;
+          uniform vec3 uNear; uniform vec3 uFar;
+          varying vec3 vLocal;
+
+          float line(float coord, float width) {
+            float g = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
+            return 1.0 - smoothstep(0.0, width, g);
+          }
+
+          void main() {
+            // el plano está rotado: x = lateral, y local = profundidad
+            float cell = 2.0;
+            float x = vLocal.x / cell;
+            float z = (vLocal.y + uRun) / cell;
+            float g = max(line(x, 1.1), line(z, 1.4));
+            if (g < 0.01) discard;
+
+            float depth = clamp(abs(vLocal.y) / 190.0, 0.0, 1.0);
+            float side = clamp(abs(vLocal.x) / 120.0, 0.0, 1.0);
+            // brillo: fuerte cerca, degradé hacia el horizonte, se apaga a los lados
+            float glow = (1.0 - smoothstep(0.15, 1.0, depth)) * (1.0 - side * side);
+            glow += (1.0 - smoothstep(0.0, 0.35, depth)) * 0.5;
+            vec3 col = mix(uNear, uFar, smoothstep(0.0, 0.6, depth));
+            float a = g * glow * 0.85 * uIntensity;
+            gl_FragColor = vec4(col * (0.7 + glow * 1.1), a);
+          }
+        `,
+      }),
+    [],
+  );
+  useEffect(() => () => material.dispose(), [material]);
 
   useFrame(({ camera }, dt) => {
     const k = tunnelIntensity(section.current);
-    run.current = (run.current + dt * 26 * k) % cell;
-    if (group.current) group.current.position.z = camera.position.z;
-    if (grid.current) grid.current.position.z = run.current;
+    material.uniforms['uRun']!.value = (material.uniforms['uRun']!.value + dt * 26 * k) % 2;
+    material.uniforms['uIntensity']!.value = 0.85 + (k - 1) * 0.35;
+    if (mesh.current) mesh.current.position.z = camera.position.z;
   });
 
   return (
-    <group ref={group} position={[0, -3.4, 0]}>
-      <gridHelper ref={grid} args={[size, divisions, GRID, GRID]} frustumCulled={false}>
-        <lineBasicMaterial attach="material" color={GRID} transparent opacity={0.6} fog />
-      </gridHelper>
-    </group>
+    <mesh
+      ref={mesh}
+      material={material}
+      rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, -3.4, 0]}
+      frustumCulled={false}
+    >
+      <planeGeometry args={[400, 400]} />
+    </mesh>
   );
 }
+
 
 
 /** Líneas de velocidad que atraviesan la cámara (túnel de secciones 0-4). */
