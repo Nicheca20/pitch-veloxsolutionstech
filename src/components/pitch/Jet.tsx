@@ -12,8 +12,8 @@ const ICE = "#EEEDFE";
 
 /** Punto de focus de la sección 6 (idéntico al del cubo verde). */
 export const JET_FOCUS = new THREE.Vector3(0, 0, -140);
-/** Ventana de scroll (índice de sección) de la sección 6. */
-export const JET_WINDOW: [number, number] = [7.05, 7.95];
+/** Ventana de scroll (índice de sección) de la sección de El Cronista. */
+export const JET_WINDOW: [number, number] = [7.0, 8.0];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
