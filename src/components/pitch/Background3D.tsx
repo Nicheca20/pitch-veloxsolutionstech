@@ -232,25 +232,77 @@ function Streaks({ section, count = 700 }: { section: Ref; count?: number }) {
   );
 }
 
-/** Campo de partículas flotante con blending aditivo, siempre alrededor de la cámara. */
-function ParticleField({ section, count = 30000 }: { section: Ref; count?: number }) {
+/** Cielo con degradé: galaxy oscuro arriba → velox/force hacia el horizonte. */
+function GradientSky() {
+  const ref = useRef<THREE.Mesh>(null);
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        side: THREE.BackSide,
+        depthWrite: false,
+        fog: false,
+        uniforms: {
+          top: { value: new THREE.Color("#07061a") },
+          mid: { value: new THREE.Color("#26215C") },
+          horizon: { value: new THREE.Color("#534AB7") },
+          low: { value: new THREE.Color("#120e33") },
+        },
+        vertexShader: `
+          varying vec3 vPos;
+          void main() {
+            vPos = position;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 top; uniform vec3 mid; uniform vec3 horizon; uniform vec3 low;
+          varying vec3 vPos;
+          void main() {
+            float h = normalize(vPos).y;
+            vec3 c = mix(mid, top, smoothstep(0.05, 0.9, h));
+            c = mix(c, horizon, smoothstep(0.28, 0.0, abs(h)) * 0.85);
+            c = mix(c, low, smoothstep(-0.05, -0.6, h));
+            gl_FragColor = vec4(c, 1.0);
+          }
+        `,
+      }),
+    [],
+  );
+  useEffect(() => () => material.dispose(), [material]);
+  useFrame(({ camera }) => {
+    if (ref.current) ref.current.position.copy(camera.position);
+  });
+  return (
+    <mesh ref={ref} material={material} frustumCulled={false} renderOrder={-1}>
+      <sphereGeometry args={[300, 32, 24]} />
+    </mesh>
+  );
+}
+
+/** Campo de partículas suaves (sprite circular) con toda la paleta y brillo variable. */
+function ParticleField({ section, count = 26000 }: { section: Ref; count?: number }) {
   const ref = useRef<THREE.Points>(null);
   const mat = useRef<THREE.PointsMaterial>(null);
   const drift = useRef(0);
   const pulse = usePulse(section);
+  const sprite = useMemo(() => softDotTexture(), []);
 
   const geometry = useMemo(() => {
     const pos = new Float32Array(count * 3);
     const col = new Float32Array(count * 3);
     const palette = PARTICLE_COLORS.map((c) => new THREE.Color(c));
+    const tmp = new THREE.Color();
     for (let i = 0; i < count; i++) {
       pos[i * 3] = (Math.random() - 0.5) * 170;
       pos[i * 3 + 1] = (Math.random() - 0.5) * 80;
       pos[i * 3 + 2] = (Math.random() - 0.5) * 170;
       const c = palette[Math.floor(Math.random() * palette.length)]!;
-      col[i * 3] = c.r;
-      col[i * 3 + 1] = c.g;
-      col[i * 3 + 2] = c.b;
+      // brillo variable: la mayoría tenues, unas pocas muy vivas
+      const b = 0.35 + Math.pow(Math.random(), 2.2) * 1.5;
+      tmp.copy(c).multiplyScalar(b);
+      col[i * 3] = tmp.r;
+      col[i * 3 + 1] = tmp.g;
+      col[i * 3 + 2] = tmp.b;
     }
     const g = new THREE.BufferGeometry();
     g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
@@ -263,15 +315,14 @@ function ParticleField({ section, count = 30000 }: { section: Ref; count?: numbe
     if (!o) return;
     const k = tunnelIntensity(section.current);
     const p = pulse(clock.elapsedTime);
-    // flujo hacia la cámara: el campo entero se desliza en +Z y se recicla
     drift.current = (drift.current + dt * 9 * k) % 170;
     o.rotation.y += dt * 0.02 * k;
     o.position.z = camera.position.z - 40 + drift.current;
     o.position.y = Math.sin(clock.elapsedTime * 0.15) * 0.6;
     o.scale.setScalar(1 + p * 0.14);
     if (mat.current) {
-      mat.current.size = 0.09 * (1 + (k - 1) * 0.5 + p * 1.6);
-      mat.current.opacity = Math.min(1, 0.9 + p * 0.1);
+      mat.current.size = 0.22 * (1 + (k - 1) * 0.5 + p * 1.6);
+      mat.current.opacity = Math.min(1, 0.85 + p * 0.15);
     }
   });
 
@@ -279,10 +330,12 @@ function ParticleField({ section, count = 30000 }: { section: Ref; count?: numbe
     <points ref={ref} geometry={geometry} frustumCulled={false}>
       <pointsMaterial
         ref={mat}
-        size={0.09}
+        size={0.22}
+        map={sprite}
+        alphaMap={sprite}
         vertexColors
         transparent
-        opacity={0.9}
+        opacity={0.85}
         depthWrite={false}
         blending={THREE.AdditiveBlending}
         sizeAttenuation
@@ -290,6 +343,73 @@ function ParticleField({ section, count = 30000 }: { section: Ref; count?: numbe
     </points>
   );
 }
+
+/** Estelas de velocidad: sprites alargados (motion-blur) que cruzan la escena. */
+function AccentStreaks({ section, count = 1600 }: { section: Ref; count?: number }) {
+  const ref = useRef<THREE.Points>(null);
+  const mat = useRef<THREE.PointsMaterial>(null);
+  const sprite = useMemo(() => streakTexture(), []);
+  const depth = 200;
+
+  const { geometry, speeds } = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const col = new Float32Array(count * 3);
+    const speeds = new Float32Array(count);
+    const palette = ACCENT_COLORS.map((c) => new THREE.Color(c));
+    const tmp = new THREE.Color();
+    for (let i = 0; i < count; i++) {
+      const r = 4 + Math.random() * 46;
+      const a = Math.random() * Math.PI * 2;
+      pos[i * 3] = Math.cos(a) * r;
+      pos[i * 3 + 1] = Math.sin(a) * r * 0.5;
+      pos[i * 3 + 2] = -Math.random() * depth;
+      const c = palette[Math.floor(Math.random() * palette.length)]!;
+      tmp.copy(c).multiplyScalar(0.8 + Math.random() * 1.4);
+      col[i * 3] = tmp.r;
+      col[i * 3 + 1] = tmp.g;
+      col[i * 3 + 2] = tmp.b;
+      speeds[i] = 22 + Math.random() * 60;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    g.setAttribute("color", new THREE.BufferAttribute(col, 3));
+    return { geometry: g, speeds };
+  }, [count]);
+
+  useFrame(({ camera }, dt) => {
+    const o = ref.current;
+    if (!o) return;
+    o.position.z = camera.position.z;
+    const k = tunnelIntensity(section.current);
+    const attr = geometry.getAttribute("position") as THREE.BufferAttribute;
+    const arr = attr.array as Float32Array;
+    for (let i = 0; i < count; i++) {
+      const i0 = i * 3 + 2;
+      arr[i0] = arr[i0]! + speeds[i]! * k * dt;
+      if (arr[i0]! > 14) arr[i0] = arr[i0]! - (depth + Math.random() * 40);
+    }
+    attr.needsUpdate = true;
+    if (mat.current) mat.current.size = 0.9 * (1 + (k - 1) * 0.6);
+  });
+
+  return (
+    <points ref={ref} geometry={geometry} frustumCulled={false}>
+      <pointsMaterial
+        ref={mat}
+        size={0.9}
+        map={sprite}
+        alphaMap={sprite}
+        vertexColors
+        transparent
+        opacity={0.55}
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        sizeAttenuation
+      />
+    </points>
+  );
+}
+
 
 /** Bloom dinámico: golpe de brillo en el hook + build-up hacia la sección 5. */
 /** Monta el carro sólo cuando la sección 5 está cerca del viewport. */
