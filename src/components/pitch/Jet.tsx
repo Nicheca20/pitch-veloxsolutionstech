@@ -233,19 +233,21 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
     // 0.35..0.70: transición al despegue
     // 0.70..1.00: asciende y sale de plano
     const t0 = smoother(s / 0.35);
-    const t1 = smoother(clamp01((s - 0.30) / 0.40));
-    const t2 = smoother(clamp01((s - 0.65) / 0.35));
+    const t1 = smoother(clamp01((s - 0.30) / 0.45));
+    const t2 = smoother(clamp01((s - 0.78) / 0.22));
 
-    // posición Z: acercamiento suave desde lejos → paso → salida acelerada
-    const zApproach = THREE.MathUtils.lerp(34, 16, t0);
-    const zExit = t2 * t2 * -70;
+    // posición Z: acercamiento suave desde lejos → paso → salida (moderada,
+    // para que el avión siga en cuadro mientras despega)
+    const zApproach = THREE.MathUtils.lerp(34, 14, t0);
+    const zExit = t2 * t2 * -26;
 
     // posición Y: empieza bajo el encuadre, asoma, luego despega ascendente
     const yApproach = THREE.MathUtils.lerp(-5.2, -0.6, t0);
-    const yLift = t1 * t1 * 13.5;
+    const yLift = t1 * 5.2 + t2 * t2 * 3.0;
 
     // rotación X: nariz se levanta progresivamente durante el despegue
-    const pitch = -t1 * 0.42;
+    const pitch = -t1 * 0.36;
+
 
     // postquemador: enciende suavemente y se mantiene durante el despegue
     const targetPower = clamp01(s / 0.22) * (0.35 + t0 * 0.65);
