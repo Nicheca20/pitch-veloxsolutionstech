@@ -49,7 +49,7 @@ export function LogoStrip() {
         {logos.map((l, i) => (
           <li
             key={l.name}
-            className="flex items-center transition-all duration-[900ms] ease-out"
+            className="flex flex-col items-center transition-all duration-[900ms] ease-out"
             style={{
               transitionDelay: `${250 + i * 260}ms`,
               opacity: on ? 1 : 0.5,
@@ -65,6 +65,11 @@ export function LogoStrip() {
               loading="lazy"
               className={`w-auto object-contain ${l.className}`}
             />
+            {l.caption && (
+              <span className="mt-3 text-[10px] font-semibold uppercase tracking-[0.22em] text-foreground/70 md:text-[11px]">
+                {l.caption}
+              </span>
+            )}
           </li>
         ))}
       </ul>
