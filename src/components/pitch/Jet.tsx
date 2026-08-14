@@ -13,7 +13,7 @@ const ICE = "#EEEDFE";
 /** Punto de focus de la sección 6 (idéntico al del cubo verde). */
 export const JET_FOCUS = new THREE.Vector3(0, 0, -95);
 /** Ventana de scroll (índice de sección) de la sección 6. */
-export const JET_WINDOW: [number, number] = [4.45, 6.0];
+export const JET_WINDOW: [number, number] = [4.55, 5.5];
 
 const clamp01 = (x: number) => Math.min(1, Math.max(0, x));
 const smooth = (x: number) => x * x * (3 - 2 * x);
@@ -172,13 +172,12 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
         mats.forEach((mm) => {
           const mat = mm as THREE.MeshStandardMaterial;
           if (!mat || !("isMeshStandardMaterial" in mat)) return;
-          mat.envMapIntensity = 2.2;
-          // la librea original es gris muy oscura: la aclaramos y le damos tinte de marca
-          mat.color.lerp(new THREE.Color(FORCE), 0.35);
+          mat.envMapIntensity = 1.6;
+          // este modelo SÍ trae PBR: conservamos sus texturas, sólo un leve realce
           mat.emissive = new THREE.Color(VELOX);
-          mat.emissiveIntensity = 0.35;
-          mat.roughness = Math.min(mat.roughness, 0.45);
-          mat.metalness = Math.max(mat.metalness, 0.55);
+          mat.emissiveIntensity = 0.12;
+          mat.roughness = Math.min(mat.roughness, 0.7);
+          mat.toneMapped = true;
           mat.needsUpdate = true;
         });
       }
