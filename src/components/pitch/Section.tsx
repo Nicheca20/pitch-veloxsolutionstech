@@ -6,10 +6,12 @@ export function Section({
   data,
   first,
   afterTitle,
+  className,
 }: {
   data: SectionData;
   first?: boolean;
   afterTitle?: React.ReactNode;
+  className?: string | undefined;
 }) {
   const ref = useRef<HTMLElement>(null);
   const [active, setActive] = useState(false);
@@ -31,7 +33,7 @@ export function Section({
       id={data.id}
       className={`pitch-section relative flex min-h-screen items-center px-6 md:px-16 lg:px-24 ${
         active ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      } transition-all duration-700 ease-out`}
+      } transition-all duration-700 ease-out ${className ?? ""}`}
     >
       <div className="text-veil relative z-10 max-w-[46rem]">
         <div className="mb-5 flex items-center gap-3">
