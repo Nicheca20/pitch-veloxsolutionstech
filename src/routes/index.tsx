@@ -150,13 +150,14 @@ function Pitch() {
 
   return (
     <div className="relative bg-background text-foreground">
+      <VeloxBackground />
       <Preloader progress={loading} done={ready} />
       <ProgressBar progress={barProgress} />
 
-      {/* Canvas fijo detrás del contenido; nunca bloquea la selección de texto */}
+      {/* Canvas 3D de modelos, por encima del fondo 2D */}
       <div
         id="pitch-canvas"
-        className="pointer-events-none fixed inset-0 z-0 bg-[radial-gradient(70%_60%_at_30%_20%,rgba(83,74,183,0.35)_0%,transparent_65%),radial-gradient(60%_60%_at_80%_80%,rgba(127,119,221,0.25)_0%,transparent_70%)] print:hidden"
+        className="pointer-events-none fixed inset-0 z-[1] print:hidden"
       >
         {mounted && use3D ? (
           <Suspense fallback={null}>
@@ -164,6 +165,7 @@ function Pitch() {
           </Suspense>
         ) : null}
       </div>
+
 
       <main className="relative z-10">
         <h1 className="sr-only">
