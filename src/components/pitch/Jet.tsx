@@ -213,7 +213,6 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
       <group ref={craft}>
         <primitive object={model} />
         <Afterburner power={power} />
-        <Trail power={power} />
         <pointLight position={[4, 5, -2]} intensity={140} distance={50} color={FORCE} />
       </group>
     </group>
