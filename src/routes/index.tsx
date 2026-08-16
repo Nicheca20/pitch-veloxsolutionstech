@@ -106,30 +106,71 @@ function Pitch() {
     return () => cancelAnimationFrame(raf);
   }, [progress]);
 
-  /** Scroll animado con easing (~1.2s), cancelable por el scroll del mouse. */
-  const smoothScrollTo = useCallback((to: number) => {
-    if (tween.current !== null) cancelAnimationFrame(tween.current);
-    const from = window.scrollY;
-    const max = document.body.scrollHeight - window.innerHeight;
-    const target = Math.max(0, Math.min(max, to));
-    const delta = target - from;
-    if (Math.abs(delta) < 1) return;
-    if (reducedRef.current) {
-      window.scrollTo(0, target);
-      return;
-    }
-    const duration = 1200;
-    const start = performance.now();
-    // easeInOutCubic
-    const ease = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2);
-    const step = (now: number) => {
-      const p = Math.min(1, (now - start) / duration);
-      window.scrollTo(0, from + delta * ease(p));
-      if (p < 1) tween.current = requestAnimationFrame(step);
-      else tween.current = null;
+  /** Motor de scroll: un solo rAF que interpola hacia un objetivo acumulado.
+   *  Los eventos nunca reinician la animación, sólo mueven el objetivo,
+   *  así un scroll rápido se traduce en movimiento continuo (sin bloqueos). */
+  const targetY = useRef<number | null>(null);
+
+  const runScroll = useCallback(() => {
+    if (tween.current !== null) return;
+    let last = performance.now();
+    const loop = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      const t = targetY.current;
+      if (t === null) {
+        tween.current = null;
+        return;
+      }
+      const y = window.scrollY;
+      const d = t - y;
+      if (Math.abs(d) < 0.5) {
+        window.scrollTo(0, t);
+        targetY.current = null;
+        tween.current = null;
+        return;
+      }
+      // suavizado exponencial: ~180 ms para alcanzar el objetivo
+      const k = 1 - Math.exp(-dt * 9);
+      window.scrollTo(0, y + d * k);
+      tween.current = requestAnimationFrame(loop);
     };
-    tween.current = requestAnimationFrame(step);
+    tween.current = requestAnimationFrame(loop);
   }, []);
+
+  const clampY = (y: number) => {
+    const max = document.body.scrollHeight - window.innerHeight;
+    return Math.max(0, Math.min(max, y));
+  };
+
+  /** Mueve el objetivo una cantidad relativa (acumulable). */
+  const scrollByAmount = useCallback(
+    (delta: number) => {
+      const base = targetY.current ?? window.scrollY;
+      targetY.current = clampY(base + delta);
+      if (reducedRef.current) {
+        window.scrollTo(0, targetY.current);
+        targetY.current = null;
+        return;
+      }
+      runScroll();
+    },
+    [runScroll],
+  );
+
+  /** Va a una posición absoluta (dots, Home/End). */
+  const smoothScrollTo = useCallback(
+    (to: number) => {
+      targetY.current = clampY(to);
+      if (reducedRef.current) {
+        window.scrollTo(0, targetY.current);
+        targetY.current = null;
+        return;
+      }
+      runScroll();
+    },
+    [runScroll],
+  );
 
   const goTo = useCallback(
     (i: number) => {
@@ -141,40 +182,24 @@ function Pitch() {
     [smoothScrollTo],
   );
 
-  /** Avance fino: cada paso mueve solo ~1 % del viewport.
-   *  Sirve tanto para clicks del puntero láser como para la rueda del mouse,
-   *  para no saltarse frames de las animaciones ni los modelos 3D. */
+  /** Avance fino: cada paso mueve ~1 % del viewport. */
   const step = useCallback(
     (dir: 1 | -1, ratio = 0.01) => {
-      const vh = window.innerHeight;
-      const y = window.scrollY;
-      const max = document.body.scrollHeight - vh;
-      const target = Math.max(0, Math.min(max, y + dir * vh * ratio));
-      smoothScrollTo(target);
+      scrollByAmount(dir * window.innerHeight * ratio);
     },
-    [smoothScrollTo],
+    [scrollByAmount],
   );
 
-  // La rueda del mouse avanza/retrocede en pasos de ~1 % del viewport
-  // en lugar del scroll nativo, para no saltarse frames.
+  // La rueda del mouse acumula pasos de ~1 % del viewport sobre el mismo
+  // objetivo, en lugar del scroll nativo: fluido y sin saltar frames.
   useEffect(() => {
-    const cancel = () => {
-      if (tween.current !== null) {
-        cancelAnimationFrame(tween.current);
-        tween.current = null;
-      }
-    };
     const onWheel = (e: WheelEvent) => {
-      e.preventDefault();
       if (Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+      e.preventDefault();
       step(e.deltaY > 0 ? 1 : -1, 0.01);
     };
     window.addEventListener("wheel", onWheel, { passive: false });
-    window.addEventListener("touchstart", cancel, { passive: true });
-    return () => {
-      window.removeEventListener("wheel", onWheel);
-      window.removeEventListener("touchstart", cancel);
-    };
+    return () => window.removeEventListener("wheel", onWheel);
   }, [step]);
 
 
@@ -210,7 +235,6 @@ function Pitch() {
 
     let holdTimer: number | null = null;
     let raf = 0;
-    let holding = false;
     let didHold = false;
     let last = 0;
 
@@ -219,25 +243,16 @@ function Pitch() {
       holdTimer = null;
       if (raf) cancelAnimationFrame(raf);
       raf = 0;
-      holding = false;
     };
 
     const startHold = (dir: 1 | -1) => {
-      holding = true;
       didHold = true;
-      if (tween.current !== null) {
-        cancelAnimationFrame(tween.current);
-        tween.current = null;
-      }
       last = performance.now();
       const loop = (now: number) => {
         const dt = now - last;
         last = now;
-        const vh = window.innerHeight;
-        const max = document.body.scrollHeight - vh;
         // misma velocidad que los pasos: 1 % del viewport cada 120 ms
-        const delta = dir * vh * 0.01 * (dt / 120);
-        window.scrollTo(0, Math.max(0, Math.min(max, window.scrollY + delta)));
+        scrollByAmount(dir * window.innerHeight * 0.01 * (dt / 120));
         raf = requestAnimationFrame(loop);
       };
       raf = requestAnimationFrame(loop);
@@ -280,7 +295,9 @@ function Pitch() {
       window.removeEventListener("click", onClick);
       window.removeEventListener("contextmenu", onCtx);
     };
-  }, [step]);
+  }, [step, scrollByAmount]);
+
+
 
 
 
