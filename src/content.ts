@@ -66,6 +66,7 @@ export const sections: Section[] = [
       "Alcance fijo, precio fijo, arquitectos senior + IA",
       "Time-to-production en semanas, no trimestres",
       "Un partner que genera pipeline",
+      { text: "Agentes hasta en 4 semanas", highlight: true },
     ],
   },
   {
