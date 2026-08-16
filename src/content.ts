@@ -1,12 +1,14 @@
 export type Metric = { value: number; suffix?: string; prefix?: string; label: string };
 
+export type Bullet = string | { text: string; highlight?: boolean };
+
 export type Section = {
   id: string;
   index: string;
   kicker: string;
   title: string;
   body?: string;
-  bullets?: string[];
+  bullets?: Bullet[];
   metrics?: Metric[];
   note?: string;
 };
