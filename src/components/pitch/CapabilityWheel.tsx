@@ -77,7 +77,7 @@ export function CapabilityWheel() {
             const front = dist === 0;
             return (
               <article
-                key={it.n}
+                key={it.title}
                 className="absolute left-1/2 top-1/2 w-[min(84vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-5 text-left transition-all duration-[900ms] ease-out sm:p-6"
                 style={{
                   transform: `rotateY(${i * STEP}deg) translateZ(min(50vw, 23rem))`,
@@ -113,7 +113,7 @@ export function CapabilityWheel() {
           const on = ((active % ITEMS.length) + ITEMS.length) % ITEMS.length === i;
           return (
             <button
-              key={it.n}
+              key={it.title}
               type="button"
               aria-label={it.title}
               onClick={() => setActive(i)}

@@ -3,25 +3,21 @@ import { Clock, Search, FlaskConical, Server, Lock, X } from "lucide-react";
 
 const STEPS = [
   {
-    index: "01",
     icon: Clock,
     title: "Preventa lenta",
     tag: "semanas perdidas",
   },
   {
-    index: "02",
     icon: Search,
     title: "Discovery eterno",
     tag: "sin fin",
   },
   {
-    index: "03",
     icon: FlaskConical,
     title: "Piloto",
     tag: "prueba aislada",
   },
   {
-    index: "04",
     icon: Server,
     title: "Producción",
     tag: "bloqueada",
