@@ -101,7 +101,7 @@ export function ProblemFlow() {
 
           return (
             <div
-              key={step.index}
+              key={step.title}
               className={`relative grid grid-cols-1 items-center gap-4 pl-14 md:grid-cols-2 md:pl-0 transition-all duration-600 ease-out ${
                 isLast
                   ? on
