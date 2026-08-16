@@ -25,6 +25,19 @@ const LANES = [
   { label: "Retail", delay: 0.24 },
 ] as const;
 
+const CERTS = [
+  { label: "Agentforce", count: 3 },
+  { label: "Agentforce Marketing", count: 1 },
+  { label: "Agentforce Sales", count: 2 },
+  { label: "Agentforce Service", count: 2 },
+  { label: "Data 360", count: 1 },
+  { label: "Platform", count: 13 },
+  { label: "Slack", count: 2 },
+] as const;
+
+const TOTAL_CERTS = CERTS.reduce((a, c) => a + c.count, 0);
+
+
 export function GrowthEngine() {
   const ref = useRef<HTMLDivElement>(null);
   const [fill, setFill] = useState(0);
@@ -156,6 +169,41 @@ export function GrowthEngine() {
 
         </div>
       </div>
+
+      {/* ---------- Certificaciones ---------- */}
+      <div
+        className="relative mt-12 transition-all duration-500"
+        style={{ opacity: 0.25 + Math.min(1, Math.max(0, (fill - 0.6) / 0.3)) * 0.75 }}
+      >
+        <div className="mb-5 flex items-center justify-center gap-3">
+          <span className="h-px w-8 bg-white/15" />
+          <span className="text-[0.7rem] uppercase tracking-[0.22em] text-foreground/80 sm:text-[0.85rem] sm:tracking-[0.3em]">
+            Certificaciones Salesforce
+          </span>
+          <span className="h-px w-8 bg-white/15" />
+        </div>
+
+        <div className="grid grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4">
+          {CERTS.map((c) => (
+            <div
+              key={c.label}
+              className="flex items-baseline justify-between gap-3 border-b border-white/8 pb-2"
+            >
+              <span className="text-[0.78rem] leading-tight text-foreground/85 sm:text-[0.92rem]">
+                {c.label}
+              </span>
+              <span className="text-[0.9rem] font-semibold tabular-nums text-ice sm:text-[1.05rem]">
+                {c.count}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-5 text-center text-[0.72rem] uppercase tracking-[0.18em] text-foreground/60 sm:text-[0.85rem]">
+          {TOTAL_CERTS} certificaciones activas
+        </div>
+      </div>
     </div>
   );
 }
+
