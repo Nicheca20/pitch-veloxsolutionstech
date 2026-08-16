@@ -1,5 +1,4 @@
 import { useFrame } from "@react-three/fiber";
-import { softPointTexture } from "./soft-point";
 import { useGLTF } from "@react-three/drei";
 import { useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
@@ -67,85 +66,6 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
     </group>
   );
 }
-
-/* ------------------------------------------------------------------- Estela */
-/** Toberas: mismas posiciones que los conos del postquemador. */
-const NOZZLES: [number, number, number][] = [
-  [-0.3, 0.15, 3.55],
-  [0.3, 0.15, 3.55],
-];
-
-
-function Trail({ power }: { power: MutableRefObject<number> }) {
-  const ref = useRef<THREE.Points>(null);
-  const count = 140;
-
-  const { geometry, seeds } = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    const seeds = Array.from({ length: count }, (_, i) => {
-      const n = NOZZLES[i % NOZZLES.length]!;
-      return {
-        ox: n[0],
-        oy: n[1],
-        oz: n[2],
-        jx: (Math.random() - 0.5) * 0.055,
-        jy: (Math.random() - 0.5) * 0.055,
-        spread: 0.18 + Math.random() * 0.3,
-        speed: 0.35 + Math.random() * 0.9,
-        offset: Math.random(),
-      };
-    });
-
-    const g = new THREE.BufferGeometry();
-    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    return { geometry: g, seeds };
-  }, []);
-
-  const tick = useRef(0);
-  useFrame(({ clock }) => {
-    const o = ref.current;
-    if (!o) return;
-    const p = power.current;
-    o.visible = p > 0.02;
-    if (!o.visible) return;
-    (o.material as THREE.PointsMaterial).opacity = p * 0.8;
-    if (++tick.current % 2) return;
-    const attr = geometry.attributes["position"] as THREE.BufferAttribute;
-    const t = clock.elapsedTime;
-    for (let i = 0; i < seeds.length; i++) {
-      const s = seeds[i]!;
-      const life = (t * s.speed + s.offset) % 1;
-      const d = life * 20;
-      // Densidad extra al inicio: evita el hueco visual entre tobera y estela.
-      const nozzleLife = life * life;
-      // nace exactamente en la tobera y se aleja recto por el eje del motor (+Z)
-      attr.setXYZ(
-        i,
-        s.ox + s.jx * nozzleLife * s.spread,
-        s.oy + s.jy * nozzleLife * s.spread,
-        s.oz + nozzleLife * d,
-      );
-
-    }
-    attr.needsUpdate = true;
-  });
-
-  return (
-    <points ref={ref} geometry={geometry} frustumCulled={false}>
-      <pointsMaterial
-        size={0.09}
-        color={ICE}
-        map={softPointTexture()}
-        alphaMap={softPointTexture()}
-        transparent
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-        sizeAttenuation
-      />
-    </points>
-  );
-}
-
 
 /* --------------------------------------------------------------------- Jet */
 export function Jet({ section }: { section: MutableRefObject<number> }) {
@@ -293,7 +213,6 @@ export function Jet({ section }: { section: MutableRefObject<number> }) {
       <group ref={craft}>
         <primitive object={model} />
         <Afterburner power={power} />
-        <Trail power={power} />
         <pointLight position={[4, 5, -2]} intensity={140} distance={50} color={FORCE} />
       </group>
     </group>
