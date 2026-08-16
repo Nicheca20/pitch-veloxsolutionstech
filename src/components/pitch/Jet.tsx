@@ -1,5 +1,4 @@
 import { useFrame } from "@react-three/fiber";
-import { softPointTexture } from "./soft-point";
 import { useGLTF } from "@react-three/drei";
 import { useMemo, useRef, type MutableRefObject } from "react";
 import * as THREE from "three";
