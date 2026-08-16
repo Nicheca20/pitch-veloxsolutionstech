@@ -1,12 +1,14 @@
 export type Metric = { value: number; suffix?: string; prefix?: string; label: string };
 
+export type Bullet = string | { text: string; highlight?: boolean };
+
 export type Section = {
   id: string;
   index: string;
   kicker: string;
   title: string;
   body?: string;
-  bullets?: string[];
+  bullets?: Bullet[];
   metrics?: Metric[];
   note?: string;
 };
@@ -64,6 +66,7 @@ export const sections: Section[] = [
       "Alcance fijo, precio fijo, arquitectos senior + IA",
       "Time-to-production en semanas, no trimestres",
       "Un partner que genera pipeline",
+      { text: "Agentes hasta en 4 semanas", highlight: true },
     ],
   },
   {

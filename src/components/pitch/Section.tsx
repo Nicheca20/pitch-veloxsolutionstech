@@ -79,12 +79,23 @@ export function Section({
 
           {data.bullets && (
             <ul className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
-              {data.bullets.map((b) => (
-                <li key={b} className="flex items-center gap-2 text-sm text-foreground/80">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--force)]" />
-                  {b}
-                </li>
-              ))}
+              {data.bullets.map((b) => {
+                const text = typeof b === "string" ? b : b.text;
+                const highlight = typeof b === "object" && b.highlight;
+                return (
+                  <li
+                    key={text}
+                    className={`flex items-center gap-2 text-foreground/80 ${
+                      highlight
+                        ? "text-[clamp(1.4rem,1.95vw,1.68rem)] font-bold"
+                        : "text-[clamp(1rem,1.4vw,1.2rem)]"
+                    }`}
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--force)]" />
+                    {text}
+                  </li>
+                );
+              })}
             </ul>
           )}
 
