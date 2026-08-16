@@ -3,25 +3,21 @@ import { Clock, Search, FlaskConical, Server, Lock, X } from "lucide-react";
 
 const STEPS = [
   {
-    index: "01",
     icon: Clock,
     title: "Preventa lenta",
     tag: "semanas perdidas",
   },
   {
-    index: "02",
     icon: Search,
     title: "Discovery eterno",
     tag: "sin fin",
   },
   {
-    index: "03",
     icon: FlaskConical,
     title: "Piloto",
     tag: "prueba aislada",
   },
   {
-    index: "04",
     icon: Server,
     title: "Producción",
     tag: "bloqueada",
@@ -105,7 +101,7 @@ export function ProblemFlow() {
 
           return (
             <div
-              key={step.index}
+              key={step.title}
               className={`relative grid grid-cols-1 items-center gap-4 pl-14 md:grid-cols-2 md:pl-0 transition-all duration-600 ease-out ${
                 isLast
                   ? on

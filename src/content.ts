@@ -23,35 +23,33 @@ export const brand = {
 export const sections: Section[] = [
   {
     id: "hook",
-    index: "01",
+    index: "",
     kicker: "Velox Solutions",
     title: "Agentes que construyen agentes.",
     body: "Partner AI-first de Agentforce en LATAM.",
   },
   {
     id: "problema",
-    index: "02",
+    index: "",
     kicker: "El problema",
     title: "El contexto se pierde entre fases.",
-    body: "Discovery eterno, pilotos que no llegan a producción.",
   },
   {
     id: "consecuencia",
-    index: "03",
+    index: "",
     kicker: "La consecuencia",
     title: "Deals que mueren desde el inicio.",
-    body: "Trimestres perdidos, consumo de Agentforce que nunca arranca.",
   },
   {
     id: "solucion",
-    index: "04",
+    index: "",
     kicker: "La solución",
     title: "Veleiro: nuestra operación entera es agéntica.",
     body: "Agentes supervisados de la preventa al soporte. Agentforce en producción.",
   },
   {
     id: "como",
-    index: "05",
+    index: "",
     kicker: "Cómo funciona",
     title: "Un activo de datos único.",
     body: "Flujos pre-construidos, gobernanza y human-in-the-loop en cada agente.",
@@ -59,7 +57,7 @@ export const sections: Section[] = [
   },
   {
     id: "diferencial",
-    index: "06",
+    index: "",
     kicker: "El diferencial",
     title: "Por qué Velox.",
     bullets: [
@@ -70,7 +68,7 @@ export const sections: Section[] = [
   },
   {
     id: "cencor",
-    index: "07",
+    index: "",
     kicker: "La prueba · Cencor",
     title: "Servicios financieros regulados, México.",
     body: "IA desde la preventa hasta el delivery, sobre Oracle Fusion como fuente maestra.",
@@ -78,7 +76,7 @@ export const sections: Section[] = [
   },
   {
     id: "cronista",
-    index: "08",
+    index: "",
     kicker: "La prueba · El Cronista",
     title: "Dos frentes de negocio en paralelo.",
     body: "Croni en producción y órdenes de trabajo automáticas por sector.",
@@ -86,7 +84,7 @@ export const sections: Section[] = [
   },
   {
     id: "adium",
-    index: "09",
+    index: "",
     kicker: "La prueba · Adium",
     title: "Profundidad en un vertical regulado.",
     body: "Asistente 24/7 al paciente y copiloto del equipo PSP dentro del CRM.",
@@ -99,9 +97,9 @@ export const sections: Section[] = [
   },
   {
     id: "cta",
-    index: "10",
+    index: "",
     kicker: "Partner Connect",
     title: "Agenda el diagnóstico.",
-    body: "Diagnóstico Agéntico gratuito + roadmap de 4 semanas. O un POC de Agentforce en vivo, sin costo.",
+    body: "Diagnóstico Agéntico + roadmap de 4 semanas + un POC de Agentforce en vivo.",
   },
 ];

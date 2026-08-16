@@ -2,37 +2,31 @@ import { useEffect, useRef, useState } from "react";
 
 const ITEMS = [
   {
-    n: "01",
     tag: "Pharma",
     title: "Operaciones Comerciales con IA",
     body: "IA para acelerar discovery, pricing y flujos de ventas en Sales Cloud y Revenue Cloud. 60%+ menos esfuerzo en análisis funcional.",
   },
   {
-    n: "02",
     tag: "Manufactura",
     title: "Integración ERP + Salesforce",
     body: "Discovery y arquitectura de integración ERP-Salesforce asistidos por IA. Fase de análisis drásticamente reducida.",
   },
   {
-    n: "03",
     tag: "Distribución",
     title: "Gestión Inteligente de Órdenes",
     body: "IA para descomponer procesos complejos en backlogs listos para sprint. Entregas iterativas aceleradas.",
   },
   {
-    n: "04",
     tag: "Medios",
     title: "Operaciones de Publicidad",
     body: "Campañas digitales, Work Orders, facturación y post-venta sobre Media Cloud. Planificación end-to-end con IA.",
   },
   {
-    n: "05",
     tag: "Gobernanza",
     title: "Gobernanza y Seguridad Salesforce",
     body: "Análisis de perfiles, permisos, validaciones y metadata con IA. Documentación de gobernanza lista para stakeholders.",
   },
   {
-    n: "06",
     tag: "Agentforce",
     title: "Asistentes IA Operativos",
     body: "Asistentes enterprise para pricing, aprobaciones, inventario, órdenes y navegación de workflows — todo dentro de Salesforce.",
@@ -83,7 +77,7 @@ export function CapabilityWheel() {
             const front = dist === 0;
             return (
               <article
-                key={it.n}
+                key={it.title}
                 className="absolute left-1/2 top-1/2 w-[min(84vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-5 text-left transition-all duration-[900ms] ease-out sm:p-6"
                 style={{
                   transform: `rotateY(${i * STEP}deg) translateZ(min(50vw, 23rem))`,
@@ -119,7 +113,7 @@ export function CapabilityWheel() {
           const on = ((active % ITEMS.length) + ITEMS.length) % ITEMS.length === i;
           return (
             <button
-              key={it.n}
+              key={it.title}
               type="button"
               aria-label={it.title}
               onClick={() => setActive(i)}

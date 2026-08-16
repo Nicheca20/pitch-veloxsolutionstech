@@ -57,8 +57,7 @@ export function Section({
       >
         {/* Kicker + título: SIEMPRE alineados a la izquierda */}
         <div className={`text-veil text-left ${right ? "w-full lg:max-w-[42%]" : "w-full max-w-[46rem]"}`}>
-          <div className="mb-5 flex items-center gap-3">
-            <span className="h-px w-8 bg-velox-gradient" />
+          <div className="mb-5">
             <span className="text-[11px] uppercase tracking-[0.28em] text-foreground/55">{data.kicker}</span>
           </div>
 

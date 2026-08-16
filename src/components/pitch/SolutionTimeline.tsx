@@ -69,16 +69,6 @@ export function SolutionTimeline() {
 
   return (
     <div ref={ref} id="asi-lo-resolvemos" className="relative mx-auto w-full max-w-5xl">
-      <div className="text-veil relative mb-14 flex flex-col items-center text-center">
-        <div className="mb-4 flex items-center gap-3">
-          <span className="h-px w-8 bg-velox-gradient" />
-          <span className="text-[11px] uppercase tracking-[0.28em] text-foreground/55">
-            Así lo resolvemos
-          </span>
-          <span className="h-px w-8 bg-velox-gradient" />
-        </div>
-      </div>
-
         <div className="relative">
           {/* Línea central */}
           <div className="absolute left-6 top-0 h-full w-px bg-white/10 md:left-1/2 md:-translate-x-1/2">
@@ -95,7 +85,7 @@ export function SolutionTimeline() {
               const on = visible[i];
               return (
                 <li
-                  key={p.index}
+                  key={p.title}
                   data-i={i}
                   ref={(el) => {
                     nodes.current[i] = el;
@@ -121,10 +111,7 @@ export function SolutionTimeline() {
                       left ? "md:col-start-1 md:pr-16 md:text-right" : "md:col-start-2 md:pl-16"
                     }`}
                   >
-                    <span className="text-[11px] font-semibold tracking-[0.3em] text-[var(--force)]">
-                      {p.index}
-                    </span>
-                    <h3 className="mt-2 text-[clamp(1.3rem,2.4vw,2rem)] font-semibold tracking-[-0.02em] text-[var(--ice)]">
+                    <h3 className="text-[clamp(1.3rem,2.4vw,2rem)] font-semibold tracking-[-0.02em] text-[var(--ice)]">
                       {p.title}
                     </h3>
                     <p className="mt-2 text-[clamp(0.95rem,1.2vw,1.1rem)] text-foreground/65">
