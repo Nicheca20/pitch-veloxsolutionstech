@@ -194,7 +194,7 @@ function Carousel3D({
               key={it.title}
               type="button"
               aria-label={it.title}
-              onClick={() => {}}
+              onClick={() => setActive(i)}
               className={`h-1.5 rounded-full transition-all duration-500 ${
                 on ? "w-8 bg-[var(--force)]" : "w-1.5 bg-foreground/25 hover:bg-foreground/50"
               }`}
