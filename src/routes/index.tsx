@@ -363,6 +363,25 @@ function Pitch() {
                   <div className="mt-[6vh] md:mt-[10vh]">
                     <AdiumAssistants />
                   </div>
+                ) : s.id === "cta" ? (
+                  <div className="flex w-full flex-col gap-8">
+                    <POCWorkflow />
+                    <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
+                      <div className="w-fit rounded-2xl border border-white/15 bg-white p-2">
+                        <img
+                          loading="lazy"
+                          decoding="async"
+                          src={qr.url}
+                          alt="Código QR para agendar el diagnóstico con Velox Solutions"
+                          className="size-[15rem] object-contain sm:size-[17rem] md:size-[19rem] lg:size-[22rem]"
+                        />
+                      </div>
+                      <p className="text-sm text-foreground/60">
+                        Escanealo o entra a{" "}
+                        <span className="text-[var(--aura)]">ai-workshops.veloxsolutions.tech/flujos</span>
+                      </p>
+                    </div>
+                  </div>
                 ) : undefined
               }
               right={
