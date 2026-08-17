@@ -395,7 +395,7 @@ function Pitch() {
                   />
                 ) : undefined
               }
-              align={s.id === "cta" ? "start" : undefined}
+              belowFullWidth={s.id === "cta"}
               /* Ritmo vertical ajustado: en móvil/tablet las secciones se
                  compactan para evitar huecos enormes al scrollear. */
               className={
