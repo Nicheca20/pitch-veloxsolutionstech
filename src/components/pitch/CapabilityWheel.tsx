@@ -35,7 +35,7 @@ const ITEMS = [
 
 const STEP = 360 / ITEMS.length;
 
-export function CapabilityWheel() {
+export function CapabilityWheel({ compact = false }: { compact?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -60,6 +60,85 @@ export function CapabilityWheel() {
 
   return (
     <div ref={ref} className="w-full">
+      {compact ? (
+        <CompactSlider active={active} setActive={setActive} />
+      ) : (
+        <Carousel3D active={active} setActive={setActive} />
+      )}
+    </div>
+  );
+}
+
+function CompactSlider({
+  active,
+  setActive,
+}: {
+  active: number;
+  setActive: (i: number) => void;
+}) {
+  const idx = ((active % ITEMS.length) + ITEMS.length) % ITEMS.length;
+  const it = ITEMS[idx]!;
+  return (
+    <div className="flex w-full flex-col">
+      <div className="relative h-[10.5rem] w-full overflow-hidden sm:h-[9.5rem]">
+        {ITEMS.map((item, i) => {
+          const on = i === idx;
+          return (
+            <article
+              key={item.title}
+              className={`absolute inset-x-0 top-0 mx-auto w-full max-w-[22rem] rounded-2xl border p-4 text-left transition-all duration-700 ease-out ${
+                on
+                  ? "opacity-100 translate-y-0"
+                  : "pointer-events-none opacity-0 translate-y-3"
+              }`}
+              style={{
+                borderColor: "color-mix(in oklab, var(--force) 50%, transparent)",
+                background: "color-mix(in oklab, var(--velox) 14%, transparent)",
+                boxShadow: "0 0 40px -16px color-mix(in oklab, var(--force) 60%, transparent)",
+              }}
+              aria-hidden={!on}
+            >
+              <span className="text-[10px] uppercase tracking-[0.24em] text-foreground/55">
+                {item.tag}
+              </span>
+              <h3 className="mt-2 text-base font-semibold leading-tight">{item.title}</h3>
+              <p className="mt-2 line-clamp-2 text-[11px] leading-relaxed text-foreground/70">
+                {item.body}
+              </p>
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="mt-3 flex justify-center gap-1.5">
+        {ITEMS.map((item, i) => {
+          const on = i === idx;
+          return (
+            <button
+              key={item.title}
+              type="button"
+              aria-label={item.title}
+              onClick={() => setActive(i)}
+              className={`h-1 rounded-full transition-all duration-500 ${
+                on ? "w-5 bg-[var(--force)]" : "w-1 bg-foreground/25 hover:bg-foreground/50"
+              }`}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function Carousel3D({
+  active,
+  setActive,
+}: {
+  active: number;
+  setActive: (i: number) => void;
+}) {
+  return (
+    <>
       <div
         className="relative mx-auto h-[26rem] w-full overflow-hidden sm:h-[22rem]"
         style={{ perspective: "1400px" }}
@@ -81,7 +160,6 @@ export function CapabilityWheel() {
                 className="absolute left-1/2 top-1/2 w-[min(84vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-5 text-left transition-all duration-[900ms] ease-out sm:p-6"
                 style={{
                   transform: `rotateY(${i * STEP}deg) translateZ(min(50vw, 23rem))`,
-
                   opacity: front ? 1 : Math.max(0.12, 0.5 - dist * 0.14),
                   borderColor: front
                     ? "color-mix(in oklab, var(--force) 70%, transparent)"
@@ -124,6 +202,6 @@ export function CapabilityWheel() {
           );
         })}
       </div>
-    </div>
+    </>
   );
 }

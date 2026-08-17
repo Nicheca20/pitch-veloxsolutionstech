@@ -17,6 +17,7 @@ import { CronistaFronts } from "@/components/pitch/CronistaFronts";
 import { AdiumAssistants } from "@/components/pitch/AdiumAssistants";
 import { PhaseCards } from "@/components/pitch/PhaseCards";
 import { POCWorkflow } from "@/components/pitch/POCWorkflow";
+import { CapabilityWheel } from "@/components/pitch/CapabilityWheel";
 
 import VeloxBackground from "@/components/pitch/VeloxBackground";
 
@@ -364,23 +365,26 @@ function Pitch() {
                     <AdiumAssistants />
                   </div>
                 ) : s.id === "cta" ? (
-                  <div className="flex w-full flex-col gap-8">
+                  <div className="flex w-full flex-col gap-6 md:gap-8">
                     <POCWorkflow />
-                    <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div className="flex w-full flex-col items-stretch gap-6 xl:flex-row xl:items-center xl:justify-between">
                       <div className="w-fit rounded-2xl border border-white/15 bg-white p-2">
                         <img
                           loading="lazy"
                           decoding="async"
                           src={qr.url}
                           alt="Código QR para agendar el diagnóstico con Velox Solutions"
-                          className="size-[15rem] object-contain sm:size-[17rem] md:size-[19rem] lg:size-[22rem]"
+                          className="size-[13rem] object-contain sm:size-[15rem] md:size-[17rem] lg:size-[19rem]"
                         />
                       </div>
-                      <p className="text-sm text-foreground/60">
-                        Escanealo o entra a{" "}
-                        <span className="text-[var(--aura)]">ai-workshops.veloxsolutions.tech/flujos</span>
-                      </p>
+                      <div className="min-w-0 flex-1">
+                        <CapabilityWheel compact />
+                      </div>
                     </div>
+                    <p className="text-center text-sm text-foreground/60">
+                      Escanealo o entra a{" "}
+                      <span className="text-[var(--aura)]">ai-workshops.veloxsolutions.tech/flujos</span>
+                    </p>
                   </div>
                 ) : undefined
               }
