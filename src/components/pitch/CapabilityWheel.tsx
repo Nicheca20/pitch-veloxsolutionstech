@@ -80,7 +80,7 @@ function CompactSlider({
   const it = ITEMS[idx]!;
   return (
     <div className="flex w-full flex-col">
-      <div className="relative h-[10.5rem] w-full overflow-hidden sm:h-[9.5rem]">
+      <div className="relative h-[12.5rem] w-full overflow-hidden sm:h-[11.5rem]">
         {ITEMS.map((item, i) => {
           const on = i === idx;
           return (
