@@ -8,6 +8,7 @@ export function Section({
   afterTitle,
   extra,
   below,
+  belowFullWidth,
   right,
   align,
   className,
@@ -17,6 +18,7 @@ export function Section({
   afterTitle?: React.ReactNode;
   extra?: React.ReactNode;
   below?: React.ReactNode;
+  belowFullWidth?: boolean;
   right?: React.ReactNode;
   align?: "center" | "start" | undefined;
   className?: string | undefined;
