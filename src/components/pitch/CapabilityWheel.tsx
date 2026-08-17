@@ -102,7 +102,7 @@ function CompactSlider({
                 {item.tag}
               </span>
               <h3 className="mt-2 text-base font-semibold leading-tight">{item.title}</h3>
-              <p className="mt-2 line-clamp-2 text-[11px] leading-relaxed text-foreground/70">
+              <p className="mt-2 line-clamp-3 text-[11px] leading-relaxed text-foreground/70">
                 {item.body}
               </p>
             </article>
