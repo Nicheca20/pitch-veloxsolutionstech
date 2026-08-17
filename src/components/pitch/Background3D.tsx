@@ -1,6 +1,6 @@
 import { softPointTexture } from "./soft-point";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { AdaptiveDpr, Environment, MeshReflectorMaterial } from "@react-three/drei";
+import { AdaptiveDpr, Environment, Lightformer, MeshReflectorMaterial } from "@react-three/drei";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 import { KernelSize } from "postprocessing";
 import { Suspense, useEffect, useMemo, useRef, useState, type MutableRefObject } from "react";
