@@ -17,6 +17,7 @@ import { CronistaFronts } from "@/components/pitch/CronistaFronts";
 import { AdiumAssistants } from "@/components/pitch/AdiumAssistants";
 import { PhaseCards } from "@/components/pitch/PhaseCards";
 import { POCWorkflow } from "@/components/pitch/POCWorkflow";
+import { CapabilityWheel } from "@/components/pitch/CapabilityWheel";
 
 import VeloxBackground from "@/components/pitch/VeloxBackground";
 
