@@ -314,10 +314,13 @@ function Pitch() {
         className="pointer-events-none fixed inset-0 z-[1] print:hidden"
       >
         {mounted && use3D ? (
-          <Suspense fallback={null}>
-            <Background3D section={section} />
-          </Suspense>
+          <SceneErrorBoundary>
+            <Suspense fallback={null}>
+              <Background3D section={section} />
+            </Suspense>
+          </SceneErrorBoundary>
         ) : null}
+
       </div>
 
 
