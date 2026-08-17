@@ -81,7 +81,7 @@ function CloudTrack({ power }: { power: MutableRefObject<number> }) {
 
 /* -------------------------------------------------------------------- Moto */
 export function Bike({ section }: { section: MutableRefObject<number> }) {
-  const { scene } = useGLTF(MODEL, true);
+  const { scene } = useGLTF(MODEL, "/draco/gltf/");
   const root = useRef<THREE.Group>(null);
   const rider = useRef<THREE.Group>(null);
   const power = useRef(0);

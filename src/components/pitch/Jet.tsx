@@ -69,7 +69,7 @@ function Afterburner({ power }: { power: MutableRefObject<number> }) {
 
 /* --------------------------------------------------------------------- Jet */
 export function Jet({ section }: { section: MutableRefObject<number> }) {
-  const { scene } = useGLTF(MODEL, true);
+  const { scene } = useGLTF(MODEL, "/draco/gltf/");
   const root = useRef<THREE.Group>(null);
   const craft = useRef<THREE.Group>(null);
   const power = useRef(0);

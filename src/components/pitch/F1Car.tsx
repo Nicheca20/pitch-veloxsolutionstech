@@ -243,7 +243,7 @@ function SpinRings({ visible }: { visible: MutableRefObject<number> }) {
 
 /* -------------------------------------------------------------------- Carro */
 export function F1Car({ section }: { section: MutableRefObject<number> }) {
-  const { scene } = useGLTF(MODEL, true);
+  const { scene } = useGLTF(MODEL, "/draco/gltf/");
   const root = useRef<THREE.Group>(null);
   const car = useRef<THREE.Group>(null);
   const pit = useRef(0);
