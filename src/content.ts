@@ -54,7 +54,7 @@ export const sections: Section[] = [
     index: "",
     kicker: "Cómo funciona",
     title: "Un activo de datos único.",
-    body: "Flujos pre-construidos, gobernanza y human-in-the-loop en cada agente.",
+    body: "Cuatro fases con IA que alimentan un mismo activo de datos: contexto, decisiones y entregables, conectados y reutilizables.",
     metrics: [{ value: 60, suffix: "%", label: "Menos esfuerzo de análisis funcional" }],
   },
   {
