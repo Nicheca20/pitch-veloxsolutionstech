@@ -747,7 +747,7 @@ function LazyBike({ section }: { section: Ref }) {
   );
 }
 
-/** Environment (HDR) compartido: sólo montado mientras hay un modelo en pantalla. */
+/** Environment 100% local: generado con Lightformers (no descarga ningún HDR). */
 function LazyEnvironment({ section }: { section: Ref }) {
   const [show, setShow] = useState(false);
   useFrame(() => {
@@ -757,11 +757,52 @@ function LazyEnvironment({ section }: { section: Ref }) {
   });
   if (!show) return null;
   return (
-    <Suspense fallback={null}>
-      <Environment preset="night" />
-    </Suspense>
+    <Environment resolution={128} frames={1} background={false}>
+      <color attach="background" args={["#0a0820"]} />
+      {/* cúpula fría de marca */}
+      <Lightformer
+        form="rect"
+        intensity={1.6}
+        color="#AFA9EC"
+        position={[0, 6, -6]}
+        scale={[14, 8, 1]}
+      />
+      <Lightformer
+        form="rect"
+        intensity={1.1}
+        color="#534AB7"
+        rotation-y={Math.PI / 2}
+        position={[-7, 2, 0]}
+        scale={[10, 6, 1]}
+      />
+      <Lightformer
+        form="rect"
+        intensity={0.9}
+        color="#7F77DD"
+        rotation-y={-Math.PI / 2}
+        position={[7, 2, 0]}
+        scale={[10, 6, 1]}
+      />
+      <Lightformer
+        form="circle"
+        intensity={2.2}
+        color="#EEEDFE"
+        rotation-x={Math.PI / 2}
+        position={[0, 9, 0]}
+        scale={[6, 6, 1]}
+      />
+      <Lightformer
+        form="rect"
+        intensity={0.5}
+        color="#231e52"
+        rotation-x={-Math.PI / 2}
+        position={[0, -5, 0]}
+        scale={[16, 16, 1]}
+      />
+    </Environment>
   );
 }
+
 
 function DynamicBloom({ section, quality }: { section: Ref; quality: number }) {
   const ref = useRef<{ intensity: number } | null>(null);
