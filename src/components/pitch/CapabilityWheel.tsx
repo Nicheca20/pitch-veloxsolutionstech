@@ -63,7 +63,7 @@ export function CapabilityWheel({ compact = false }: { compact?: boolean }) {
       {compact ? (
         <CompactSlider active={active} setActive={setActive} />
       ) : (
-        <Carousel3D active={active} />
+        <Carousel3D active={active} setActive={setActive} />
       )}
     </div>
   );
