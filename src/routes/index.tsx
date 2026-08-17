@@ -338,21 +338,7 @@ function Pitch() {
               data={s}
               first={i === 0}
               afterTitle={s.id === "solucion" ? <VeleiroLogo /> : undefined}
-              extra={
-                s.id === "cta" ? (
-                  <div className="mt-10">
-                    <div className="w-fit rounded-2xl border border-white/15 bg-white p-2">
-                      <img
-                        loading="lazy"
-                        decoding="async"
-                        src={qr.url}
-                        alt="Código QR para agendar el diagnóstico con Velox Solutions"
-                        className="size-[15rem] object-contain sm:size-[17rem] md:size-[19rem] lg:size-[22rem]"
-                      />
-                    </div>
-                  </div>
-                ) : undefined
-              }
+              extra={undefined}
               below={
                 s.id === "problema" ? (
                   <ProblemFlow />
