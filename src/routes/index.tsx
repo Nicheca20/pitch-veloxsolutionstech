@@ -15,6 +15,7 @@ import { GrowthEngine } from "@/components/pitch/GrowthEngine";
 import { CronistaFronts } from "@/components/pitch/CronistaFronts";
 import { CapabilityWheel } from "@/components/pitch/CapabilityWheel";
 import { AdiumAssistants } from "@/components/pitch/AdiumAssistants";
+import { PhaseCards } from "@/components/pitch/PhaseCards";
 
 import VeloxBackground from "@/components/pitch/VeloxBackground";
 
@@ -359,7 +360,12 @@ function Pitch() {
                 ) : s.id === "solucion" ? (
                   <SolutionTimeline />
                 ) : s.id === "como" ? (
-                  <DataCycle />
+                  <div className="flex w-full flex-col items-center gap-10 md:gap-14">
+                    <PhaseCards />
+                    <div className="w-full max-w-[640px]">
+                      <DataCycle />
+                    </div>
+                  </div>
                 ) : s.id === "diferencial" ? (
                   <GrowthEngine />
                 ) : s.id === "cronista" ? (
