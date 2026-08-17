@@ -90,7 +90,7 @@ export function CapabilityWheel({ compact = false }: { compact?: boolean }) {
                     compact ? "min(28vw,12rem)" : "min(50vw,23rem)"
                   })`,
 
-                  opacity: front ? 1 : Math.max(0.12, 0.5 - dist * 0.14),
+                  opacity: front ? 1 : Math.max(compact ? 0.04 : 0.12, (compact ? 0.35 : 0.5) - dist * 0.14),
                   borderColor: front
                     ? "color-mix(in oklab, var(--force) 70%, transparent)"
                     : "rgba(255,255,255,0.08)",
