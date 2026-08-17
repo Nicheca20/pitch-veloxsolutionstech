@@ -82,7 +82,7 @@ export function CapabilityWheel({ compact = false }: { compact?: boolean }) {
                 key={it.title}
                 className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-2xl border text-left transition-all duration-[900ms] ease-out ${
                   compact
-                    ? "w-[min(78vw,18rem)] p-3 sm:p-4"
+                    ? "w-[min(70vw,15rem)] p-3 sm:p-3.5"
                     : "w-[min(84vw,26rem)] p-5 sm:p-6"
                 }`}
                 style={{
