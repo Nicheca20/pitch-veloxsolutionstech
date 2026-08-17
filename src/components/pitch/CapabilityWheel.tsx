@@ -35,7 +35,7 @@ const ITEMS = [
 
 const STEP = 360 / ITEMS.length;
 
-export function CapabilityWheel({ compact = false, onSelect }: { compact?: boolean; onSelect?: (i: number) => void }) {
+export function CapabilityWheel({ compact = false }: { compact?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
   const [visible, setVisible] = useState(false);
