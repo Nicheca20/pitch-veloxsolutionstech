@@ -230,6 +230,14 @@
   background-image: var(--velox-gradient);
 }
 
+@utility font-poppins {
+  font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+}
+
+@utility font-inter {
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
 /* Velo radial detrás del texto para garantizar contraste AA sobre la escena 3D */
 @utility text-veil {
   &::before {
