@@ -367,7 +367,7 @@ function Pitch() {
                 ) : s.id === "cta" ? (
                   <div className="flex w-full flex-col gap-6 md:gap-8">
                     <POCWorkflow />
-                    <div className="flex w-full flex-col items-stretch gap-6 lg:flex-row lg:items-center lg:justify-between">
+                    <div className="flex w-full flex-col items-stretch gap-6 xl:flex-row xl:items-center xl:justify-between">
                       <div className="w-fit rounded-2xl border border-white/15 bg-white p-2">
                         <img
                           loading="lazy"
