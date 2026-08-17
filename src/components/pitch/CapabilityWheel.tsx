@@ -87,7 +87,7 @@ export function CapabilityWheel({ compact = false }: { compact?: boolean }) {
                 }`}
                 style={{
                   transform: `rotateY(${i * STEP}deg) translateZ(${
-                    compact ? "min(40vw,16rem)" : "min(50vw,23rem)"
+                    compact ? "min(28vw,12rem)" : "min(50vw,23rem)"
                   })`,
 
                   opacity: front ? 1 : Math.max(0.12, 0.5 - dist * 0.14),
