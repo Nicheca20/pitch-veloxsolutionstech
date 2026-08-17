@@ -73,7 +73,7 @@ export function PhaseCards() {
       </div>
 
       <p
-        className={`mt-6 text-center text-[0.8rem] font-medium uppercase tracking-[0.18em] text-[var(--aura)] transition-all duration-600 ease-out sm:text-[0.85rem] ${
+        className={`mt-6 text-center text-[0.8rem] font-medium uppercase tracking-[0.18em] text-[var(--aura)] transition-all duration-500 ease-out sm:text-[0.85rem] ${
           visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
         }`}
         style={{ transitionDelay: visible ? "520ms" : "0ms" }}
