@@ -61,7 +61,9 @@ export function CapabilityWheel({ compact = false }: { compact?: boolean }) {
   return (
     <div ref={ref} className="w-full">
       <div
-        className="relative mx-auto h-[26rem] w-full overflow-hidden sm:h-[22rem]"
+        className={`relative mx-auto w-full overflow-hidden ${
+          compact ? "h-[16rem] sm:h-[14rem]" : "h-[26rem] sm:h-[22rem]"
+        }`}
         style={{ perspective: "1400px" }}
       >
         <div
@@ -78,9 +80,15 @@ export function CapabilityWheel({ compact = false }: { compact?: boolean }) {
             return (
               <article
                 key={it.title}
-                className="absolute left-1/2 top-1/2 w-[min(84vw,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-5 text-left transition-all duration-[900ms] ease-out sm:p-6"
+                className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-2xl border text-left transition-all duration-[900ms] ease-out ${
+                  compact
+                    ? "w-[min(78vw,18rem)] p-3 sm:p-4"
+                    : "w-[min(84vw,26rem)] p-5 sm:p-6"
+                }`}
                 style={{
-                  transform: `rotateY(${i * STEP}deg) translateZ(min(50vw, 23rem))`,
+                  transform: `rotateY(${i * STEP}deg) translateZ(${
+                    compact ? "min(40vw,16rem)" : "min(50vw,23rem)"
+                  })`,
 
                   opacity: front ? 1 : Math.max(0.12, 0.5 - dist * 0.14),
                   borderColor: front
@@ -96,19 +104,35 @@ export function CapabilityWheel({ compact = false }: { compact?: boolean }) {
                 aria-hidden={!front}
               >
                 <div className="flex items-center gap-3">
-                  <span className="text-[11px] uppercase tracking-[0.24em] text-foreground/55">
+                  <span
+                    className={`uppercase tracking-[0.24em] text-foreground/55 ${
+                      compact ? "text-[10px]" : "text-[11px]"
+                    }`}
+                  >
                     {it.tag}
                   </span>
                 </div>
-                <h3 className="mt-3 text-xl font-semibold leading-tight">{it.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-foreground/70">{it.body}</p>
+                <h3
+                  className={`font-semibold leading-tight ${
+                    compact ? "mt-2 text-base" : "mt-3 text-xl"
+                  }`}
+                >
+                  {it.title}
+                </h3>
+                <p
+                  className={`leading-relaxed text-foreground/70 ${
+                    compact ? "mt-2 text-[11px] line-clamp-3" : "mt-3 text-sm"
+                  }`}
+                >
+                  {it.body}
+                </p>
               </article>
             );
           })}
         </div>
       </div>
 
-      <div className="mt-6 flex justify-center gap-2">
+      <div className={`flex justify-center gap-2 ${compact ? "mt-3" : "mt-6"}`}>
         {ITEMS.map((it, i) => {
           const on = ((active % ITEMS.length) + ITEMS.length) % ITEMS.length === i;
           return (
@@ -117,8 +141,12 @@ export function CapabilityWheel({ compact = false }: { compact?: boolean }) {
               type="button"
               aria-label={it.title}
               onClick={() => setActive(i)}
-              className={`h-1.5 rounded-full transition-all duration-500 ${
-                on ? "w-8 bg-[var(--force)]" : "w-1.5 bg-foreground/25 hover:bg-foreground/50"
+              className={`rounded-full transition-all duration-500 ${
+                compact ? "h-1" : "h-1.5"
+              } ${
+                on
+                  ? `bg-[var(--force)] ${compact ? "w-6" : "w-8"}`
+                  : `bg-foreground/25 hover:bg-foreground/50 ${compact ? "w-1" : "w-1.5"}`
               }`}
             />
           );
