@@ -28,7 +28,9 @@ import { ProgressBar } from "@/components/pitch/ProgressBar";
 import { Preloader } from "@/components/pitch/Preloader";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
 
+import { SceneErrorBoundary } from "@/components/pitch/SceneErrorBoundary";
 const Background3D = lazy(() =>
+
   import("@/components/pitch/Background3D").then((m) => ({ default: m.Background3D })),
 );
 
