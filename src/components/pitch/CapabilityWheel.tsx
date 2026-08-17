@@ -130,7 +130,13 @@ function CompactSlider({
   );
 }
 
-function Carousel3D({ active }: { active: number }) {
+function Carousel3D({
+  active,
+  setActive,
+}: {
+  active: number;
+  setActive: (i: number) => void;
+}) {
   return (
     <>
       <div
