@@ -28,7 +28,9 @@ import { ProgressBar } from "@/components/pitch/ProgressBar";
 import { Preloader } from "@/components/pitch/Preloader";
 import { useScrollProgress } from "@/hooks/use-scroll-progress";
 
+import { SceneErrorBoundary } from "@/components/pitch/SceneErrorBoundary";
 const Background3D = lazy(() =>
+
   import("@/components/pitch/Background3D").then((m) => ({ default: m.Background3D })),
 );
 
@@ -314,10 +316,13 @@ function Pitch() {
         className="pointer-events-none fixed inset-0 z-[1] print:hidden"
       >
         {mounted && use3D ? (
-          <Suspense fallback={null}>
-            <Background3D section={section} />
-          </Suspense>
+          <SceneErrorBoundary>
+            <Suspense fallback={null}>
+              <Background3D section={section} />
+            </Suspense>
+          </SceneErrorBoundary>
         ) : null}
+
       </div>
 
 
