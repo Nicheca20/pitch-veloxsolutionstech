@@ -126,7 +126,7 @@ export function Section({
       {/* Todo lo demás (flujos, timelines, diagramas) va centrado */}
       {below && (
         <div className="relative z-10 mt-10 flex w-full justify-center md:mt-14">
-          <div className="w-full max-w-5xl">{below}</div>
+          <div className={`w-full ${belowFullWidth ? "" : "max-w-5xl"}`}>{below}</div>
         </div>
       )}
 
