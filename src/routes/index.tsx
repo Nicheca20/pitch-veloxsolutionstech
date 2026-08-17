@@ -13,9 +13,10 @@ import { ClientLogo } from "@/components/pitch/ClientLogo";
 import { VeleiroLogo } from "@/components/pitch/VeleiroLogo";
 import { GrowthEngine } from "@/components/pitch/GrowthEngine";
 import { CronistaFronts } from "@/components/pitch/CronistaFronts";
-import { CapabilityWheel } from "@/components/pitch/CapabilityWheel";
+
 import { AdiumAssistants } from "@/components/pitch/AdiumAssistants";
 import { PhaseCards } from "@/components/pitch/PhaseCards";
+import { POCWorkflow } from "@/components/pitch/POCWorkflow";
 
 import VeloxBackground from "@/components/pitch/VeloxBackground";
 
@@ -337,21 +338,7 @@ function Pitch() {
               data={s}
               first={i === 0}
               afterTitle={s.id === "solucion" ? <VeleiroLogo /> : undefined}
-              extra={
-                s.id === "cta" ? (
-                  <div className="mt-10">
-                    <div className="w-fit rounded-2xl border border-white/15 bg-white p-2">
-                      <img
-                        loading="lazy"
-                        decoding="async"
-                        src={qr.url}
-                        alt="Código QR para agendar el diagnóstico con Velox Solutions"
-                        className="size-[15rem] object-contain sm:size-[17rem] md:size-[19rem] lg:size-[22rem]"
-                      />
-                    </div>
-                  </div>
-                ) : undefined
-              }
+              extra={undefined}
               below={
                 s.id === "problema" ? (
                   <ProblemFlow />
@@ -376,6 +363,25 @@ function Pitch() {
                   <div className="mt-[6vh] md:mt-[10vh]">
                     <AdiumAssistants />
                   </div>
+                ) : s.id === "cta" ? (
+                  <div className="flex w-full flex-col gap-8">
+                    <POCWorkflow />
+                    <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between">
+                      <div className="w-fit rounded-2xl border border-white/15 bg-white p-2">
+                        <img
+                          loading="lazy"
+                          decoding="async"
+                          src={qr.url}
+                          alt="Código QR para agendar el diagnóstico con Velox Solutions"
+                          className="size-[15rem] object-contain sm:size-[17rem] md:size-[19rem] lg:size-[22rem]"
+                        />
+                      </div>
+                      <p className="text-sm text-foreground/60">
+                        Escanealo o entra a{" "}
+                        <span className="text-[var(--aura)]">ai-workshops.veloxsolutions.tech/flujos</span>
+                      </p>
+                    </div>
+                  </div>
                 ) : undefined
               }
               right={
@@ -387,13 +393,9 @@ function Pitch() {
                     alt="Velox Solutions"
                     className="h-auto w-[min(58vw,14rem)] object-contain opacity-90 md:w-[min(38vw,19rem)]"
                   />
-                ) : s.id === "cta" ? (
-                  <div className="w-full pt-[18vh] lg:pt-[22vh]">
-                    <CapabilityWheel />
-                  </div>
                 ) : undefined
               }
-              align={s.id === "cta" ? "start" : undefined}
+              belowFullWidth={s.id === "cta"}
               /* Ritmo vertical ajustado: en móvil/tablet las secciones se
                  compactan para evitar huecos enormes al scrollear. */
               className={

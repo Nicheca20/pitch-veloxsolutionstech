@@ -102,7 +102,7 @@ export const sections: Section[] = [
     id: "cta",
     index: "",
     kicker: "Partner Connect",
-    title: "Agenda el diagnóstico.",
+    title: "Implementemos una POC en tu cliente.",
     body: "Diagnóstico Agéntico + roadmap de 4 semanas + un POC de Agentforce en vivo.",
   },
 ];
